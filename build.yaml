@@ -1,0 +1,25 @@
+# Read about `build.yaml` at https://pub.dev/packages/build_config
+builders:
+#  copyBuilder:
+#    import: "package:style_generator/style_generator.dart"
+#    builder_factories: ["copyBuilder"]
+#    build_extensions: { ".dart": [ ".dart.copy" ] }
+#    build_to: source
+#    auto_apply: root_package
+#    defaults:
+#      options:
+#        run_only_if_triggered: true
+
+  styleBuilder:
+    import: "package:style_generator/style_generator.dart"
+    builder_factories: [ "styleBuilder" ]
+    build_extensions: { ".dart": [ ".style.dart" ] }
+    build_to: source
+    auto_apply: root_package
+    defaults:
+      options:
+        run_only_if_triggered: true
+
+triggers:
+  style_generator:styleBuilder:
+    - annotation Style
