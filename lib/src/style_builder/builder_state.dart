@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:analyzer/dart/constant/value.dart';
@@ -7,16 +5,13 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:collection/collection.dart';
-import 'package:logging/logging.dart';
 import 'package:path/path.dart' hide Style;
 import 'package:style_generator/src/data/annotated_element.dart';
 import 'package:style_generator/src/data/annotation_builder.dart';
 import 'package:style_generator/src/data/variable.dart';
 import 'package:style_generator/src/extensions/dart_type_extension.dart';
-import 'package:style_generator/src/extensions/element_extension.dart';
-import 'package:style_generator/src/style_builder/style_builder.dart' ;
-
-import '../annotations/style.dart';
+import 'package:style_generator/src/extensions/element_annotation_extension.dart';
+import 'package:style_generator/style_generator.dart';
 
 part '_copy_with_gen.dart';
 part '_lerp_gen.dart';
@@ -26,9 +21,9 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
 
   static final String _nl = Platform.lineTerminator;
 
-  String generateForAnnotation(AssetId inputId, LibraryElement lib, AnnotationBuilder<Style> annotation) {
+  String generateForAnnotation(AssetId inputId, LibraryElement lib, AnnotationBuilder<Style> styleAnnotation, AnnotationBuilder<StyleKey> styleKeyAnnotation) {
 
-    AnnotatedElement<Style> c = _getAnnotatedElements(lib.classes, annotation).first;
+    AnnotatedElement<Style> c = _getAnnotatedElements(lib.classes, styleAnnotation).first;
     ClassElement clazz = c.element as ClassElement;
 
     ConstructorElement? constructor = _getConstructor(clazz.constructors, c.annotation.constructor);
@@ -39,6 +34,13 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
     // List<Variable> variables = fields.map((e) => Variable(element: e)).toList();
 
     List<Variable> variables = constructor.formalParameters.map((e) => Variable(element: e)).toList();
+
+    List<AnnotatedElement<StyleKey>> v = _getAnnotatedElements(_getFields(clazz.fields), styleKeyAnnotation);
+
+    // TODO(Alex): make StyleKey.functionCall internal or create a internal style_key representation.
+    // TODO(Alex): apply annotations from constructor and from fields
+    // TODO(Alex): create ThemeLerp override annotation
+    v.forEach((element) => print(element.annotation.toJson()),);
 
     String fieldContent = _generateFieldGetter(variables);
     String copyWithContent = _generateCopyWith(clazz.displayName, variables);

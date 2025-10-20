@@ -1,27 +1,25 @@
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
-import '../extensions/dart_object_extension.dart';
 
-typedef AnnotationFromJson<T> = T Function(Map<String, Object?> json);
+typedef AnnotationFromMap<T> = T Function(Map<String, DartObject?> map);
 
 class AnnotationBuilder<T> {
   /// the annotation as class element (e.g. @Style() annotation)
   final ClassElement annotationClass;
-  final AnnotationFromJson<T> _buildAnnotation;
+  final AnnotationFromMap<T> _buildAnnotation;
 
-  const AnnotationBuilder({required this.annotationClass, required AnnotationFromJson<T> buildAnnotation}) : _buildAnnotation = buildAnnotation;
+  const AnnotationBuilder({required this.annotationClass, required AnnotationFromMap<T> buildAnnotation}) : _buildAnnotation = buildAnnotation;
 
   T build(DartObject object)  {
-    Map<String, Object?> json = {};
+    Map<String, DartObject?> map = {};
 
-    DartObject? field;
     for (var f in annotationClass.fields) {
-      field = object.getField(f.displayName);
+      DartObject? field = object.getField(f.displayName);
 
-      json[f.displayName] = field?.toValue();
+      map[f.displayName] = field;
     }
 
-    return _buildAnnotation(json);
+    return _buildAnnotation(map);
   }
 }
