@@ -5,7 +5,7 @@ mixin _MergeGen {
   static String get _nl => BuilderState._nl;
 
 
-  String _generateMerge(LibraryElement lib, String className, List<FieldElement> fields) {
+  String _generateMerge(LibraryElement lib, String className, List<Variable> fields) {
     List<String> copyWithParams = [];
 
     String name;
@@ -28,7 +28,7 @@ mixin _MergeGen {
     return function;
   }
 
-  String _getMergeMethod(LibraryElement lib, FieldElement field, {required String a, required String b,}) {
+  String _getMergeMethod(LibraryElement lib, Variable field, {required String a, required String b,}) {
     DartType d = field.type.extensionTypeErasure;
     String   suffix = field.type.isNullable ? "?" : "";
 

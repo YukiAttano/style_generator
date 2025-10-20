@@ -6,13 +6,14 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:path/path.dart';
+
 import 'package:source_gen/source_gen.dart';
+import 'package:style_generator/src/data/annotation_builder.dart';
 import 'package:style_generator/src/style_builder/builder_state.dart';
 
-class Style {
-  const Style();
-}
+import '../../style_generator.dart';
+
+
 
 /*
     // Lookup classes from packages
@@ -33,53 +34,20 @@ class StyleBuilder implements Builder {
     '.dart': ['.style.dart']
   };
 
-
-  Iterable<DartObject> _annotationsWhere(
-      Object element,
-      bool Function(DartType) predicate, {
-        bool throwOnUnresolved = true,
-      }) sync* {
-    if (element
-    case Element(:final metadata) || ElementDirective(:final metadata)) {
-      final annotations = metadata.annotations;
-      for (var i = 0; i < annotations.length; i++) {
-        final value = annotations[i].computeConstantValue();
-        if (value?.type != null && predicate(value!.type!)) {
-          yield value;
-        }
-      }
-    }
-  }
-
-  bool isAssignableFromType(DartType staticType) {
-    final element = staticType.element;
-    return element != null && isAssignableFrom(element);
-  }
-
-  bool isAssignableFrom(Element element) =>
-
-          (element is InterfaceElement && element.allSupertypes.any(isExactlyType));
-
-  bool isExactlyType(DartType staticType) {
-    final element = staticType.element;
-    if (element != null) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   bool _isInitialized = false;
 
-  final Map<String, Element> _libraryAnnotations = {};
-  Element get styleAnnotation => _libraryAnnotations["Style"]!;
+  final Map<String, AnnotationBuilder> _libraryAnnotations = {};
+  AnnotationBuilder<Style> get styleAnnoBuilder => _libraryAnnotations["Style"] as AnnotationBuilder<Style>;
 
   Future<void> _init(BuildStep buildStep) async {
     var asset = AssetId.resolve(Uri.parse("package:style_generator/style_generator.dart"));
     var lib = await buildStep.resolver.libraryFor(asset);
 
-    Element? styleElement = lib.exportNamespace.get2("Style");
-    if (styleElement != null) _libraryAnnotations["Style"] = styleElement;
+    ClassElement? styleElement = lib.exportNamespace.get2("Style") as ClassElement?;
+    if (styleElement != null) {
+      _libraryAnnotations["Style"] = AnnotationBuilder<Style>(annotationClass: styleElement, buildAnnotation: Style.fromJson);
+    }
+    _isInitialized = true;
   }
 
   @override
@@ -97,7 +65,7 @@ class StyleBuilder implements Builder {
 
     BuilderState state = BuilderState();
 
-    String partClass = state.generateForAnnotation(inputId, l, styleAnnotation);
+    String partClass = state.generateForAnnotation(inputId, l, styleAnnoBuilder);
 
     partClass = formatter.format(partClass);
 

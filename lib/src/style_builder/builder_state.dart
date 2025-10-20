@@ -1,36 +1,44 @@
 
 
 import 'dart:io';
-import 'package:build/build.dart';
+
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:build/build.dart';
 import 'package:collection/collection.dart';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart' hide Style;
+import 'package:style_generator/src/data/annotated_element.dart';
+import 'package:style_generator/src/data/annotation_builder.dart';
 import 'package:style_generator/src/data/variable.dart';
 import 'package:style_generator/src/extensions/element_extension.dart';
 import 'package:style_generator/src/style_builder/style_builder.dart' ;
-import 'package:logging/logging.dart';
 
+import '../annotations/style.dart';
+
+part '_copy_with_gen.dart';
 part '_lerp_gen.dart';
 part '_merge_gen.dart';
-part '_copy_with_gen.dart';
 
 class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
 
   static final String _nl = Platform.lineTerminator;
 
-  String generateForAnnotation(AssetId inputId, LibraryElement lib, Element annotation) {
+  String generateForAnnotation(AssetId inputId, LibraryElement lib, AnnotationBuilder<Style> annotation) {
 
-    ClassElement clazz = _getAnnotatedClasses(lib, annotation).first;
+    AnnotatedElement<Style> c = _getAnnotatedElements(lib.classes, annotation).first;
+    ClassElement clazz = c.element as ClassElement;
 
     ConstructorElement constructor = _getPrimaryConstructor(clazz.constructors);
 
     List<FieldElement> fields = _getFields(clazz.fields);
+    List<Variable> variables = fields.map((e) => Variable(element: e)).toList();
 
     String fieldContent = _generateFieldGetter(fields);
-    String copyWithContent = _generateCopyWith(clazz.displayName, fields);
-    String mergeContent = _generateMerge(lib, clazz.displayName, fields);
-    String lerpContent = _generateLerp(lib, clazz.displayName, fields.map((e) => Variable(element: e)).toList());
+    String copyWithContent = _generateCopyWith(clazz.displayName, variables);
+    String mergeContent = _generateMerge(lib, clazz.displayName, variables);
+    String lerpContent = _generateLerp(lib, clazz.displayName, variables);
 
     return _generatePartClass(
         basename(inputId.path), clazz.displayName, fields: fieldContent, copyWith: copyWithContent, merge: mergeContent, lerp: lerpContent, trailing: [
@@ -59,22 +67,28 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
     return partClass;
   }
 
-  List<ClassElement> _getAnnotatedClasses(LibraryElement lib, Element annotation) {
-    List<ClassElement> classes = [];
+  List<AnnotatedElement<T>> _getAnnotatedElements<T>(List<Element> elements, AnnotationBuilder<T> builder) {
+    List<AnnotatedElement<T>> list = [];
 
-    for (var c in lib.classes) {
-      for (var a in c.metadata.annotations) {
-        if (a.isOfType(annotation)) {
-          classes.add(c);
+    for (var e in elements) {
+      for (var annotationClass in e.metadata.annotations) {
+        if (annotationClass.isOfType(builder.annotationClass)) {
+          
+          DartObject? annotationObject = annotationClass.computeConstantValue()!;
+          
+          list.add(AnnotatedElement<T>(
+            element: e,
+            object: annotationObject,
+            annotation: builder.build(annotationObject),
+          ));
         }
       }
     }
 
-    return classes;
+    return list;
   }
 
   List<FieldElement> _getFields(List<FieldElement> fields) {
-
     List<FieldElement> list = [];
 
     for (var f in fields) {

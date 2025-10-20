@@ -3,7 +3,7 @@ part of 'builder_state.dart';
 mixin _CopyWithGen {
   static String get _nl => BuilderState._nl;
 
-  String _generateCopyWith(String className, List<FieldElement> fields) {
+  String _generateCopyWith(String className, List<Variable> fields) {
     List<String> params = [];
     List<String> constructorParams = [];
 
