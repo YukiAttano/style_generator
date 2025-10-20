@@ -1,6 +1,7 @@
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
+import '../extensions/dart_object_extension.dart';
 
 typedef AnnotationFromJson<T> = T Function(Map<String, Object?> json);
 
@@ -14,9 +15,11 @@ class AnnotationBuilder<T> {
   T build(DartObject object)  {
     Map<String, Object?> json = {};
 
-    // TODO(Alex): try to invoke toJson() instead, because this method will also use private fields, getters and setters
+    DartObject? field;
     for (var f in annotationClass.fields) {
-      json[f.displayName] = object.getField(f.displayName);
+      field = object.getField(f.displayName);
+
+      json[f.displayName] = field?.toValue();
     }
 
     return _buildAnnotation(json);

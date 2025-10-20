@@ -31,12 +31,16 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
     AnnotatedElement<Style> c = _getAnnotatedElements(lib.classes, annotation).first;
     ClassElement clazz = c.element as ClassElement;
 
-    ConstructorElement constructor = _getPrimaryConstructor(clazz.constructors);
+    ConstructorElement? constructor = _getConstructor(clazz.constructors, c.annotation.constructor);
 
-    List<FieldElement> fields = _getFields(clazz.fields);
-    List<Variable> variables = fields.map((e) => Variable(element: e)).toList();
+    if (constructor == null) throw Exception("No Constructor found");
 
-    String fieldContent = _generateFieldGetter(fields);
+    // List<FieldElement> fields = _getFields(clazz.fields);
+    // List<Variable> variables = fields.map((e) => Variable(element: e)).toList();
+
+    List<Variable> variables = constructor.formalParameters.map((e) => Variable(element: e)).toList();
+
+    String fieldContent = _generateFieldGetter(variables);
     String copyWithContent = _generateCopyWith(clazz.displayName, variables);
     String mergeContent = _generateMerge(lib, clazz.displayName, variables);
     String lerpContent = _generateLerp(lib, clazz.displayName, variables);
@@ -103,6 +107,25 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
     return list;
   }
 
+  ConstructorElement? _getConstructor(List<ConstructorElement> constructors, String? name) {
+    ConstructorElement? constructor;
+
+    if (name == null) {
+      constructor = _getPrimaryConstructor(constructors);
+    } else {
+      if (name == "") name = "new"; // Default Constructor name
+
+      for (var c in constructors) {
+        if (c.name == name && c.name != null) {
+          constructor = c;
+          break;
+        }
+      }
+    }
+
+    return constructor;
+  }
+
   ConstructorElement _getPrimaryConstructor(List<ConstructorElement> constructors) {
     ConstructorElement? primaryConstructor;
 
@@ -120,11 +143,8 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
     return primaryConstructor!;
   }
 
-  void print(Object? text) {
-    log.log(Level.WARNING, text);
-  }
 
-  String _generateFieldGetter(List<FieldElement> fields) {
+  String _generateFieldGetter(List<Variable> fields) {
     List<String> f = [];
 
     String? name;
