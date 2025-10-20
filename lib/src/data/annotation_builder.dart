@@ -14,6 +14,7 @@ class AnnotationBuilder<T> {
   T build(DartObject object)  {
     Map<String, Object?> json = {};
 
+    // TODO(Alex): try to invoke toJson() instead, because this method will also use private fields, getters and setters
     for (var f in annotationClass.fields) {
       json[f.displayName] = object.getField(f.displayName);
     }
