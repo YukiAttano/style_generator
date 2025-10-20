@@ -12,6 +12,7 @@ import 'package:path/path.dart' hide Style;
 import 'package:style_generator/src/data/annotated_element.dart';
 import 'package:style_generator/src/data/annotation_builder.dart';
 import 'package:style_generator/src/data/variable.dart';
+import 'package:style_generator/src/extensions/dart_type_extension.dart';
 import 'package:style_generator/src/extensions/element_extension.dart';
 import 'package:style_generator/src/style_builder/style_builder.dart' ;
 

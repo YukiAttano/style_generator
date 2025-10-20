@@ -72,11 +72,3 @@ class StyleBuilder implements Builder {
     await buildStep.writeAsString(outputId, partClass);
   }
 }
-
-
-
-
-
-extension DartTypeExtension on DartType {
-  bool get isNullable => nullabilitySuffix == NullabilitySuffix.question;
-}
