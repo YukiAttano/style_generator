@@ -1,9 +1,14 @@
+// @docImport('style_key.dart');
+library;
+
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:style_generator/src/extensions/dart_object_extension.dart';
 
-import 'style_key.dart';
-
+/// The internal representation of [StyleKey]
+///
+/// [StyleKey] forces the [lerp] method to be be correctly typed,
+/// while this internal representation just holds the function name.
 class StyleKeyInternal<T> {
   final bool inCopyWith;
   final bool inMerge;
