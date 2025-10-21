@@ -9,6 +9,7 @@ import 'package:path/path.dart' hide Style;
 import 'package:style_generator/src/data/annotated_element.dart';
 import 'package:style_generator/src/data/annotation_builder.dart';
 import 'package:style_generator/src/data/variable.dart';
+import '../annotations/style_key_internal.dart';
 import 'package:style_generator/src/extensions/dart_type_extension.dart';
 import 'package:style_generator/src/extensions/element_annotation_extension.dart';
 import 'package:style_generator/style_generator.dart';
@@ -28,7 +29,7 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen, _OfGen {
     AssetId inputId,
     LibraryElement lib,
     AnnotationBuilder<Style> styleAnnotation,
-    AnnotationBuilder<StyleKey> styleKeyAnnotation,
+    AnnotationBuilder<StyleKeyInternal> styleKeyAnnotation,
   ) {
     AnnotatedElement<Style> c = _getAnnotatedElements(lib.classes, styleAnnotation).first;
     ClassElement clazz = c.element as ClassElement;
@@ -43,7 +44,7 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen, _OfGen {
     List<Variable> constructorParams = constructor.formalParameters.map((e) => Variable(element: e)).toList();
     List<Variable> fields = _getFields(clazz.fields).map((e) => Variable(element: e)).toList();
 
-    List<AnnotatedElement<StyleKey>> v = _getAnnotatedElements(_getFields(clazz.fields), styleKeyAnnotation);
+    List<AnnotatedElement<StyleKeyInternal>> v = _getAnnotatedElements(_getFields(clazz.fields), styleKeyAnnotation);
 
     // TODO(Alex): make StyleKey.functionCall internal or create an internal style_key representation.
     // TODO(Alex): apply annotations from constructor and from fields

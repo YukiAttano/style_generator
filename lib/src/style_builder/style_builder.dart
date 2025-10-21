@@ -10,6 +10,7 @@ import 'package:style_generator/src/extensions/dart_object_extension.dart';
 import 'package:style_generator/src/style_builder/builder_state.dart';
 
 import '../../style_generator.dart';
+import '../annotations/style_key_internal.dart';
 import '../data/json_annotation_builder.dart';
 
 /*
@@ -34,7 +35,7 @@ class StyleBuilder implements Builder {
 
   AnnotationBuilder<Style> get styleAnnoBuilder => _libraryAnnotations["Style"] as AnnotationBuilder<Style>;
 
-  AnnotationBuilder<StyleKey> get styleKeyAnnoBuilder => _libraryAnnotations["StyleKey"] as AnnotationBuilder<StyleKey>;
+  AnnotationBuilder<StyleKeyInternal> get styleKeyAnnoBuilder => _libraryAnnotations["StyleKey"] as AnnotationBuilder<StyleKeyInternal>;
 
   Future<void> _init(BuildStep buildStep) async {
     var asset = AssetId.resolve(Uri.parse("package:style_generator/style_generator.dart"));
@@ -49,7 +50,7 @@ class StyleBuilder implements Builder {
       );
     }
     if (styleKeyElement != null) {
-      _libraryAnnotations["StyleKey"] = AnnotationBuilder<StyleKey>(
+      _libraryAnnotations["StyleKey"] = AnnotationBuilder<StyleKeyInternal>(
         annotationClass: styleKeyElement,
         buildAnnotation: createStyleKey,
       );
@@ -77,26 +78,5 @@ class StyleBuilder implements Builder {
 
     await buildStep.writeAsString(outputId, partClass);
   }
-}
-
-StyleKey<T> createStyleKey<T>(Map<String, DartObject?> map) {
-  ExecutableElement? lerp = map["lerp"]?.toFunctionValue();
-
-  String? callbackName;
-  if (lerp != null && lerp.isStatic) {
-    switch (lerp.kind) {
-      case ElementKind.METHOD:
-        callbackName = "${lerp.enclosingElement?.displayName ?? ""}${lerp.displayName}";
-      case ElementKind.FUNCTION:
-        callbackName = lerp.displayName;
-    }
-  }
-
-  return StyleKey.internal(
-      inLerp: map["inLerp"]?.toValue() as bool?,
-      inMerge: map["inMerge"]?.toValue() as bool? ,
-      inCopyWith: map["inCopyWith"]?.toValue() as bool?,
-      functionCall: callbackName,
-  );
 }
 
