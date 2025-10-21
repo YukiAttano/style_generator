@@ -1,18 +1,19 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:collection/collection.dart';
+
+import '../annotations/style_key_internal.dart';
 import '../data/annotation_converter.dart';
 import '../data/variable.dart';
 import '../extensions/dart_type_extension.dart';
 import '../style_builder/style_builder.dart';
 
-import '../annotations/style_key_internal.dart';
-
 class LerpGenResult {
   /// the generated function
   final String content;
+
   /// additional code that [content] depends on
-  final List<String> trailing;
+  final Iterable<String> trailing;
 
   const LerpGenResult({this.content = "", this.trailing = const []});
 }
@@ -20,8 +21,9 @@ class LerpGenResult {
 class LerpMethodGenResult {
   /// the generated function
   final String content;
+
   /// additional code that [content] depends on
-  final List<String> trailing;
+  final Iterable<String> trailing;
 
   const LerpMethodGenResult({required this.content, this.trailing = const []});
 }
@@ -36,7 +38,7 @@ mixin LerpGen {
     List<Variable> fields,
     AnnotationConverter<StyleKeyInternal> styleKeyAnnotation,
   ) {
-    List<String> trailing = [];
+    Set<String> trailing = {};
     List<String> constructorParams = [];
 
     StyleKeyInternal? styleKey;
@@ -45,15 +47,12 @@ mixin LerpGen {
     LerpMethodGenResult method;
     for (var field in fields) {
       name = field.name;
-      styleKey = field.getAnnotationOf(styleKeyAnnotation);
 
       styleKey = field.getAnnotationOf(styleKeyAnnotation);
       prefix = styleKey?.inMerge ?? true ? "" : "//";
 
       method = _getLerpMethod(lib, field, lerpMethod: styleKey?.lerp, a: "$name", b: "other.$name");
-      constructorParams.add(
-        "$prefix $name: ${method.content},",
-      );
+      constructorParams.add("$prefix $name: ${method.content},");
       trailing.addAll(method.trailing);
     }
 
@@ -124,7 +123,7 @@ mixin LerpGen {
             if (isNullable) {
               content = "$a?.lerp($b, t) ?? $b";
             } else {
-              content =  "$a.lerp($b, t)";
+              content = "$a.lerp($b, t)";
             }
           }
         }

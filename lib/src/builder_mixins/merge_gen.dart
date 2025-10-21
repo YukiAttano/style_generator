@@ -1,22 +1,22 @@
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:build/build.dart';
 import 'package:collection/collection.dart';
-import 'package:style_generator/src/data/annotated_element.dart';
 import 'package:style_generator/src/data/annotation_converter.dart';
 import 'package:style_generator/src/data/variable.dart';
-import '../annotations/style_key_internal.dart';
 import 'package:style_generator/src/extensions/dart_type_extension.dart';
-import 'package:style_generator/src/extensions/element_annotation_extension.dart';
 import 'package:style_generator/style_generator.dart';
 
-mixin MergeGen {
+import '../annotations/style_key_internal.dart';
 
+mixin MergeGen {
   static String get _nl => newLine;
 
-
-  String generateMerge(LibraryElement lib, String className, List<Variable> fields, AnnotationConverter<StyleKeyInternal> styleKeyAnnotation,) {
+  String generateMerge(
+    LibraryElement lib,
+    String className,
+    List<Variable> fields,
+    AnnotationConverter<StyleKeyInternal> styleKeyAnnotation,
+  ) {
     List<String> copyWithParams = [];
 
     StyleKeyInternal? styleKey;
@@ -27,10 +27,12 @@ mixin MergeGen {
 
       styleKey = field.getAnnotationOf(styleKeyAnnotation);
       prefix = styleKey?.inMerge ?? true ? "" : "//";
+
       copyWithParams.add("$prefix $name: ${_getMergeMethod(lib, field, a: name, b: "other.$name")},");
     }
 
-    String function = """
+    String function =
+        """
     $className merge(ThemeExtension<$className>? other) {
       if (other is! $className) return this as $className;
     
@@ -43,7 +45,7 @@ mixin MergeGen {
     return function;
   }
 
-  String _getMergeMethod(LibraryElement lib, Variable field, {required String a, required String b,}) {
+  String _getMergeMethod(LibraryElement lib, Variable field, {required String a, required String b}) {
     DartType d = field.type.extensionTypeErasure;
     bool isNullable = d.isNullable;
 
@@ -67,8 +69,6 @@ mixin MergeGen {
       }
     }
 
-
     return b;
   }
 }
-
