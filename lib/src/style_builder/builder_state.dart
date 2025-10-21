@@ -14,15 +14,22 @@ import 'package:style_generator/src/extensions/element_annotation_extension.dart
 import 'package:style_generator/style_generator.dart';
 
 part '_copy_with_gen.dart';
+
 part '_lerp_gen.dart';
+
 part '_merge_gen.dart';
 
-class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
+part '_of_gen.dart';
 
+class BuilderState with _LerpGen, _MergeGen, _CopyWithGen, _OfGen {
   static final String _nl = Platform.lineTerminator;
 
-  String generateForAnnotation(AssetId inputId, LibraryElement lib, AnnotationBuilder<Style> styleAnnotation, AnnotationBuilder<StyleKey> styleKeyAnnotation) {
-
+  String generateForAnnotation(
+    AssetId inputId,
+    LibraryElement lib,
+    AnnotationBuilder<Style> styleAnnotation,
+    AnnotationBuilder<StyleKey> styleKeyAnnotation,
+  ) {
     AnnotatedElement<Style> c = _getAnnotatedElements(lib.classes, styleAnnotation).first;
     ClassElement clazz = c.element as ClassElement;
 
@@ -33,34 +40,63 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
     // List<FieldElement> fields = _getFields(clazz.fields);
     // List<Variable> variables = fields.map((e) => Variable(element: e)).toList();
 
-    List<Variable> variables = constructor.formalParameters.map((e) => Variable(element: e)).toList();
+    List<Variable> constructorParams = constructor.formalParameters.map((e) => Variable(element: e)).toList();
+    List<Variable> fields = _getFields(clazz.fields).map((e) => Variable(element: e)).toList();
 
     List<AnnotatedElement<StyleKey>> v = _getAnnotatedElements(_getFields(clazz.fields), styleKeyAnnotation);
 
-    // TODO(Alex): make StyleKey.functionCall internal or create a internal style_key representation.
+    // TODO(Alex): make StyleKey.functionCall internal or create an internal style_key representation.
     // TODO(Alex): apply annotations from constructor and from fields
     // TODO(Alex): create ThemeLerp override annotation
-    v.forEach((element) => print(element.annotation.toJson()),);
+    v.forEach((element) => print(element.annotation.toJson()));
+
+    VariableState state = VariableState(constructorParams: constructorParams, fields: fields);
+    state.build(styleKeyAnnotation);
+    List<Variable> variables = state.merged;
+
+    Style config = c.annotation;
+    String constructorName = config.constructor ?? constructor.name!;
+    String? fallback = config.fallback;
+    bool genCopyWith = config.genCopyWith;
+    bool genMerge = config.genMerge;
+    bool genLerp = config.genLerp;
 
     String fieldContent = _generateFieldGetter(variables);
-    String copyWithContent = _generateCopyWith(clazz.displayName, variables);
-    String mergeContent = _generateMerge(lib, clazz.displayName, variables);
-    String lerpContent = _generateLerp(lib, clazz.displayName, variables);
+    String ofContent = fallback == null ? "" : _generateOf(clazz.displayName, fallback);
+    String copyWithContent = !genCopyWith ? "" : _generateCopyWith(clazz.displayName, constructorName, variables);
+    String mergeContent = !genMerge ? "" : _generateMerge(lib, clazz.displayName, variables);
+    String lerpContent = !genLerp ? "" : _generateLerp(lib, clazz.displayName, constructorName, variables);
 
     return _generatePartClass(
-        basename(inputId.path), clazz.displayName, fields: fieldContent, copyWith: copyWithContent, merge: mergeContent, lerp: lerpContent, trailing: [
-      _durationLerp,
-    ]);
+      basename(inputId.path),
+      clazz.displayName,
+      fields: fieldContent,
+      of: ofContent,
+      copyWith: copyWithContent,
+      merge: mergeContent,
+      lerp: lerpContent,
+      trailing: [_durationLerp],
+    );
   }
 
-  String _generatePartClass(String filename, String className, {required String fields, required String copyWith, required String merge, required String lerp, List<String> trailing = const []}) {
-    String partClass = """
+  String _generatePartClass(
+    String filename,
+    String className, {
+    required String fields,
+    required String of,
+    required String copyWith,
+    required String merge,
+    required String lerp,
+    List<String> trailing = const [],
+  }) {
+    String partClass =
+        """
     part of "$filename";
     
     mixin _\$$className {
 
       $fields
-
+      
       $copyWith
       
       $merge
@@ -69,6 +105,8 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
       
       ${trailing.join("$_nl$_nl")}
     }
+    
+    $of 
     """;
 
     return partClass;
@@ -80,14 +118,11 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
     for (var e in elements) {
       for (var annotationClass in e.metadata.annotations) {
         if (annotationClass.isOfType(builder.annotationClass)) {
-          
           DartObject? annotationObject = annotationClass.computeConstantValue()!;
-          
-          list.add(AnnotatedElement<T>(
-            element: e,
-            object: annotationObject,
-            annotation: builder.build(annotationObject),
-          ));
+
+          list.add(
+            AnnotatedElement<T>(element: e, object: annotationObject, annotation: builder.build(annotationObject)),
+          );
         }
       }
     }
@@ -135,7 +170,6 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
       if (primaryConstructor == null) {
         primaryConstructor = c;
       } else if (c.isPublic) {
-
         if (primaryConstructor.isPrivate) {
           primaryConstructor = c;
         }
@@ -144,7 +178,6 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
 
     return primaryConstructor!;
   }
-
 
   String _generateFieldGetter(List<Variable> fields) {
     List<String> f = [];
@@ -156,16 +189,11 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen {
       f.add("${field.type} get $name;");
     }
 
-
-    String content = """
+    String content =
+        """
     ${f.join(_nl)}
     """;
 
     return content;
   }
-
-
 }
-
-
-

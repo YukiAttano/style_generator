@@ -10,7 +10,7 @@ class Style {
 
   /// The name of the constructor that should be used for the .of() constructor to create a default Style
   ///
-  /// * `null` will remove the fallback
+  /// * `null` will remove the fallback (and stop generating the .of() factory constructor)
   /// * `""` (Empty string) will use the default constructor
   /// * `"_example"` will use the _example constructor
   final String? fallback;

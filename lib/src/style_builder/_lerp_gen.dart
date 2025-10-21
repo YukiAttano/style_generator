@@ -3,7 +3,7 @@ part of 'builder_state.dart';
 mixin _LerpGen {
   static String get _nl => BuilderState._nl;
 
-  String _generateLerp(LibraryElement lib, String className, List<Variable> fields) {
+  String _generateLerp(LibraryElement lib, String className, String constructor, List<Variable> fields) {
     List<String> constructorParams = [];
 
     String? name;
@@ -18,7 +18,7 @@ mixin _LerpGen {
     $className lerp(covariant ThemeExtension<$className>? other, double t) {
       if (other is! $className) return this as $className;
     
-      return $className(
+      return $className.$constructor(
         ${constructorParams.join(_nl)}
       );
     }
