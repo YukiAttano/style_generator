@@ -1,17 +1,16 @@
 import 'dart:async';
+import 'dart:io';
 
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:source_gen/source_gen.dart';
-import 'package:style_generator/src/data/annotation_builder.dart';
-import 'package:style_generator/src/extensions/dart_object_extension.dart';
-import 'package:style_generator/src/style_builder/builder_state.dart';
+import 'package:style_generator/src/data/annotation_converter.dart';
+import 'package:style_generator/src/style_builder/style_generator.dart';
 
 import '../../style_generator.dart';
 import '../annotations/style_key_internal.dart';
-import '../data/json_annotation_builder.dart';
+import '../data/json_annotation_converter.dart';
 
 /*
     // Lookup classes from packages
@@ -21,36 +20,43 @@ import '../data/json_annotation_builder.dart';
 
  */
 
+String get newLine => Platform.lineTerminator;
+
 class SomeGen extends GeneratorForAnnotation {}
 
 class StyleBuilder implements Builder {
+
+  static const String outExtension = ".style.dart";
+
   @override
   final buildExtensions = const {
-    '.dart': ['.style.dart'],
+    '.dart': [outExtension],
   };
 
   bool _isInitialized = false;
 
-  final Map<String, AnnotationBuilder> _libraryAnnotations = {};
+  final Map<String, AnnotationConverter> _libraryAnnotations = {};
 
-  AnnotationBuilder<Style> get styleAnnoBuilder => _libraryAnnotations["Style"] as AnnotationBuilder<Style>;
+  AnnotationConverter<Style> get styleAnnoConverter => _libraryAnnotations["Style"] as AnnotationConverter<Style>;
 
-  AnnotationBuilder<StyleKeyInternal> get styleKeyAnnoBuilder => _libraryAnnotations["StyleKey"] as AnnotationBuilder<StyleKeyInternal>;
+  AnnotationConverter<StyleKeyInternal> get styleKeyAnnoConverter => _libraryAnnotations["StyleKey"] as AnnotationConverter<StyleKeyInternal>;
 
   Future<void> _init(BuildStep buildStep) async {
-    var asset = AssetId.resolve(Uri.parse("package:style_generator/style_generator.dart"));
-    var lib = await buildStep.resolver.libraryFor(asset);
+    // create ClassElements of our annotations
+    AssetId asset = AssetId.resolve(Uri.parse("package:style_generator/style_generator.dart"));
+    LibraryElement lib = await buildStep.resolver.libraryFor(asset);
 
     ClassElement? styleElement = lib.exportNamespace.get2("Style") as ClassElement?;
     ClassElement? styleKeyElement = lib.exportNamespace.get2("StyleKey") as ClassElement?;
+    // create converter for the ClassElements to read the configured Annotations from real DartObjects
     if (styleElement != null) {
-      _libraryAnnotations["Style"] = JsonAnnotationBuilder<Style>(
+      _libraryAnnotations["Style"] = JsonAnnotationConverter<Style>(
         annotationClass: styleElement,
         buildAnnotation: Style.fromJson,
       );
     }
     if (styleKeyElement != null) {
-      _libraryAnnotations["StyleKey"] = AnnotationBuilder<StyleKeyInternal>(
+      _libraryAnnotations["StyleKey"] = AnnotationConverter<StyleKeyInternal>(
         annotationClass: styleKeyElement,
         buildAnnotation: createStyleKey,
       );
@@ -64,19 +70,17 @@ class StyleBuilder implements Builder {
 
     DartFormatter formatter = DartFormatter(languageVersion: DartFormatter.latestLanguageVersion);
 
-    // Create the output ID from the build step input ID.
     AssetId inputId = buildStep.inputId;
-    AssetId outputId = inputId.changeExtension('.style.dart');
+    AssetId outputId = inputId.changeExtension(outExtension);
 
-    var l = await buildStep.inputLibrary;
+    LibraryElement lib = await buildStep.inputLibrary;
 
-    BuilderState state = BuilderState();
+    StyleGenerator state = StyleGenerator();
 
-    String partClass = state.generateForAnnotation(inputId, l, styleAnnoBuilder, styleKeyAnnoBuilder);
+    String partClass = state.generateForAnnotation(inputId, lib, styleAnnoConverter, styleKeyAnnoConverter);
 
     partClass = formatter.format(partClass);
 
     await buildStep.writeAsString(outputId, partClass);
   }
 }
-

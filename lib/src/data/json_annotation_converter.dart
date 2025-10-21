@@ -1,12 +1,13 @@
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:style_generator/src/data/annotation_builder.dart';
+import 'package:style_generator/src/data/annotation_converter.dart';
 import '../extensions/dart_object_extension.dart';
 
 typedef AnnotationFromJson<T> = T Function(Map<String, Object?> json);
 
-class JsonAnnotationBuilder<T> extends AnnotationBuilder<T> {
-  JsonAnnotationBuilder({required super.annotationClass, required AnnotationFromJson<T> buildAnnotation})
+/// reconstructs an annotation based on a json object
+class JsonAnnotationConverter<T> extends AnnotationConverter<T> {
+  JsonAnnotationConverter({required super.annotationClass, required AnnotationFromJson<T> buildAnnotation})
     : super(buildAnnotation: (map) => _mapToJson(map, buildAnnotation));
 }
 

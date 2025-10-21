@@ -1,13 +1,18 @@
-part of 'builder_state.dart';
+import 'package:style_generator/src/data/annotation_converter.dart';
+import 'package:style_generator/src/data/variable.dart';
+import 'package:style_generator/src/extensions/dart_type_extension.dart';
+import 'package:style_generator/style_generator.dart';
 
-mixin _CopyWithGen {
-  static String get _nl => BuilderState._nl;
+import '../annotations/style_key_internal.dart';
 
-  String _generateCopyWith(
+mixin CopyWithGen {
+  static String get _nl => newLine;
+
+  String generateCopyWith(
     String className,
     String constructor,
     List<Variable> fields,
-    AnnotationBuilder<StyleKeyInternal> styleKeyAnnotation,
+    AnnotationConverter<StyleKeyInternal> styleKeyAnnotation,
   ) {
     List<String> params = [];
     List<String> constructorParams = [];

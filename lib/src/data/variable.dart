@@ -2,12 +2,12 @@ import 'dart:collection';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:style_generator/src/data/annotation_builder.dart';
+import 'package:style_generator/src/data/annotation_converter.dart';
 import 'package:style_generator/src/extensions/element_extension.dart';
 
 import '../data/annotated_element.dart';
 
-part 'variable_state.dart';
+part 'variable_handler.dart';
 
 class Variable {
   final VariableElement element;
@@ -30,7 +30,7 @@ class Variable {
 
   Variable({required VariableElement element}) : this._(element: element);
 
-  T? getAnnotationOf<T>(AnnotationBuilder<T> builder) => _cache.getAnnotation<T>(element, builder);
+  T? getAnnotationOf<T>(AnnotationConverter<T> converter) => _cache.getAnnotation<T>(element, converter);
 
   @override
   bool operator ==(Object other) {
@@ -52,12 +52,12 @@ class _Cache {
 
   _Cache({Map<Type, AnnotatedElement<Object?>>? map}) : map = map ?? {};
 
-  AnnotatedElement<T>? _getAnnotatedElement<T>(VariableElement element, AnnotationBuilder<T> builder) {
+  AnnotatedElement<T>? _getAnnotatedElement<T>(VariableElement element, AnnotationConverter<T> converter) {
     AnnotatedElement<T>? annotation = map[T] as AnnotatedElement<T>?;
 
     if (annotation == null) {
       annotation = element
-          .getAnnotationsOf<T>(builder)
+          .getAnnotationsOf<T>(converter)
           .firstOrNull;
       if (annotation != null) _inject<T>(annotation);
     }
@@ -65,8 +65,8 @@ class _Cache {
     return annotation;
   }
 
-  T? getAnnotation<T>(VariableElement element, AnnotationBuilder<T> builder) {
-    return _getAnnotatedElement<T>(element, builder)?.annotation;
+  T? getAnnotation<T>(VariableElement element, AnnotationConverter<T> converter) {
+    return _getAnnotatedElement<T>(element, converter)?.annotation;
   }
 
   void _inject<T>(AnnotatedElement<T>? annotation) {

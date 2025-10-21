@@ -1,35 +1,28 @@
-import 'dart:io';
-
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
-import 'package:collection/collection.dart';
 import 'package:path/path.dart' hide Style;
 import 'package:style_generator/src/data/annotated_element.dart';
-import 'package:style_generator/src/data/annotation_builder.dart';
+import 'package:style_generator/src/data/annotation_converter.dart';
 import 'package:style_generator/src/data/variable.dart';
-import '../annotations/style_key_internal.dart';
-import 'package:style_generator/src/extensions/dart_type_extension.dart';
 import 'package:style_generator/src/extensions/element_annotation_extension.dart';
 import 'package:style_generator/style_generator.dart';
 
-part '_copy_with_gen.dart';
+import '../annotations/style_key_internal.dart';
+import '../builder_mixins/copy_with_gen.dart';
+import '../builder_mixins/lerp_gen.dart';
+import '../builder_mixins/merge_gen.dart';
+import '../builder_mixins/of_gen.dart';
 
-part '_lerp_gen.dart';
+class StyleGenerator with LerpGen, MergeGen, CopyWithGen, OfGen {
 
-part '_merge_gen.dart';
-
-part '_of_gen.dart';
-
-class BuilderState with _LerpGen, _MergeGen, _CopyWithGen, _OfGen {
-  static final String _nl = Platform.lineTerminator;
+  static String get _nl => newLine;
 
   String generateForAnnotation(
     AssetId inputId,
     LibraryElement lib,
-    AnnotationBuilder<Style> styleAnnotation,
-    AnnotationBuilder<StyleKeyInternal> styleKeyAnnotation,
+    AnnotationConverter<Style> styleAnnotation,
+    AnnotationConverter<StyleKeyInternal> styleKeyAnnotation,
   ) {
     AnnotatedElement<Style> c = _getAnnotatedElements(lib.classes, styleAnnotation).first;
     ClassElement clazz = c.element as ClassElement;
@@ -38,20 +31,10 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen, _OfGen {
 
     if (constructor == null) throw Exception("No Constructor found");
 
-    // List<FieldElement> fields = _getFields(clazz.fields);
-    // List<Variable> variables = fields.map((e) => Variable(element: e)).toList();
-
     List<Variable> constructorParams = constructor.formalParameters.map((e) => Variable(element: e)).toList();
     List<Variable> fields = _getFields(clazz.fields).map((e) => Variable(element: e)).toList();
 
-    List<AnnotatedElement<StyleKeyInternal>> v = _getAnnotatedElements(_getFields(clazz.fields), styleKeyAnnotation);
-
-    // TODO(Alex): make StyleKey.functionCall internal or create an internal style_key representation.
-    // TODO(Alex): apply annotations from constructor and from fields
-    // TODO(Alex): create ThemeLerp override annotation
-    v.forEach((element) => print(element.annotation.toJson()));
-
-    VariableState state = VariableState(constructorParams: constructorParams, fields: fields);
+    VariableHandler state = VariableHandler(constructorParams: constructorParams, fields: fields);
     state.build(styleKeyAnnotation);
 
     List<Variable> variables = state.merged;
@@ -64,10 +47,10 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen, _OfGen {
     bool genLerp = config.genLerp;
 
     String fieldContent = _generateFieldGetter(variables);
-    String ofContent = fallback == null ? "" : _generateOf(clazz.displayName, fallback);
-    String copyWithContent = !genCopyWith ? "" : _generateCopyWith(clazz.displayName, constructorName, variables, styleKeyAnnotation);
-    String mergeContent = !genMerge ? "" : _generateMerge(lib, clazz.displayName, variables, styleKeyAnnotation);
-    String lerpContent = !genLerp ? "" : _generateLerp(lib, clazz.displayName, constructorName, variables, styleKeyAnnotation);
+    String ofContent = fallback == null ? "" : generateOf(clazz.displayName, fallback);
+    String copyWithContent = !genCopyWith ? "" : generateCopyWith(clazz.displayName, constructorName, variables, styleKeyAnnotation);
+    String mergeContent = !genMerge ? "" : generateMerge(lib, clazz.displayName, variables, styleKeyAnnotation);
+    LerpGenResult lerpContent = !genLerp ? LerpGenResult() : generateLerp(lib, clazz.displayName, constructorName, variables, styleKeyAnnotation);
 
     return _generatePartClass(
       basename(inputId.path),
@@ -76,8 +59,10 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen, _OfGen {
       of: ofContent,
       copyWith: copyWithContent,
       merge: mergeContent,
-      lerp: lerpContent,
-      trailing: [_durationLerp],
+      lerp: lerpContent.content,
+      trailing: [
+        ...lerpContent.trailing,
+      ],
     );
   }
 
@@ -114,7 +99,7 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen, _OfGen {
     return partClass;
   }
 
-  List<AnnotatedElement<T>> _getAnnotatedElements<T>(List<Element> elements, AnnotationBuilder<T> builder) {
+  List<AnnotatedElement<T>> _getAnnotatedElements<T>(List<Element> elements, AnnotationConverter<T> builder) {
     List<AnnotatedElement<T>> list = [];
 
     for (var e in elements) {

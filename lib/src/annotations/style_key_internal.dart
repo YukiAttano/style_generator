@@ -1,4 +1,4 @@
-// @docImport('style_key.dart');
+/// @docImport 'style_key.dart';
 library;
 
 import 'package:analyzer/dart/constant/value.dart';
