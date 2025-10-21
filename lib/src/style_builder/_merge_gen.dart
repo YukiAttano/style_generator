@@ -30,20 +30,24 @@ mixin _MergeGen {
 
   String _getMergeMethod(LibraryElement lib, Variable field, {required String a, required String b,}) {
     DartType d = field.type.extensionTypeErasure;
-    String   suffix = field.type.isNullable ? "?" : "";
+    bool isNullable = d.isNullable;
 
     var typeSystem = lib.typeSystem;
     var typeProvider = lib.typeProvider;
     //var themeExtensionType = (typeProvider.objectElement.library.exportNamespace.get2('ThemeExtension<Object?>') as ClassElement).thisType;
 
     if (d is InterfaceType) {
-      MethodElement? lerpMethod = d.element.methods.firstWhereOrNull((method) => method.name == "merge");
+      MethodElement? mergeMethod = d.element.methods.firstWhereOrNull((method) => method.name == "merge");
 
-      if (lerpMethod != null) {
-        if (lerpMethod.isStatic) {
+      if (mergeMethod != null) {
+        if (mergeMethod.isStatic) {
           return "${typeSystem.promoteToNonNull(d)}.merge($a, $b)";
         } else {
-          return "$a$suffix.merge($b)";
+          if (isNullable) {
+            return "$a?.merge($b) ?? $b";
+          } else {
+            return "$a.merge($b)";
+          }
         }
       }
     }

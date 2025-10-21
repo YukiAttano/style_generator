@@ -29,19 +29,19 @@ mixin _LerpGen {
 
   String _getLerpMethod(LibraryElement lib, Variable field, {required String a, required String b}) {
     DartType d = field.type.extensionTypeErasure;
-    String suffix = field.type.isNullable ? "?" : "";
+    bool isNullable = d.isNullable;
 
     var typeSystem = lib.typeSystem;
     var typeProvider = lib.typeProvider;
     //var themeExtensionType = (typeProvider.objectElement.library.exportNamespace.get2('ThemeExtension<Object?>') as ClassElement).thisType;
 
     if (d.isDartCoreDouble || d.isDartCoreNum) {
-      if (d.isNullable) return "lerpDouble($a, $b, t)";
+      if (isNullable) return "lerpDouble($a, $b, t)";
 
       // if DataType of [d] can't be null, this method will never return null
       return "lerpDouble($a, $b, t)!";
     } else if (d.isDartCoreInt) {
-      if (d.isNullable) return "lerpDouble($a, $b, t)?.round()";
+      if (isNullable) return "lerpDouble($a, $b, t)?.round()";
 
       return "lerpDouble($a, $b, t)!.round()";
     } else if (d is InterfaceType) {
@@ -53,9 +53,13 @@ mixin _LerpGen {
 
       if (lerpMethod != null) {
         if (lerpMethod.isStatic) {
-          return "${typeSystem.promoteToNonNull(d)}.lerp($a, $b, t)";
+          if (isNullable) return "${typeSystem.promoteToNonNull(d)}.lerp($a, $b, t)";
+
+          return "${typeSystem.promoteToNonNull(d)}.lerp($a, $b, t)!";
         } else {
-          return "$a$suffix.lerp($b, t)";
+          if (isNullable) return "$a?.lerp($b, t) ?? $b";
+
+          return "$a.lerp($b, t)";
         }
       }
     }
