@@ -5,15 +5,12 @@ import 'package:style_generator/src/extensions/dart_object_extension.dart';
 import 'style_key.dart';
 
 class StyleKeyInternal<T> {
-  final bool? inCopyWith;
-  final bool? inMerge;
-  final bool? inLerp;
+  final bool inCopyWith;
+  final bool inMerge;
+  final bool inLerp;
   final String? lerp;
 
-  const StyleKeyInternal({required bool? inCopyWith, required bool? inMerge, required bool? inLerp, required this.lerp})
-    : inCopyWith = inCopyWith ?? true,
-      inMerge = inMerge ?? true,
-      inLerp = inLerp ?? true;
+  const StyleKeyInternal({required this.inCopyWith, required this.inMerge, required this.inLerp, required this.lerp});
 
   Map<String, Object?> toJson() {
     return {"inCopyWith": inCopyWith, "inMerge": inMerge, "inLerp": inLerp, "lerp": lerp};
@@ -34,9 +31,9 @@ StyleKeyInternal<T> createStyleKey<T>(Map<String, DartObject?> map) {
   }
 
   return StyleKeyInternal(
-    inLerp: map["inLerp"]?.toValue() as bool?,
-    inMerge: map["inMerge"]?.toValue() as bool?,
-    inCopyWith: map["inCopyWith"]?.toValue() as bool?,
+    inLerp: map["inLerp"]?.toValue() as bool,
+    inMerge: map["inMerge"]?.toValue() as bool,
+    inCopyWith: map["inCopyWith"]?.toValue() as bool,
     lerp: callbackName,
   );
 }

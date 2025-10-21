@@ -3,14 +3,27 @@ part of 'builder_state.dart';
 mixin _LerpGen {
   static String get _nl => BuilderState._nl;
 
-  String _generateLerp(LibraryElement lib, String className, String constructor, List<Variable> fields) {
+  String _generateLerp(
+    LibraryElement lib,
+    String className,
+    String constructor,
+    List<Variable> fields,
+    AnnotationBuilder<StyleKeyInternal> styleKeyAnnotation,
+  ) {
     List<String> constructorParams = [];
 
+    StyleKeyInternal? styleKey;
+    String prefix = "";
     String? name;
     for (var field in fields) {
       name = field.name;
+      styleKey = field.getAnnotationOf(styleKeyAnnotation);
 
-      constructorParams.add("$name: ${_getLerpMethod(lib, field, a: "$name", b: "other.$name")},");
+      styleKey = field.getAnnotationOf(styleKeyAnnotation);
+      prefix = styleKey?.inMerge ?? true ? "" : "//";
+      constructorParams.add(
+        "$prefix $name: ${_getLerpMethod(lib, field, lerpMethod: styleKey?.lerp, a: "$name", b: "other.$name")},",
+      );
     }
 
     String function =
@@ -27,7 +40,13 @@ mixin _LerpGen {
     return function;
   }
 
-  String _getLerpMethod(LibraryElement lib, Variable field, {required String a, required String b}) {
+  String _getLerpMethod(
+    LibraryElement lib,
+    Variable field, {
+    String? lerpMethod,
+    required String a,
+    required String b,
+  }) {
     DartType d = field.type.extensionTypeErasure;
     bool isNullable = d.isNullable;
 
@@ -35,10 +54,13 @@ mixin _LerpGen {
     var typeProvider = lib.typeProvider;
     //var themeExtensionType = (typeProvider.objectElement.library.exportNamespace.get2('ThemeExtension<Object?>') as ClassElement).thisType;
 
-    if (d.isDartCoreDouble || d.isDartCoreNum) {
+    if (lerpMethod != null) {
+      // nullability is enforced by type parameters, therefor no check here is required
+      return "$lerpMethod($a, $b, t)";
+    } else if (d.isDartCoreDouble || d.isDartCoreNum) {
       if (isNullable) return "lerpDouble($a, $b, t)";
 
-      // if DataType of [d] can't be null, this method will never return null
+      // if DataType of [d] can't be null, this method will never return null so forcing non-null will not be a problem
       return "lerpDouble($a, $b, t)!";
     } else if (d.isDartCoreInt) {
       if (isNullable) return "lerpDouble($a, $b, t)?.round()";

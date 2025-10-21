@@ -53,6 +53,7 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen, _OfGen {
 
     VariableState state = VariableState(constructorParams: constructorParams, fields: fields);
     state.build(styleKeyAnnotation);
+
     List<Variable> variables = state.merged;
 
     Style config = c.annotation;
@@ -64,9 +65,9 @@ class BuilderState with _LerpGen, _MergeGen, _CopyWithGen, _OfGen {
 
     String fieldContent = _generateFieldGetter(variables);
     String ofContent = fallback == null ? "" : _generateOf(clazz.displayName, fallback);
-    String copyWithContent = !genCopyWith ? "" : _generateCopyWith(clazz.displayName, constructorName, variables);
-    String mergeContent = !genMerge ? "" : _generateMerge(lib, clazz.displayName, variables);
-    String lerpContent = !genLerp ? "" : _generateLerp(lib, clazz.displayName, constructorName, variables);
+    String copyWithContent = !genCopyWith ? "" : _generateCopyWith(clazz.displayName, constructorName, variables, styleKeyAnnotation);
+    String mergeContent = !genMerge ? "" : _generateMerge(lib, clazz.displayName, variables, styleKeyAnnotation);
+    String lerpContent = !genLerp ? "" : _generateLerp(lib, clazz.displayName, constructorName, variables, styleKeyAnnotation);
 
     return _generatePartClass(
       basename(inputId.path),

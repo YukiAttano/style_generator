@@ -5,14 +5,18 @@ mixin _MergeGen {
   static String get _nl => BuilderState._nl;
 
 
-  String _generateMerge(LibraryElement lib, String className, List<Variable> fields) {
+  String _generateMerge(LibraryElement lib, String className, List<Variable> fields, AnnotationBuilder<StyleKeyInternal> styleKeyAnnotation,) {
     List<String> copyWithParams = [];
 
+    StyleKeyInternal? styleKey;
+    String prefix = "";
     String name;
     for (var field in fields) {
       name = field.name!;
 
-      copyWithParams.add("$name: ${_getMergeMethod(lib, field, a: name, b: "other.$name")},");
+      styleKey = field.getAnnotationOf(styleKeyAnnotation);
+      prefix = styleKey?.inMerge ?? true ? "" : "//";
+      copyWithParams.add("$prefix $name: ${_getMergeMethod(lib, field, a: name, b: "other.$name")},");
     }
 
     String function = """
