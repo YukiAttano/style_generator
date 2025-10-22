@@ -1,4 +1,4 @@
-import 'package:meta/meta_meta.dart';
+import "package:meta/meta_meta.dart";
 
 @Target({TargetKind.classType})
 class Style {
@@ -42,9 +42,9 @@ class Style {
     return Style(
       constructor: json["constructor"]?.toString(),
       fallback: json["fallback"]?.toString(),
-      genCopyWith: json["genCopyWith"] as bool,
-      genMerge: json["genMerge"] as bool,
-      genLerp: json["genLerp"] as bool,
+      genCopyWith: json["genCopyWith"]! as bool,
+      genMerge: json["genMerge"]! as bool,
+      genLerp: json["genLerp"]! as bool,
     );
   }
 

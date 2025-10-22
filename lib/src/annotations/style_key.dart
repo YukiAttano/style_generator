@@ -1,4 +1,4 @@
-import 'package:meta/meta_meta.dart';
+import "package:meta/meta_meta.dart";
 
 typedef LerpCallback<T> = T Function(T? a, T? b, double t);
 

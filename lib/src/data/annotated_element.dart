@@ -1,6 +1,5 @@
-
-import 'package:analyzer/dart/constant/value.dart';
-import 'package:analyzer/dart/element/element.dart';
+import "package:analyzer/dart/constant/value.dart";
+import "package:analyzer/dart/element/element.dart";
 
 class AnnotatedElement<T> {
   final Element element;
@@ -14,6 +13,6 @@ class AnnotatedElement<T> {
   ///
   /// this can be used to read the configuration
   final T annotation;
-  
+
   const AnnotatedElement({required this.element, required this.object, required this.annotation});
 }

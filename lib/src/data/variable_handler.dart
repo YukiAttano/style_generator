@@ -1,4 +1,4 @@
-part of 'variable.dart';
+part of "variable.dart";
 
 /// merges the annotations of constructor parameters and class fields together.
 ///
@@ -6,11 +6,11 @@ part of 'variable.dart';
 ///
 /// We may speak of merging, but annotations are in fact replaced and not merged.
 class VariableHandler {
-
   final List<Variable> constructorParams;
   final List<Variable> fields;
 
   late final List<Variable> _merged = List.of(constructorParams.map((e) => Variable(element: e.element)));
+
   List<Variable> get merged => UnmodifiableListView(_merged);
 
   VariableHandler({required this.constructorParams, required this.fields});

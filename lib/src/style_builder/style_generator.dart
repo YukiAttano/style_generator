@@ -1,21 +1,20 @@
-import 'package:analyzer/dart/constant/value.dart';
-import 'package:analyzer/dart/element/element.dart';
-import 'package:build/build.dart';
-import 'package:path/path.dart' hide Style;
-import 'package:style_generator/src/data/annotated_element.dart';
-import 'package:style_generator/src/data/annotation_converter.dart';
-import 'package:style_generator/src/data/variable.dart';
-import 'package:style_generator/src/extensions/element_annotation_extension.dart';
-import 'package:style_generator/style_generator.dart';
+import "package:analyzer/dart/constant/value.dart";
+import "package:analyzer/dart/element/element.dart";
+import "package:build/build.dart";
+import "package:path/path.dart" hide Style;
 
-import '../annotations/style_key_internal.dart';
-import '../builder_mixins/copy_with_gen.dart';
-import '../builder_mixins/lerp_gen.dart';
-import '../builder_mixins/merge_gen.dart';
-import '../builder_mixins/of_gen.dart';
+import "../../style_generator.dart";
+import "../annotations/style_key_internal.dart";
+import "../builder_mixins/copy_with_gen.dart";
+import "../builder_mixins/lerp_gen.dart";
+import "../builder_mixins/merge_gen.dart";
+import "../builder_mixins/of_gen.dart";
+import "../data/annotated_element.dart";
+import "../data/annotation_converter.dart";
+import "../data/variable.dart";
+import "../extensions/element_annotation_extension.dart";
 
 class StyleGenerator with LerpGen, MergeGen, CopyWithGen, OfGen {
-
   static String get _nl => newLine;
 
   String generateForAnnotation(
@@ -48,9 +47,13 @@ class StyleGenerator with LerpGen, MergeGen, CopyWithGen, OfGen {
 
     String fieldContent = _generateFieldGetter(variables);
     String ofContent = fallback == null ? "" : generateOf(clazz.displayName, fallback);
-    String copyWithContent = !genCopyWith ? "" : generateCopyWith(clazz.displayName, constructorName, variables, styleKeyAnnotation);
+    String copyWithContent = !genCopyWith
+        ? ""
+        : generateCopyWith(clazz.displayName, constructorName, variables, styleKeyAnnotation);
     String mergeContent = !genMerge ? "" : generateMerge(lib, clazz.displayName, variables, styleKeyAnnotation);
-    LerpGenResult lerpContent = !genLerp ? LerpGenResult() : generateLerp(lib, clazz.displayName, constructorName, variables, styleKeyAnnotation);
+    LerpGenResult lerpContent = !genLerp
+        ? const LerpGenResult()
+        : generateLerp(lib, clazz.displayName, constructorName, variables, styleKeyAnnotation);
 
     return _generatePartClass(
       basename(inputId.path),
@@ -60,9 +63,7 @@ class StyleGenerator with LerpGen, MergeGen, CopyWithGen, OfGen {
       copyWith: copyWithContent,
       merge: mergeContent,
       lerp: lerpContent.content,
-      trailing: [
-        ...lerpContent.trailing,
-      ],
+      trailing: [...lerpContent.trailing],
     );
   }
 
@@ -105,7 +106,7 @@ class StyleGenerator with LerpGen, MergeGen, CopyWithGen, OfGen {
     for (var e in elements) {
       for (var annotationClass in e.metadata.annotations) {
         if (annotationClass.isOfType(builder.annotationClass)) {
-          DartObject? annotationObject = annotationClass.computeConstantValue()!;
+          DartObject annotationObject = annotationClass.computeConstantValue()!;
 
           list.add(
             AnnotatedElement<T>(element: e, object: annotationObject, annotation: builder.build(annotationObject)),
@@ -137,6 +138,7 @@ class StyleGenerator with LerpGen, MergeGen, CopyWithGen, OfGen {
     if (name == null) {
       constructor = _getPrimaryConstructor(constructors);
     } else {
+      // ignore:  parameter_assignments .
       if (name == "") name = "new"; // Default Constructor name
 
       for (var c in constructors) {

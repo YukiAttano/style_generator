@@ -15,7 +15,7 @@ dependencies:
   path: ^1.9.1
   dart_style: ^3.1.2
   collection: ^1.19.1
-  source_gen: ^4.0.2
+  meta: any
 
 dev_dependencies:
   flutter_test:

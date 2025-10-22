@@ -1,12 +1,12 @@
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
-import 'package:collection/collection.dart';
-import 'package:style_generator/src/data/annotation_converter.dart';
-import 'package:style_generator/src/data/variable.dart';
-import 'package:style_generator/src/extensions/dart_type_extension.dart';
-import 'package:style_generator/style_generator.dart';
+import "package:analyzer/dart/element/element.dart";
+import "package:analyzer/dart/element/type.dart";
+import "package:collection/collection.dart";
 
-import '../annotations/style_key_internal.dart';
+import "../../style_generator.dart";
+import "../annotations/style_key_internal.dart";
+import "../data/annotation_converter.dart";
+import "../data/variable.dart";
+import "../extensions/dart_type_extension.dart";
 
 mixin MergeGen {
   static String get _nl => newLine;
@@ -50,8 +50,6 @@ mixin MergeGen {
     bool isNullable = d.isNullable;
 
     var typeSystem = lib.typeSystem;
-    var typeProvider = lib.typeProvider;
-    //var themeExtensionType = (typeProvider.objectElement.library.exportNamespace.get2('ThemeExtension<Object?>') as ClassElement).thisType;
 
     if (d is InterfaceType) {
       MethodElement? mergeMethod = d.element.methods.firstWhereOrNull((method) => method.name == "merge");

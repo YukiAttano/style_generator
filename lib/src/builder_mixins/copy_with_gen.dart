@@ -1,9 +1,8 @@
-import 'package:style_generator/src/data/annotation_converter.dart';
-import 'package:style_generator/src/data/variable.dart';
-import 'package:style_generator/src/extensions/dart_type_extension.dart';
-import 'package:style_generator/style_generator.dart';
-
-import '../annotations/style_key_internal.dart';
+import "../../style_generator.dart";
+import "../annotations/style_key_internal.dart";
+import "../data/annotation_converter.dart";
+import "../data/variable.dart";
+import "../extensions/dart_type_extension.dart";
 
 mixin CopyWithGen {
   static String get _nl => newLine;

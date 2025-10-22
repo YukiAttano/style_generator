@@ -1,13 +1,13 @@
-import 'dart:collection';
+import "dart:collection";
 
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
-import 'package:style_generator/src/data/annotation_converter.dart';
-import 'package:style_generator/src/extensions/element_extension.dart';
+import "package:analyzer/dart/element/element.dart";
+import "package:analyzer/dart/element/type.dart";
 
-import '../data/annotated_element.dart';
+import "../data/annotated_element.dart";
+import "../extensions/element_extension.dart";
+import "annotation_converter.dart";
 
-part 'variable_handler.dart';
+part "variable_handler.dart";
 
 class Variable {
   final VariableElement element;
@@ -47,7 +47,6 @@ class Variable {
 }
 
 class _Cache {
-
   final Map<Type, AnnotatedElement<Object?>> map;
 
   _Cache({Map<Type, AnnotatedElement<Object?>>? map}) : map = map ?? {};
@@ -56,9 +55,7 @@ class _Cache {
     AnnotatedElement<T>? annotation = map[T] as AnnotatedElement<T>?;
 
     if (annotation == null) {
-      annotation = element
-          .getAnnotationsOf<T>(converter)
-          .firstOrNull;
+      annotation = element.getAnnotationsOf<T>(converter).firstOrNull;
       if (annotation != null) _inject<T>(annotation);
     }
 

@@ -1,16 +1,15 @@
-import 'dart:async';
-import 'dart:io';
+import "dart:async";
+import "dart:io";
 
-import 'package:analyzer/dart/element/element.dart';
-import 'package:build/build.dart';
-import 'package:dart_style/dart_style.dart';
-import 'package:source_gen/source_gen.dart';
-import 'package:style_generator/src/data/annotation_converter.dart';
-import 'package:style_generator/src/style_builder/style_generator.dart';
+import "package:analyzer/dart/element/element.dart";
+import "package:build/build.dart";
+import "package:dart_style/dart_style.dart";
 
-import '../../style_generator.dart';
-import '../annotations/style_key_internal.dart';
-import '../data/json_annotation_converter.dart';
+import "../../style_generator.dart";
+import "../annotations/style_key_internal.dart";
+import "../data/annotation_converter.dart";
+import "../data/json_annotation_converter.dart";
+import "style_generator.dart";
 
 /*
     // Lookup classes from packages
@@ -22,24 +21,22 @@ import '../data/json_annotation_converter.dart';
 
 String get newLine => Platform.lineTerminator;
 
-class SomeGen extends GeneratorForAnnotation {}
-
 class StyleBuilder implements Builder {
-
   static const String outExtension = ".style.dart";
 
   @override
   final buildExtensions = const {
-    '.dart': [outExtension],
+    ".dart": [outExtension],
   };
 
   bool _isInitialized = false;
 
   final Map<String, AnnotationConverter> _libraryAnnotations = {};
 
-  AnnotationConverter<Style> get styleAnnoConverter => _libraryAnnotations["Style"] as AnnotationConverter<Style>;
+  AnnotationConverter<Style> get styleAnnoConverter => _libraryAnnotations["Style"]! as AnnotationConverter<Style>;
 
-  AnnotationConverter<StyleKeyInternal> get styleKeyAnnoConverter => _libraryAnnotations["StyleKey"] as AnnotationConverter<StyleKeyInternal>;
+  AnnotationConverter<StyleKeyInternal> get styleKeyAnnoConverter =>
+      _libraryAnnotations["StyleKey"]! as AnnotationConverter<StyleKeyInternal>;
 
   Future<void> _init(BuildStep buildStep) async {
     // create ClassElements of our annotations

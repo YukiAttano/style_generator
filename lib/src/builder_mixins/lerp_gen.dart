@@ -1,12 +1,12 @@
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
-import 'package:collection/collection.dart';
+import "package:analyzer/dart/element/element.dart";
+import "package:analyzer/dart/element/type.dart";
+import "package:collection/collection.dart";
 
-import '../annotations/style_key_internal.dart';
-import '../data/annotation_converter.dart';
-import '../data/variable.dart';
-import '../extensions/dart_type_extension.dart';
-import '../style_builder/style_builder.dart';
+import "../annotations/style_key_internal.dart";
+import "../data/annotation_converter.dart";
+import "../data/variable.dart";
+import "../extensions/dart_type_extension.dart";
+import "../style_builder/style_builder.dart";
 
 class LerpGenResult {
   /// the generated function
@@ -81,8 +81,6 @@ mixin LerpGen {
     bool isNullable = d.isNullable;
 
     var typeSystem = lib.typeSystem;
-    var typeProvider = lib.typeProvider;
-    //var themeExtensionType = (typeProvider.objectElement.library.exportNamespace.get2('ThemeExtension<Object?>') as ClassElement).thisType;
 
     String content = b;
     List<String> trailing = [];
@@ -105,7 +103,7 @@ mixin LerpGen {
       }
     } else if (d is InterfaceType) {
       if (d.element.library.isDartCore) {
-        if (d.element.name == 'Duration') {
+        if (d.element.name == "Duration") {
           content = _lerpDurationMethod(d.isNullable, a, b);
           trailing.add(_durationLerp);
         }

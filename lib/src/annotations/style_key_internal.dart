@@ -1,9 +1,10 @@
 /// @docImport 'style_key.dart';
 library;
 
-import 'package:analyzer/dart/constant/value.dart';
-import 'package:analyzer/dart/element/element.dart';
-import 'package:style_generator/src/extensions/dart_object_extension.dart';
+import "package:analyzer/dart/constant/value.dart";
+import "package:analyzer/dart/element/element.dart";
+
+import "../extensions/dart_object_extension.dart";
 
 /// The internal representation of [StyleKey]
 ///
@@ -36,9 +37,9 @@ StyleKeyInternal<T> createStyleKey<T>(Map<String, DartObject?> map) {
   }
 
   return StyleKeyInternal(
-    inLerp: map["inLerp"]?.toValue() as bool,
-    inMerge: map["inMerge"]?.toValue() as bool,
-    inCopyWith: map["inCopyWith"]?.toValue() as bool,
+    inLerp: map["inLerp"]!.toValue()! as bool,
+    inMerge: map["inMerge"]!.toValue()! as bool,
+    inCopyWith: map["inCopyWith"]!.toValue()! as bool,
     lerp: callbackName,
   );
 }
