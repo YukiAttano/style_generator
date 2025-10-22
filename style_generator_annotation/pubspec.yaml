@@ -1,0 +1,13 @@
+name: style_generator_annotation
+description: The Annotations for style_generator
+version: 0.1.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  meta: ^1.0.0
+
+dev_dependencies:
+  lints: ^6.0.0
