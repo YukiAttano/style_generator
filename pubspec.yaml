@@ -1,24 +1,16 @@
-name: style_generator
-description: "Theme and Style generator"
-version: 0.0.1
+name: _
+description: "Style generator and Annotations"
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
   sdk: ^3.6.0
+workspace:
+  - style_generator
 
 dependencies:
-  flutter:
-    sdk: flutter
-  build: ">=3.0.0 <5.0.0"
-  analyzer: ^8.0.0
-  path: ^1.0.0 # ^1.9.1
-  dart_style: ^3.0.0 # ^3.1.2
-  collection: ^1.0.0 # ^1.19.1
-  meta: ^1.0.0
+ 
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^5.0.0
-  build_runner: ^2.0.0 #^2.9.0
-  build_config: ^1.0.0
 
