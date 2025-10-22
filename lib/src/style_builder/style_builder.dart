@@ -76,8 +76,6 @@ class StyleBuilder implements Builder {
 
     // TODO(Alex): rename generated style class?
     // TODO(Alex): add Header and ignore lints
-    // TODO(Alex): add linting for this project
-
     String partClass = state.generateForAnnotation(inputId, lib, styleAnnoConverter, styleKeyAnnoConverter);
 
     partClass = formatter.format(partClass);
