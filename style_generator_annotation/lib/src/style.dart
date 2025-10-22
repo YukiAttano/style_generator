@@ -6,45 +6,46 @@ class Style {
   /// Example: `Style.fromJson(Map<String, Object?> json)` will be `fromJson`.
   // The displayName would be `Style.fromJson`
   ///
-  /// * `null` enables auto guessing of the constructor
+  /// * `null` enables auto guessing of the constructor (the default)
   /// * `""` (Empty string) will use the default constructor
   /// * `"_example"` will use the _example constructor
   final String? constructor;
 
   /// The name of the constructor that should be used for the .of() constructor to create a default Style
   ///
-  /// * `null` will remove the fallback (and stop generating the .of() factory constructor)
-  /// * `""` (Empty string) will use the default constructor
+  /// * `null` will use the default constructor (the default) (will not use auto guessing)
+  /// * `""` (Empty string) will use the default constructor (the default)
   /// * `"_example"` will use the _example constructor
   final String? fallback;
 
   /// if true (the default) will generate a copyWith method
   ///
   /// if this is false, consider disabling [genMerge] too
-  final bool genCopyWith;
+  final bool? genCopyWith;
 
   /// if true (the default) will generate a merge method
   ///
-  /// requires a copyWith method
-  final bool genMerge;
+  /// requires a `copyWith()` method
+  final bool? genMerge;
 
   /// if true (the default) will generate a lerp method
-  final bool genLerp;
+  final bool? genLerp;
 
-  const Style({String? constructor, String? fallback = "", bool? genCopyWith, bool? genMerge, bool? genLerp})
-    : constructor = constructor == "" ? "new" : constructor,
-      fallback = fallback == "" ? "new" : fallback,
-      genCopyWith = genCopyWith ?? true,
-      genMerge = genMerge ?? true,
-      genLerp = genLerp ?? true;
+  /// if true (the default) will generate the factory .of constructor
+  ///
+  /// requires a `merge()` method
+  final bool? genOf;
+
+  const Style({this.constructor, this.fallback, this.genCopyWith, this.genMerge, this.genLerp, this.genOf});
 
   factory Style.fromJson(Map<String, Object?> json) {
     return Style(
       constructor: json["constructor"]?.toString(),
       fallback: json["fallback"]?.toString(),
-      genCopyWith: json["genCopyWith"]! as bool,
-      genMerge: json["genMerge"]! as bool,
-      genLerp: json["genLerp"]! as bool,
+      genCopyWith: json["genCopyWith"] as bool?,
+      genMerge: json["genMerge"] as bool?,
+      genLerp: json["genLerp"] as bool?,
+      genOf: json["genOf"] as bool?,
     );
   }
 
@@ -55,6 +56,7 @@ class Style {
       "genCopyWith": genCopyWith,
       "genMerge": genMerge,
       "genLerp": genLerp,
+      "genOf": genOf,
     };
   }
 }
