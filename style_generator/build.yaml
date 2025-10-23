@@ -1,6 +1,6 @@
 # Read about `build.yaml` at https://pub.dev/packages/build_config
 builders:
-  styleBuilder:
+  style_builder:
     import: "package:style_generator/style_generator.dart"
     builder_factories: [ "styleBuilder" ]
     build_extensions: { ".dart": [ ".style.dart" ] }
@@ -18,5 +18,5 @@ builders:
         suffix: null
 
 triggers:
-  style_generator:styleBuilder:
+  style_generator:style_builder:
     - annotation Style

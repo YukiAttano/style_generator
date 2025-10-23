@@ -1,5 +1,7 @@
 import "package:analyzer/dart/element/element.dart";
+import "package:analyzer/dart/element/nullability_suffix.dart";
 import "package:analyzer/dart/element/type.dart";
+import "package:analyzer/dart/element/type_system.dart";
 import "package:collection/collection.dart";
 
 import "../annotations/style_key_internal.dart";
@@ -126,25 +128,59 @@ mixin LerpGen {
         MethodElement? lerpMethod = d.element.methods.firstWhereOrNull((method) => method.name == "lerp");
 
         if (lerpMethod != null) {
-          if (lerpMethod.isStatic) {
-            if (isNullable) {
-              content = "${typeSystem.promoteToNonNull(d)}.lerp($a, $b, t)";
-            } else {
-              content = "${typeSystem.promoteToNonNull(d)}.lerp($a, $b, t)!";
-            }
-          } else {
-            if (isNullable) {
-              content = "$a?.lerp($b, t) ?? $b";
-            } else {
-              content = "$a.lerp($b, t)";
-            }
-          }
+          content = _getTypedFunction(typeSystem, d, lerp: lerpMethod, a: a, b: b);
         }
       }
     }
 
     return LerpMethodGenResult(content: content, trailing: trailing);
   }
+
+   String _getTypedFunction(TypeSystem typeSystem, InterfaceType d, {required MethodElement lerp, required String a, required String b}) {
+
+     bool isNullable = d.isNullable;
+     //DartType clazz = typeSystem.promoteToNonNull(d);
+
+     List<TypeParameterElement> typeParameters = lerp.typeParameters;
+
+     String methodName = lerp.displayName;
+
+     List<String> typeList = [];
+     String types = "";
+     if (typeParameters.isNotEmpty) {
+       var iterator = d.typeArguments.iterator;
+       for (var t in typeParameters) {
+         if (iterator.moveNext()) {
+           typeList.add(iterator.current.extensionTypeErasure.getDisplayString());
+         } else {
+           typeList.add("Object?");
+         }
+       }
+
+       types = "<${typeList.join(",")}>";
+     }
+
+     String function;
+
+     if (lerp.isStatic) {
+       String className = lerp.enclosingElement!.displayName;
+
+       String suffix = isNullable ? "" : "!";
+
+       function = "$className.$methodName$types($a, $b, t)$suffix";
+     } else {
+
+       if (isNullable) {
+         function = "$a?.lerp$types($b, t) ?? $b";
+       } else {
+         function = "$a.lerp$types($b, t)";
+       }
+     }
+
+
+     return function;
+   }
+
 
   String _lerpDurationMethod(bool nullable, String a, String b) {
     String function;
