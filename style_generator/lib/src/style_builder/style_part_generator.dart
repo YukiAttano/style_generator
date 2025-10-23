@@ -1,7 +1,6 @@
+import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
-import "package:build/build.dart";
-import "package:path/path.dart" hide Style;
 import "package:style_generator_annotation/style_generator_annotation.dart";
 
 import "../../style_generator.dart";
@@ -9,12 +8,12 @@ import "../annotations/style_config.dart";
 import "../annotations/style_key_internal.dart";
 import "../builder_mixins/copy_with_gen.dart";
 import "../builder_mixins/fields_gen.dart";
-import "../builder_mixins/header_gen.dart";
 import "../builder_mixins/lerp_gen.dart";
 import "../builder_mixins/merge_gen.dart";
 import "../builder_mixins/of_gen.dart";
 import "../data/annotated_element.dart";
 import "../data/annotation_converter.dart";
+import "../data/lookup_store.dart";
 import "../data/variable.dart";
 import "../extensions/element_annotation_extension.dart";
 import "../extensions/string_constructor_extension.dart";
@@ -32,14 +31,16 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
 
   final LibraryElement lib;
   final StyleConfig styleConfig;
-  final AnnotationConverter<Style> styleAnnotation;
-  final AnnotationConverter<StyleKeyInternal> styleKeyAnnotation;
+  final LookupStore store;
+
+  AnnotationConverter<Style> get styleAnnotation => store.styleAnnoConverter;
+
+  AnnotationConverter<StyleKeyInternal> get styleKeyAnnotation => store.styleKeyAnnoConverter;
 
   StyleGenerator({
     required this.lib,
     required this.styleConfig,
-    required this.styleAnnotation,
-    required this.styleKeyAnnotation,
+    required this.store,
   });
 
   StyleGeneratorResult generate() {
@@ -57,8 +58,6 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
         _generateForClass(c, config),
       );
     }
-
-    print("GEN ${parts.length}");
 
     return StyleGeneratorResult(parts: parts);
   }
@@ -86,7 +85,12 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     bool genMerge = config.genMerge;
     bool genLerp = config.genLerp;
     bool genOf = config.genOf;
+    String suffix = config.suffix;
 
+    ConstructorElement? fallbackConstructor = _getConstructor(clazz.constructors, config.fallback);
+    genOf = genOf && _matchesFallback(fallbackConstructor);
+
+    String generatedClassName = clazz.displayName + suffix;
     String fieldContent = !genFields ? "" : generateFieldGetter(variables);
     String ofContent = !genOf ? "" : generateOf(clazz.displayName, fallback);
     String copyWithContent =
@@ -97,7 +101,7 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
         : generateLerp(lib, clazz.displayName, constructorName, variables, styleKeyAnnotation);
 
     return _generatePartClass(
-      clazz.displayName,
+      generatedClassName,
       fields: fieldContent,
       of: ofContent,
       copyWith: copyWithContent,
@@ -107,8 +111,16 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     );
   }
 
+  bool _matchesFallback(ConstructorElement? constructor) {
+    if (constructor == null) return false;
+
+    List<FormalParameterElement> params = constructor.formalParameters;
+
+    return params.isNotEmpty && params.first.type == store.buildContextType;
+  }
+
   String _generatePartClass(
-    String className, {
+    String generatedClassName, {
     required String fields,
     required String of,
     required String copyWith,
@@ -118,7 +130,7 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
   }) {
     String partClass = """
        
-    mixin _\$$className {
+    mixin _\$$generatedClassName {
 
       $fields
       
@@ -175,8 +187,8 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     if (name == null) {
       constructor = _getPrimaryConstructor(constructors);
     } else {
-    //  // ignore:  parameter_assignments .
-    //  if (name == "") name = "new"; // Default Constructor name
+      //  // ignore:  parameter_assignments .
+      //  if (name == "") name = "new"; // Default Constructor name
 
       for (var c in constructors) {
         if (c.name == name && c.name != null) {

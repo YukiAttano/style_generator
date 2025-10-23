@@ -15,6 +15,7 @@ builders:
         gen_merge: true
         gen_lerp: true
         gen_of: true
+        suffix: "Swag"
 
 triggers:
   style_generator:styleBuilder:

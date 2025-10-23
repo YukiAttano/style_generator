@@ -36,7 +36,19 @@ class Style {
   /// requires a `merge()` method
   final bool? genOf;
 
-  const Style({this.constructor, this.fallback, this.genCopyWith, this.genMerge, this.genLerp, this.genOf});
+  /// The suffix is applied to the generated mixin
+  ///
+  /// Example:
+  /// ```dart
+  /// @Style(mixinSuffix: "S")
+  /// class SomeStyle extends ThemeExtension<Style> with _$SomeStyleS {}
+  ///
+  /// // generates
+  /// mixin SomeStyleS {}
+  /// ```
+  final String? suffix;
+
+  const Style({this.constructor, this.fallback, this.genCopyWith, this.genMerge, this.genLerp, this.genOf, this.suffix});
 
   factory Style.fromJson(Map<String, Object?> json) {
     return Style(
@@ -46,6 +58,7 @@ class Style {
       genMerge: json["genMerge"] as bool?,
       genLerp: json["genLerp"] as bool?,
       genOf: json["genOf"] as bool?,
+      suffix: json["suffix"] as String?,
     );
   }
 
@@ -57,6 +70,7 @@ class Style {
       "genMerge": genMerge,
       "genLerp": genLerp,
       "genOf": genOf,
+      "suffix": suffix,
     };
   }
 }
