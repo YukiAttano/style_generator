@@ -1,30 +1,35 @@
 import "dart:async";
-import "dart:developer" as dev;
 
-import "package:logging/logging.dart" ;
+import "package:build/build.dart" as build;
+import "package:logging/logging.dart";
 
 import "variable.dart";
 
 void log(
-  String message, {
-  DateTime? time,
-  int? sequenceNumber,
-  int level = 0,
-  String name = "",
-  Zone? zone,
+  Level level,
+  Object? message, [
   Object? error,
   StackTrace? stackTrace,
-}) {
-  print(
+  Zone? zone,
+]) {
+  build.log.log(
+    level,
     message,
-
+    error,
+    stackTrace,
+    zone,
   );
 }
 
-void warn(String message) {
-  log(message, level: Level.WARNING.value);
+void info(Object? message) {
+  log(Level.INFO, message);
+}
+
+void warn(Object? message) {
+  log(Level.WARNING, message);
 }
 
 void cannotIgnorePositional(Variable variable, {required String clazz, required String method}) {
-  warn("Parameter '$variable' in Class $clazz cannot be excluded from $method because it is used as a positional constructor parameter");
+  warn(
+      "Parameter '$variable' in Class $clazz cannot be excluded from $method because it is used as a positional constructor parameter");
 }
