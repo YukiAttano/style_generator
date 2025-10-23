@@ -4,6 +4,7 @@ import "package:collection/collection.dart";
 
 import "../annotations/style_key_internal.dart";
 import "../data/annotation_converter.dart";
+import "../data/logger.dart";
 import "../data/variable.dart";
 import "../extensions/dart_type_extension.dart";
 import "../style_builder/style_builder.dart";
@@ -45,12 +46,15 @@ mixin LerpGen {
     StyleKeyInternal? styleKey;
     String prefix = "";
     String? name;
+    bool inLerp;
     LerpMethodGenResult method;
     for (var v in params) {
       name = v.name;
 
       styleKey = v.getAnnotationOf(styleKeyAnnotation);
-      prefix = styleKey?.inLerp ?? true ? "" : "//";
+      inLerp =  _includeVariable(v, styleKey, className);
+
+      prefix = inLerp ? "" : "//";
 
       method = _getLerpMethod(lib, v, lerpMethod: styleKey?.lerp, a: "$name", b: "other.$name");
 
@@ -152,6 +156,16 @@ mixin LerpGen {
     }
 
     return function;
+  }
+
+  bool _includeVariable(Variable v, StyleKeyInternal? styleKey, String clazz) {
+    bool include = styleKey?.inLerp ?? true;
+    if (!include && v.isPositional) {
+      cannotIgnorePositional(v, clazz: clazz, method: "lerp");
+      include = true;
+    }
+
+    return include;
   }
 }
 

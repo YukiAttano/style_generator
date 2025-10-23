@@ -39,6 +39,8 @@ class Style {
   /// * `null` will only generate if the [fallback] constructor matches
   /// the fallback prototype and a factory .of() constructor is given
   /// * `false` generation is disabled
+  ///
+  /// if all gen parameter are false and [genOf] is null, it is also considered false
   final bool? genOf;
 
   /// The suffix is applied to the generated mixin

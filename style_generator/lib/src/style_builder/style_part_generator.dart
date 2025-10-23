@@ -81,7 +81,7 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     ConstructorElement? fallbackConstructor = _getConstructor(clazz.constructors, config.fallback);
     ConstructorElement? ofConstructor = _getConstructor(clazz.constructors, "of");
 
-    bool canGenOf = _matchesFallbackExpectations(fallback: fallbackConstructor, of: ofConstructor);
+    Variable? buildContext = _getBuildContextParameterFrom(fallback: fallbackConstructor, of: ofConstructor);
 
     String constructorName = (config.constructor ?? constructor.name!).asConstructorName;
     String fallback = (config.fallback ?? "").asConstructorName;
@@ -89,12 +89,12 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     bool genCopyWith = config.genCopyWith;
     bool genMerge = config.genMerge;
     bool genLerp = config.genLerp;
-    bool genOf = config.genOf ?? canGenOf;
+    bool genOf = config.genOf ?? buildContext != null;
     String suffix = config.suffix;
 
     String generatedClassName = clazz.displayName + suffix;
     String fieldContent = !genFields ? "" : generateFieldGetter(variables);
-    String ofContent = !genOf ? "" : generateOf(clazz.displayName, fallback);
+    String ofContent = !genOf ? "" : generateOf(clazz.displayName, buildContext, fallback);
     String copyWithContent =
         !genCopyWith ? "" : generateCopyWith(clazz.displayName, constructorName, variables, styleKeyAnnotation);
     String mergeContent = !genMerge ? "" : generateMerge(lib, clazz.displayName, variables, styleKeyAnnotation);
@@ -113,13 +113,34 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     );
   }
 
-
-  bool _matchesFallbackExpectations({ConstructorElement? fallback, ConstructorElement? of}) {
-    if (fallback == null || of == null) return false;
+  Variable? _getBuildContextParameterFrom({ConstructorElement? fallback, ConstructorElement? of}) {
+    if (fallback == null || of == null) return null;
 
     List<FormalParameterElement> params = fallback.formalParameters;
 
-    return params.isNotEmpty && params.first.isPositional && params.first.type == store.buildContextType;
+    if (params.isNotEmpty) {
+      // if our first parameter is positional, it must be of type BuildContext because we cannot pass other arguments
+      // into our fallback constructor
+      FormalParameterElement p = params.first;
+      if (p.isPositional) {
+        if (p.type == store.buildContextType) {
+          return Variable(element: p);
+        } else {
+          return null;
+        }
+      }
+
+      // if the first is not positional, none will be positional so we can search for our fitting parameter.
+      // we do not check if other parameter are required, so we might still generate a broken of() constructor.
+      // This is fine, because the dart analyzer will tell the user whats wrong
+      for (var p in params) {
+        if (p.type == store.buildContextType) {
+          return Variable(element: p);
+        }
+      }
+    }
+
+    return null;
   }
 
   String _generatePartClass(

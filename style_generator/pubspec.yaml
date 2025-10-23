@@ -17,8 +17,11 @@ dependencies:
   collection: ^1.0.0 # ^1.19.1
   meta: ^1.0.0
   build_config: ^1.0.0
+  logging: ^1.0.0
+
   style_generator_annotation:
     path: "../style_generator_annotation"
+
 
 dev_dependencies:
   flutter_test:

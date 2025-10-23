@@ -12,8 +12,8 @@ typedef LerpCallback<T> = T Function(T? a, T? b, double t);
 class StyleKey<T> {
   /// if false, the field will not be included in the copyWith() method
   ///
-  /// if the field is excluded, consider excluding it in [inMerge] too
-  /// to let the generator generate valid code
+  /// if the field is excluded, consider excluding it in [inMerge] too,
+  /// otherwise the generated code might be invalid
   final bool inCopyWith;
 
   /// if false, the field will not be included in the merge() method

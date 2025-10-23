@@ -22,11 +22,13 @@ mixin MergeGen {
     StyleKeyInternal? styleKey;
     String prefix = "";
     String name;
+    bool inMerge;
     for (var field in fields) {
       name = field.name!;
 
       styleKey = field.getAnnotationOf(styleKeyAnnotation);
-      prefix = styleKey?.inMerge ?? true ? "" : "//";
+      inMerge = _includeVariable(field, styleKey, className);
+      prefix = inMerge ? "" : "//";
 
       copyWithParams.add("$prefix $name: ${_getMergeMethod(lib, field, a: name, b: "other.$name")},");
     }
@@ -68,5 +70,11 @@ mixin MergeGen {
     }
 
     return b;
+  }
+
+  bool _includeVariable(Variable v, StyleKeyInternal? styleKey, String clazz) {
+    bool include = styleKey?.inMerge ?? true;
+
+    return include;
   }
 }
