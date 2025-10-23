@@ -75,8 +75,12 @@ class StyleBuilder with HeaderGen implements Builder {
 
     DartFormatter formatter = DartFormatter(languageVersion: DartFormatter.latestLanguageVersion);
 
+
     AssetId inputId = buildStep.inputId;
     AssetId outputId = inputId.changeExtension(outExtension);
+
+    print("INPUT $inputId");
+
 
     Map<String, Object?> config = options.config;
     StyleConfig styleConfig = StyleConfig.fromConfig(config);

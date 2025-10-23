@@ -58,6 +58,8 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
       );
     }
 
+    print("GEN ${parts.length}");
+
     return StyleGeneratorResult(parts: parts);
   }
 
