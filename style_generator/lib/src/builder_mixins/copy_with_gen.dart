@@ -10,32 +10,43 @@ mixin CopyWithGen {
   String generateCopyWith(
     String className,
     String constructor,
-    List<Variable> fields,
+    List<Variable> parameters,
     AnnotationConverter<StyleKeyInternal> styleKeyAnnotation,
   ) {
     List<String> params = [];
-    List<String> constructorParams = [];
+    List<String> namedConstructorParams = [];
+    List<String> positionalConstructorParams = [];
 
     StyleKeyInternal? styleKey;
     String prefix = "";
-    String? name;
+    String name;
     String suffix;
-    for (var field in fields) {
-      name = field.name;
-      suffix = field.type.isNullable ? "" : "?";
+    for (var v in parameters) {
+      name = v.name!;
+      suffix = v.type.isNullable ? "" : "?";
 
-      styleKey = field.getAnnotationOf(styleKeyAnnotation);
+      styleKey = v.getAnnotationOf(styleKeyAnnotation);
       prefix = styleKey?.inCopyWith ?? true ? "" : "//";
 
-      params.add("$prefix ${field.type}$suffix $name,");
-      constructorParams.add("$prefix $name: $name ?? this.$name,");
+      params.add("$prefix ${v.type}$suffix $name,");
+      if (v.isNamed) {
+        namedConstructorParams.add("$prefix $name: $name ?? this.$name,");
+      } else {
+        positionalConstructorParams.add("$prefix $name ?? this.$name,");
+      }
+
     }
+
+    String parameter = params.isEmpty ? "" : "{${params.join(_nl)}}";
+    String positional = positionalConstructorParams.isEmpty ? "" : positionalConstructorParams.join(_nl);
+    String named = namedConstructorParams.isEmpty ? "" : namedConstructorParams.join(_nl);
 
     String function =
         """
-    $className copyWith({${params.join(_nl)}}) {
+    $className copyWith($parameter) {
       return $className.$constructor(
-        ${constructorParams.join(_nl)}
+       $positional
+       $named
       );
     }
     """;

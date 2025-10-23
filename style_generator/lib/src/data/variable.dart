@@ -12,6 +12,12 @@ part "variable_handler.dart";
 class Variable {
   final VariableElement element;
 
+  FormalParameterElement? get _asParameter {
+    assert(element is FormalParameterElement,
+        "Accessed $element as FormalParameterElement but it is ${element.runtimeType}");
+    return element is FormalParameterElement ? element as FormalParameterElement : null;
+  }
+
   DartType get type => element.type;
 
   String? get name => element.name;
@@ -23,6 +29,14 @@ class Variable {
   bool get isPrivate => element.isPrivate;
 
   bool get isStatic => element.isStatic;
+
+  bool get isNamed => _asParameter?.isNamed ?? false;
+
+  bool get isPositional => _asParameter?.isPositional ?? false;
+
+  bool get isOptional => _asParameter?.isOptional ?? false;
+
+  bool get isRequired => _asParameter?.isRequired ?? false;
 
   final _Cache _cache;
 

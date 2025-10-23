@@ -76,7 +76,7 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
 
     List<Variable> variables = state.merged;
 
-    if (variables.isEmpty) throw Exception("Empty Class");
+    //if (variables.isEmpty) throw Exception("Empty Class");
 
     ConstructorElement? fallbackConstructor = _getConstructor(clazz.constructors, config.fallback);
     ConstructorElement? ofConstructor = _getConstructor(clazz.constructors, "of");
@@ -113,15 +113,13 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     );
   }
 
-  bool _matchesFallbackExpectations({
-    ConstructorElement? fallback,
-    ConstructorElement? of,
-}) {
+
+  bool _matchesFallbackExpectations({ConstructorElement? fallback, ConstructorElement? of}) {
     if (fallback == null || of == null) return false;
 
     List<FormalParameterElement> params = fallback.formalParameters;
 
-    return params.isNotEmpty && params.first.type == store.buildContextType;
+    return params.isNotEmpty && params.first.isPositional && params.first.type == store.buildContextType;
   }
 
   String _generatePartClass(
