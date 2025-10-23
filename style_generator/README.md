@@ -1,4 +1,4 @@
-(https://img.shields.io/pub/v/style_generator)](https://pub.dev/packages/style_generator)
+[![Pub Package](https://img.shields.io/pub/v/style_generator)](https://pub.dev/packages/style_generator)
 
 Generates ThemeExtensions for your Style Classes
 

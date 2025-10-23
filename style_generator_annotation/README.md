@@ -1,4 +1,4 @@
-(https://img.shields.io/pub/v/style_generator_annotation)](https://pub.dev/packages/style_generator_annotation)
+[![Pub Package](https://img.shields.io/pub/v/style_generator_annotation)](https://pub.dev/packages/style_generator_annotation)
 
 This package requires [style_generator](https://pub.dev/packages/style_generator) 
 to be a dependency to build code.
