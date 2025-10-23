@@ -34,7 +34,6 @@ mixin CopyWithGen {
       } else {
         positionalConstructorParams.add("$prefix $name ?? this.$name,");
       }
-
     }
 
     String parameter = params.isEmpty ? "" : "{${params.join(_nl)}}";

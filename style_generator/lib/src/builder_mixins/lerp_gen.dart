@@ -35,26 +35,36 @@ mixin LerpGen {
     LibraryElement lib,
     String className,
     String constructor,
-    List<Variable> fields,
+    List<Variable> params,
     AnnotationConverter<StyleKeyInternal> styleKeyAnnotation,
   ) {
     Set<String> trailing = {};
-    List<String> constructorParams = [];
+    List<String> namedConstructorParams = [];
+    List<String> positionalConstructorParams = [];
 
     StyleKeyInternal? styleKey;
     String prefix = "";
     String? name;
     LerpMethodGenResult method;
-    for (var field in fields) {
-      name = field.name;
+    for (var v in params) {
+      name = v.name;
 
-      styleKey = field.getAnnotationOf(styleKeyAnnotation);
-      prefix = styleKey?.inMerge ?? true ? "" : "//";
+      styleKey = v.getAnnotationOf(styleKeyAnnotation);
+      prefix = styleKey?.inLerp ?? true ? "" : "//";
 
-      method = _getLerpMethod(lib, field, lerpMethod: styleKey?.lerp, a: "$name", b: "other.$name");
-      constructorParams.add("$prefix $name: ${method.content},");
+      method = _getLerpMethod(lib, v, lerpMethod: styleKey?.lerp, a: "$name", b: "other.$name");
+
+      if (v.isNamed) {
+        namedConstructorParams.add("$prefix $name: ${method.content},");
+      } else {
+        positionalConstructorParams.add("$prefix ${method.content},");
+      }
+
       trailing.addAll(method.trailing);
     }
+
+    String positional = positionalConstructorParams.isEmpty ? "" : positionalConstructorParams.join(_nl);
+    String named = namedConstructorParams.isEmpty ? "" : namedConstructorParams.join(_nl);
 
     String function =
         """
@@ -62,7 +72,8 @@ mixin LerpGen {
       if (other is! $className) return this as $className;
     
       return $className.$constructor(
-        ${constructorParams.join(_nl)}
+        $positional
+        $named
       );
     }
     """;
