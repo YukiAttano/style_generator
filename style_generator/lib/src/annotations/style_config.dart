@@ -11,14 +11,11 @@ class StyleConfig extends Style {
   bool get genLerp => super.genLerp!;
 
   @override
-  bool get genOf => super.genOf!;
-
-  @override
   String get suffix => super.suffix!;
 
   bool get genFields => genCopyWith || genMerge || genLerp;
 
-  bool get isDisabled => !genCopyWith && !genMerge && !genLerp && !genOf;
+  bool get isDisabled => !genCopyWith && !genMerge && !genLerp && !(genOf ?? false);
 
   const StyleConfig({
     super.constructor,
@@ -26,9 +23,9 @@ class StyleConfig extends Style {
     required bool genCopyWith,
     required bool genMerge,
     required bool genLerp,
-    required bool genOf,
+    super.genOf,
     required String suffix,
-  }) : super(genCopyWith: genCopyWith, genMerge: genMerge, genLerp: genLerp, genOf: genOf, suffix: suffix);
+  }) : super(genCopyWith: genCopyWith, genMerge: genMerge, genLerp: genLerp, suffix: suffix);
 
   factory StyleConfig.fromConfig(Map<String, Object?> config) {
     return StyleConfig(
@@ -37,7 +34,7 @@ class StyleConfig extends Style {
       genCopyWith: config["gen_copy_with"] as bool? ?? true,
       genMerge: config["gen_merge"] as bool? ?? true,
       genLerp: config["gen_lerp"] as bool? ?? true,
-      genOf: config["gen_of"] as bool? ?? true,
+      genOf: config["gen_of"] as bool?,
       suffix: config["suffix"] as String? ?? "",
     );
   }

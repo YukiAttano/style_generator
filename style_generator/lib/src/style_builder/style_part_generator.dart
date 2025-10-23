@@ -78,17 +78,19 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
 
     if (variables.isEmpty) throw Exception("Empty Class");
 
+    ConstructorElement? fallbackConstructor = _getConstructor(clazz.constructors, config.fallback);
+    ConstructorElement? ofConstructor = _getConstructor(clazz.constructors, "of");
+
+    bool canGenOf = _matchesFallbackExpectations(fallback: fallbackConstructor, of: ofConstructor);
+
     String constructorName = (config.constructor ?? constructor.name!).asConstructorName;
     String fallback = (config.fallback ?? "").asConstructorName;
     bool genFields = config.genFields;
     bool genCopyWith = config.genCopyWith;
     bool genMerge = config.genMerge;
     bool genLerp = config.genLerp;
-    bool genOf = config.genOf;
+    bool genOf = config.genOf ?? canGenOf;
     String suffix = config.suffix;
-
-    ConstructorElement? fallbackConstructor = _getConstructor(clazz.constructors, config.fallback);
-    genOf = genOf && _matchesFallback(fallbackConstructor);
 
     String generatedClassName = clazz.displayName + suffix;
     String fieldContent = !genFields ? "" : generateFieldGetter(variables);
@@ -111,10 +113,13 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     );
   }
 
-  bool _matchesFallback(ConstructorElement? constructor) {
-    if (constructor == null) return false;
+  bool _matchesFallbackExpectations({
+    ConstructorElement? fallback,
+    ConstructorElement? of,
+}) {
+    if (fallback == null || of == null) return false;
 
-    List<FormalParameterElement> params = constructor.formalParameters;
+    List<FormalParameterElement> params = fallback.formalParameters;
 
     return params.isNotEmpty && params.first.type == store.buildContextType;
   }

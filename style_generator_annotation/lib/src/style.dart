@@ -31,9 +31,14 @@ class Style {
   /// if true (the default) will generate a lerp method
   final bool? genLerp;
 
-  /// if true (the default) will generate the factory .of constructor
+  /// will generate the factory .of constructor
   ///
   /// requires a `merge()` method
+  ///
+  /// * `true` forces generation
+  /// * `null` will only generate if the [fallback] constructor matches
+  /// the fallback prototype and a factory .of() constructor is given
+  /// * `false` generation is disabled
   final bool? genOf;
 
   /// The suffix is applied to the generated mixin
