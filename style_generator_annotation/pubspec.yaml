@@ -1,7 +1,13 @@
 name: style_generator_annotation
 description: The Annotations for style_generator
 version: 0.1.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/YukiAttano/style_generator/tree/main/style_generator_annotation
+issue_tracker: https://github.com/YukiAttano/style_generator/issues
+topics:
+  - theme
+  - style
+  - extension
+  - codegen
 
 environment:
   sdk: ^3.9.2
