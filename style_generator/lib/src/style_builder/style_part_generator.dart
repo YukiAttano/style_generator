@@ -94,7 +94,7 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
 
     String generatedClassName = clazz.displayName + suffix;
     String fieldContent = !genFields ? "" : generateFieldGetter(variables);
-    String ofContent = !genOf ? "" : generateOf(clazz.displayName, buildContext, fallback);
+    String ofContent = !genOf ? "" : generateOf(clazz.displayName, suffix, buildContext, fallback);
     String copyWithContent =
         !genCopyWith ? "" : generateCopyWith(clazz.displayName, constructorName, variables, styleKeyAnnotation);
     String mergeContent = !genMerge ? "" : generateMerge(lib, clazz.displayName, variables, styleKeyAnnotation);

@@ -112,6 +112,8 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 ```
 
 Additionally non-nullable parameter and typed parameter are also supported.
+Types that have a lerp function, whether static or not are used for lerp() automatically.
+
 
 ```dart
 @Style()
@@ -119,9 +121,142 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
   final TextStyle titleStyle;
   final TextStyle subtitleStyle;
 
-  final Color? color;
+  // lerp method from Some<T, K> will be used
+  final Some<Color, double>? color;
   final Color? selectionColor;
 
   const SomeStyle(this.titleStyle, this.color, {required this.subtitleStyle, this.selectionColor});
 }
+
+class Some<T, K> {
+  final T color;
+  final K something;
+
+  const Some(this.color, this.something);
+
+  Some<T, K>? lerp(Some<T, K>? a, Some<T, K>? b, double t) {
+    return b;
+  }
+}
+```
+
+# Annotations
+
+## Style
+The Style annotation allows customizing the generation of the style class.
+For example, you can disable the .copyWith generation and use another Package for its generation.
+
+See the Style documentation for more info.
+
+```dart
+@Style(constructor: "_", fallback: "custom", genCopyWith: true, genMerge: true, genLerp: true, genOf: true, suffix: "Generated")
+class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyleGenerated {
+  final TextStyle titleStyle;
+  final TextStyle subtitleStyle;
+
+  // lerp method from Some<T, K> will be used
+  final Some<Color, double>? color;
+  final Color? selectionColor;
+
+  const SomeStyle(this.titleStyle, this.color, {required this.subtitleStyle, this.selectionColor});
+  
+  factory SomeStyle.of(BuildContext context, [SomeStyle? style]) => _$SomeStyleGeneratedOf(context, style);
+}
+
+```
+
+You can customize the default behavior in your build.yml
+
+```yaml
+targets:
+  $default:
+    builders:
+      style_generator|style_builder:
+        enabled: true
+        options:
+          constructor: null     # The constructor for .copyWith and .lerp to use. The default is `null`
+          fallback: "fallback"  # The constructor for .of to use. The default is `null`
+          gen_copy_with: true   # whether .copyWith should be generated, The default is `true`
+          gen_merge: true       # whether .merge should be generated, The default is `true`
+          gen_lerp: true        # whether .lerp should be generated, The default is `true`
+          gen_of: null          # whether .of should be generated, The default is `null` (will only generate if the fallback constructor and a factory .of() constructor is found)
+          suffix: null          # an optional suffix for the generated mixin and .of method
+```
+
+## StyleKey
+
+Every field or constructor parameter can be further configured with @StyleKey()
+
+```dart
+@Style()
+class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
+ 
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
+
+  @StyleKey(inCopyWith: false, inLerp: false, inMerge: false)
+  final Color? color;
+  final Color? selectionColor;
+
+  const SomeStyle({
+    this.titleStyle, 
+    this.color, 
+    this.subtitleStyle,
+    @StyleKey(inCopyWith: false, inLerp: false, inMerge: false)
+    this.selectionColor,
+  });
+}
+```
+
+Only StyleKeys on fields and the constructor matching Style.constructor are considered.
+
+Do note, StyleKeys on the constructor override configurations on the field without further warning.
+
+## Custom Lerp Functions
+
+Sometimes, custom lerp functions are required.
+
+The generator will consider lerpDouble() for integer, double and num fields by default.
+It uses a lerpDuration for Darts Duration method.
+For all other cases, it searches for a .lerp() method inside the types class and applies that.
+If nothing is found, .lerp() will not lerp the field.
+
+Other custom typed .lerp() functions can be applied with StyleKeys.
+(The custom method must be static or a top level method).
+
+
+
+```dart
+@Style()
+class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
+ 
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
+
+  // The function must match the type of the StyleKey. (Which itself should match the type of the field)
+  @StyleKey<WidgetStateProperty<double?>?>(lerp: lerpWidgetStateProperty)
+  final WidgetStateProperty<double?>? elevation;
+  
+  // Here, a custom color lerp function is used
+  @StyleKey<Color?>(lerp: customColorLerp)
+  final Color? color;
+  final Color? selectionColor;
+
+  const SomeStyle({
+    this.titleStyle, 
+    this.color, 
+    this.subtitleStyle,
+    this.selectionColor,
+  });
+
+  static WidgetStateProperty<double?>? lerpWidgetStateProperty(
+      WidgetStateProperty<double?>? a,
+      WidgetStateProperty<double?>? b,
+      double t,
+      ) {
+    return WidgetStateProperty.lerp<double?>(a, b, t, lerpDouble);
+  }
+}
+
+Color? customColorLerp(Color? a, Color? b, double t) => b;
 ```
