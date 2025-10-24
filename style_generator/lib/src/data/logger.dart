@@ -29,7 +29,7 @@ void warn(Object? message) {
   log(Level.WARNING, message);
 }
 
-void cannotIgnorePositional(Variable variable, {required String clazz, required String method}) {
+void cannotIgnorePositionalOrRequiredParameter(Variable variable, {required String clazz, required String method}) {
   warn(
-      "Parameter '$variable' in Class $clazz cannot be excluded from $method because it is used as a positional constructor parameter");
+      "Parameter '$variable' in Class $clazz cannot be excluded from $method because it is used either a positional or required constructor parameter");
 }

@@ -200,8 +200,8 @@ mixin LerpGen {
 
   bool _includeVariable(Variable v, StyleKeyInternal? styleKey, String clazz) {
     bool include = styleKey?.inLerp ?? true;
-    if (!include && v.isPositional) {
-      cannotIgnorePositional(v, clazz: clazz, method: "lerp");
+    if (!include && (v.isPositional || v.isRequired)) {
+      cannotIgnorePositionalOrRequiredParameter(v, clazz: clazz, method: "lerp");
       include = true;
     }
 

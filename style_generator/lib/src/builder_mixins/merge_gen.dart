@@ -14,7 +14,7 @@ mixin MergeGen {
   String generateMerge(
     LibraryElement lib,
     String className,
-    List<Variable> fields,
+    List<Variable> params,
     AnnotationConverter<StyleKeyInternal> styleKeyAnnotation,
   ) {
     List<String> copyWithParams = [];
@@ -23,14 +23,14 @@ mixin MergeGen {
     String prefix = "";
     String name;
     bool inMerge;
-    for (var field in fields) {
-      name = field.name!;
+    for (var p in params) {
+      name = p.name!;
 
-      styleKey = field.getAnnotationOf(styleKeyAnnotation);
-      inMerge = _includeVariable(field, styleKey, className);
+      styleKey = p.getAnnotationOf(styleKeyAnnotation);
+      inMerge = _includeVariable(p, styleKey, className);
       prefix = inMerge ? "" : "//";
 
-      copyWithParams.add("$prefix $name: ${_getMergeMethod(lib, field, a: name, b: "other.$name")},");
+      copyWithParams.add("$prefix $name: ${_getMergeMethod(lib, p, a: name, b: "other.$name")},");
     }
 
     String function =

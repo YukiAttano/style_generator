@@ -59,8 +59,8 @@ mixin CopyWithGen {
 
   bool _includeVariable(Variable v, StyleKeyInternal? styleKey, String clazz) {
     bool include = styleKey?.inCopyWith ?? true;
-    if (!include && v.isPositional) {
-      cannotIgnorePositional(v, clazz: clazz, method: "copyWith");
+    if (!include && (v.isPositional || v.isRequired)) {
+      cannotIgnorePositionalOrRequiredParameter(v, clazz: clazz, method: "copyWith");
       include = true;
     }
 

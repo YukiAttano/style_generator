@@ -8,11 +8,15 @@ Generates ThemeExtensions for your Style Classes
 
 # Getting Started
 
-
+```shell
+dart pub add style_generator_annotation
+dart pub add dev:style_generator
+dart pub add dev:build_runner
+```
 
 # ThemeExtensions
 
-Minimum Example:
+## Minimum Example:
 ```dart
 import 'package:flutter/material.dart';
 // add import
@@ -35,7 +39,7 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 }
 ```
 
-Fallback and of() Constructor:
+## Fallback and of() Constructor:
 
 This package supports generating a quick constructor to retrieve your Style from BuildContext.
 
@@ -86,5 +90,38 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 
     return s;
   }
+}
+```
+
+## Positional and Named Parameter
+
+A mix of positional and named parameter are supported.
+
+```dart
+@Style()
+class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
+
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
+
+  final Color? color;
+  final Color? selectionColor;
+
+  const SomeStyle(this.titleStyle, this.color, {this.subtitleStyle, this.selectionColor});
+}
+```
+
+Additionally non-nullable parameter and typed parameter are also supported.
+
+```dart
+@Style()
+class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
+  final TextStyle titleStyle;
+  final TextStyle subtitleStyle;
+
+  final Color? color;
+  final Color? selectionColor;
+
+  const SomeStyle(this.titleStyle, this.color, {required this.subtitleStyle, this.selectionColor});
 }
 ```
