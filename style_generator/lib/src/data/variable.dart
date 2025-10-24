@@ -13,8 +13,10 @@ class Variable {
   final VariableElement element;
 
   FormalParameterElement? get _asParameter {
-    assert(element is FormalParameterElement,
-        "Accessed $element as FormalParameterElement but it is ${element.runtimeType}");
+    assert(
+      element is FormalParameterElement,
+      "Accessed $element as FormalParameterElement but it is ${element.runtimeType}",
+    );
     return element is FormalParameterElement ? element as FormalParameterElement : null;
   }
 

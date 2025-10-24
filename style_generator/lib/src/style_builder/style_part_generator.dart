@@ -1,4 +1,3 @@
-import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:style_generator_annotation/style_generator_annotation.dart";

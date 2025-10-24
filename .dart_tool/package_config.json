@@ -321,7 +321,7 @@
     },
     {
       "name": "style_generator_annotation",
-      "rootUri": "../style_generator_annotation",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/style_generator_annotation-0.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.9"
     },

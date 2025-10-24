@@ -31,5 +31,6 @@ void warn(Object? message) {
 
 void cannotIgnorePositionalOrRequiredParameter(Variable variable, {required String clazz, required String method}) {
   warn(
-      "Parameter '$variable' in Class $clazz cannot be excluded from $method because it is used either a positional or required constructor parameter");
+    "Parameter '$variable' in Class $clazz cannot be excluded from $method because it is used either a positional or required constructor parameter",
+  );
 }

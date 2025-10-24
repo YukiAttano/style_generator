@@ -419,9 +419,10 @@ packages:
   style_generator_annotation:
     dependency: transitive
     description:
-      path: style_generator_annotation
-      relative: true
-    source: path
+      name: style_generator_annotation
+      sha256: a289917cec62456300812525042ef754d8694a9dcd22cf22eaead1c666da9b58
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.0"
   term_glyph:
     dependency: transitive

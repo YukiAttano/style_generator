@@ -1,4 +1,3 @@
-
 import "../../style_generator.dart";
 import "../data/variable.dart";
 
