@@ -1,5 +1,7 @@
 [![Pub Package](https://img.shields.io/pub/v/style_generator)](https://pub.dev/packages/style_generator)
 
+This package is considered stable and will jump to version 1.0.0 after a testing period.
+
 Generates ThemeExtensions for your Style Classes
 
 | Before                                                                               | After                                                                              |
@@ -224,8 +226,6 @@ If nothing is found, .lerp() will not lerp the field.
 Other custom typed .lerp() functions can be applied with StyleKeys.
 (The custom method must be static or a top level method).
 
-
-
 ```dart
 @Style()
 class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
@@ -260,3 +260,7 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 
 Color? customColorLerp(Color? a, Color? b, double t) => b;
 ```
+
+# Feedback
+
+Any feedback is welcome :)
