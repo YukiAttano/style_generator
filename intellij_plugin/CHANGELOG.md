@@ -1,3 +1,11 @@
-## 0.1.0
+## 1.0.1
 
-- Initial Release.
+### Changed
+
+- Lowered IDE Dependency
+
+## 1.0.0
+
+### Added
+
+- Initial Release
