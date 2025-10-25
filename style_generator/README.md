@@ -4,9 +4,9 @@ This package is considered stable and will jump to version 1.0.0 after a testing
 
 Generates ThemeExtensions for your Style Classes
 
-| Before                                                                               | After                                                                              |
-| ------------------------------------------------------------------------------------ |------------------------------------------------------------------------------------|
-| ![before](https://github.com/YukiAttano/style_generator/blob/main/assets/before.png) | ![after](https://github.com/YukiAttano/style_generator/blob/main/assets/after.png) |
+| Before                                   | After                                 |
+|------------------------------------------|---------------------------------------|
+| ![before.png](../ressources/before.png)  | ![after.png](../ressources/after.png) |
 
 # Getting Started
 
