@@ -30,11 +30,12 @@ mixin MergeGen {
       inMerge = _includeVariable(p, styleKey, className);
       prefix = inMerge ? "" : "//";
 
-      copyWithParams.add("$prefix $name: ${_getMergeMethod(lib, p, a: name, b: "other.$name")},");
+      copyWithParams.add(
+        "$prefix $name: ${_getMergeMethod(lib, p, mergeMethod: styleKey?.merge, a: name, b: "other.$name")},",
+      );
     }
 
-    String function =
-        """
+    String function = """
     $className merge(ThemeExtension<$className>? other) {
       if (other is! $className) return this as $className;
     
@@ -47,13 +48,21 @@ mixin MergeGen {
     return function;
   }
 
-  String _getMergeMethod(LibraryElement lib, Variable field, {required String a, required String b}) {
-    DartType d = field.type.extensionTypeErasure;
+  String _getMergeMethod(
+    LibraryElement lib,
+    Variable variable, {
+    String? mergeMethod,
+    required String a,
+    required String b,
+  }) {
+    DartType d = variable.type.extensionTypeErasure;
     bool isNullable = d.isNullable;
 
     var typeSystem = lib.typeSystem;
 
-    if (d is InterfaceType) {
+    if (mergeMethod != null) {
+      return "$mergeMethod($a, $b)";
+    } else if (d is InterfaceType) {
       MethodElement? mergeMethod = d.element.methods.firstWhereOrNull((method) => method.name == "merge");
 
       if (mergeMethod != null) {

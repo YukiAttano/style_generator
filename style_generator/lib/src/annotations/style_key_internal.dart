@@ -15,12 +15,14 @@ class StyleKeyInternal<T> {
   final bool inMerge;
   final bool inLerp;
   final String? lerp;
+  final String? merge;
 
   const StyleKeyInternal({
     required this.inCopyWith,
     required this.inMerge,
     required this.inLerp,
     required this.lerp,
+    required this.merge,
   });
 
   Map<String, Object?> toJson() {
@@ -29,27 +31,34 @@ class StyleKeyInternal<T> {
       "inMerge": inMerge,
       "inLerp": inLerp,
       "lerp": lerp,
+      "merge": merge,
     };
   }
 }
 
 StyleKeyInternal<T> createStyleKey<T>(Map<String, DartObject?> map) {
   ExecutableElement? lerp = map["lerp"]?.toFunctionValue();
-
-  String? callbackName;
-  if (lerp != null && lerp.isStatic) {
-    switch (lerp.kind) {
-      case ElementKind.METHOD:
-        callbackName = "${lerp.enclosingElement?.displayName ?? ""}.${lerp.displayName}";
-      case ElementKind.FUNCTION:
-        callbackName = lerp.displayName;
-    }
-  }
+  ExecutableElement? merge = map["merge"]?.toFunctionValue();
 
   return StyleKeyInternal(
     inLerp: map["inLerp"]!.toValue()! as bool,
     inMerge: map["inMerge"]!.toValue()! as bool,
     inCopyWith: map["inCopyWith"]!.toValue()! as bool,
-    lerp: callbackName,
+    lerp: _getFunctionName(lerp),
+    merge: _getFunctionName(merge),
   );
+}
+
+String? _getFunctionName(ExecutableElement? function) {
+  String? callbackName;
+  if (function != null && function.isStatic) {
+    switch (function.kind) {
+      case ElementKind.METHOD:
+        callbackName = "${function.enclosingElement?.displayName ?? ""}.${function.displayName}";
+      case ElementKind.FUNCTION:
+        callbackName = function.displayName;
+    }
+  }
+
+  return callbackName;
 }

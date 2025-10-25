@@ -56,7 +56,7 @@ mixin LerpGen {
 
       prefix = inLerp ? "" : "//";
 
-      method = _getLerpMethod(lib, v, lerpMethod: styleKey?.lerp, a: "$name", b: "other.$name");
+      method = _getLerpMethod(lib, v, lerpMethod: styleKey?.lerp, className: className, a: "$name", b: "other.$name");
 
       if (v.isNamed) {
         namedConstructorParams.add("$prefix $name: ${method.content},");
@@ -88,6 +88,7 @@ mixin LerpGen {
     LibraryElement lib,
     Variable variable, {
     String? lerpMethod,
+    required String className,
     required String a,
     required String b,
   }) {
@@ -141,6 +142,8 @@ mixin LerpGen {
         }
       }
     }
+
+    if (content == b) didNotFindLerpForParameter(variable, clazz: className);
 
     return LerpMethodGenResult(content: content, trailing: trailing);
   }

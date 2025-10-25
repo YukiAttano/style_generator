@@ -31,6 +31,12 @@ void warn(Object? message) {
 
 void cannotIgnorePositionalOrRequiredParameter(Variable variable, {required String clazz, required String method}) {
   warn(
-    "Parameter '$variable' in Class $clazz cannot be excluded from $method because it is used either a positional or required constructor parameter",
+    "Class '$clazz' parameter '${variable.type} ${variable.displayName}' cannot be excluded from $method because it is either a positional or required constructor parameter",
+  );
+}
+
+void didNotFindLerpForParameter(Variable variable, {required String clazz}) {
+  warn(
+    "Class '$clazz' parameter '${variable.type} ${variable.displayName}' has no lerp method. Annotate the parameter with @StyleKey(lerp: noLerp) if this is intended",
   );
 }
