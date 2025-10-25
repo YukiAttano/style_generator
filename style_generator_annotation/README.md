@@ -8,3 +8,7 @@ Docs and Examples can be found there.
 ```shell
 dart pub add style_generator_annotation dev:style_generator dev:build_runner
 ```
+
+For even faster generation, use the Live Template plugin for Android Studio
+
+<iframe width="245px" height="48px" src="https://plugins.jetbrains.com/embeddable/install/28833"></iframe>
