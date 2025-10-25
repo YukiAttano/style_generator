@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>attano.yukiteru.stylegenerator.livetemplates</id>
     <name>Style Generator Templates for Flutter</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <vendor email="yukiattano@memeozer.com" url="https://github.com/YukiAttano">YukiAttano</vendor>
 
     <description>
@@ -9,7 +9,7 @@
         with the [style_generator package](https://pub.dev/packages/style_generator)
     </description>
 
-    <idea-version since-build="223.0"/>
+    <idea-version since-build="243.0"/>
 
     <depends>com.intellij.modules.platform</depends>
 

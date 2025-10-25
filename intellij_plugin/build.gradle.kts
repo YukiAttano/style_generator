@@ -2,12 +2,14 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
+// plugins defined through alias are found in gradle/libs.version.toml
 plugins {
     alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.changelog) // Kotlin support
     alias(libs.plugins.intelliJPlatform) // Kotlin support
 }
 
+// What is this version used for?
 intellijPlatform({
     version = "2025.1"
 })
@@ -26,7 +28,7 @@ intellijPlatform({
 // kotlin {
 //     jvmToolchain(21)
 // }
-//
+
  // Configure project's dependencies
  repositories {
      mavenCentral()
@@ -49,9 +51,6 @@ dependencies {
 
         testFramework(TestFrameworkType.Platform)
     }
-
-    //testImplementation("junit:junit:4.13.2")
-    // other dependencies, e.g., 3rd-party libraries
 }
 
 // // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
@@ -76,7 +75,7 @@ dependencies {
 //     }
 // }
 
-// // Configure IntelliJ Platform Gradle Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-extension.html
+// Configure IntelliJ Platform Gradle Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-extension.html
 intellijPlatform {
     buildSearchableOptions = false
 
@@ -135,7 +134,7 @@ intellijPlatform {
         }
     }
 }
-//
+
 // // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
 // changelog {
 //     groups.empty()
