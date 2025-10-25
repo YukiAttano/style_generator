@@ -1,13 +1,17 @@
+## NEXT
+
+- Increase StyleKey dependency from ^0.1.2 to ^0.1.3 (required since 0.1.2)
+
 ## 0.1.2
 
 - Add StyleKey.merge override parameter
 - Add noMerge() and noLerp() shortcut methods
-- Increase meta dependency from ^1.2.0 to ^1.15.0
+- Increase meta dependency from ^1.2.0 to ^1.15.0 (required since 0.1.0)
 
 ## 0.1.1
 
 - Add link to AndroidStudio/IntelliJ plugin in ReadMe
-- Increase meta dependency from ^1.0.0 to ^1.2.0
+- Increase meta dependency from ^1.0.0 to ^1.2.0 (required since 0.1.0)
 
 ## 0.1.0
 

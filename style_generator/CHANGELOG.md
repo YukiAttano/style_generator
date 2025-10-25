@@ -1,12 +1,12 @@
 ## 0.1.2
 
 * Add StyleKey.merge override parameter
-* Add Warning if no lerp method could be found
+* Add Warning if no lerp() method could be found
 
 ## 0.1.1
 
 * Add IntelliJ/Android Studio plugin to ReadMe
-* Support `analyzer: ">=8.1.0 <10.0.0"`
+* Support `analyzer: ">=8.1.0 <10.0.0"` (required since 0.1.0)
 
 ## 0.1.0
 
