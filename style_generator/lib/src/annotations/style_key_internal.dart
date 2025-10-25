@@ -16,10 +16,20 @@ class StyleKeyInternal<T> {
   final bool inLerp;
   final String? lerp;
 
-  const StyleKeyInternal({required this.inCopyWith, required this.inMerge, required this.inLerp, required this.lerp});
+  const StyleKeyInternal({
+    required this.inCopyWith,
+    required this.inMerge,
+    required this.inLerp,
+    required this.lerp,
+  });
 
   Map<String, Object?> toJson() {
-    return {"inCopyWith": inCopyWith, "inMerge": inMerge, "inLerp": inLerp, "lerp": lerp};
+    return {
+      "inCopyWith": inCopyWith,
+      "inMerge": inMerge,
+      "inLerp": inLerp,
+      "lerp": lerp,
+    };
   }
 }
 

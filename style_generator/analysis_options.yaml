@@ -12,9 +12,6 @@ include: package:lints/recommended.yaml
 analyzer:
   exclude: [
     build/**,
-    lib/**.freezed.dart,
-    lib/**.g.dart,
-    lib/generated/**.dart,
   ]
   language: # see https://dart.dev/tools/analysis
     #strice-casts:

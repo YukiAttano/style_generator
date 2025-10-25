@@ -25,7 +25,12 @@ class StyleConfig extends Style {
     required bool genLerp,
     super.genOf,
     required String suffix,
-  }) : super(genCopyWith: genCopyWith, genMerge: genMerge, genLerp: genLerp, suffix: suffix);
+  }) : super(
+          genCopyWith: genCopyWith,
+          genMerge: genMerge,
+          genLerp: genLerp,
+          suffix: suffix,
+        );
 
   factory StyleConfig.fromConfig(Map<String, Object?> config) {
     return StyleConfig(
