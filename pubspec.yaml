@@ -6,11 +6,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
   sdk: ^3.6.0
+
 workspace:
   - style_generator
-
-dependencies:
- 
-
-dev_dependencies:
+  - style_generator_annotation
 
