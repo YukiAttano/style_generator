@@ -55,7 +55,15 @@ class Style {
   /// ```
   final String? suffix;
 
-  const Style({this.constructor, this.fallback, this.genCopyWith, this.genMerge, this.genLerp, this.genOf, this.suffix});
+  const Style({
+    this.constructor,
+    this.fallback,
+    this.genCopyWith,
+    this.genMerge,
+    this.genLerp,
+    this.genOf,
+    this.suffix,
+  });
 
   factory Style.fromJson(Map<String, Object?> json) {
     return Style(

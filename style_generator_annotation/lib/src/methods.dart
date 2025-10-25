@@ -1,4 +1,4 @@
-/// @docImport "style_key.dart";
+/// @docImport "annotations/style_key.dart";
 library;
 
 /// will always return [other]

@@ -1,3 +1,8 @@
+## 0.1.2
+
+- Add StyleKey.merge override parameter
+- Add noMerge() and noLerp() shortcut methods 
+
 ## 0.1.1
 
 - Add link to AndroidStudio/IntelliJ plugin in ReadMe

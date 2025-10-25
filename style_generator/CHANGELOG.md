@@ -1,3 +1,8 @@
+## 0.1.2
+
+* Add StyleKey.merge override parameter
+* Add Warning if no lerp method could be found
+
 ## 0.1.1
 
 * Add IntelliJ/Android Studio plugin to ReadMe
