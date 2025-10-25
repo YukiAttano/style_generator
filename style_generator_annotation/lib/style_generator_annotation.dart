@@ -1,4 +1,5 @@
 library;
 
-export "src/style.dart";
-export "src/style_key.dart";
+export "src/annotations/style.dart";
+export "src/annotations/style_key.dart";
+export 'src/methods.dart';

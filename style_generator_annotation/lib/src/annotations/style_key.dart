@@ -36,12 +36,23 @@ class StyleKey<T> {
   /// must either be a top level function or a static function
   final MergeCallback<T>? merge;
 
-  const StyleKey({bool? inCopyWith, bool? inMerge, bool? inLerp, this.lerp, this.merge})
-    : inCopyWith = inCopyWith ?? true,
-      inMerge = inMerge ?? true,
-      inLerp = inLerp ?? true;
+  const StyleKey({
+    bool? inCopyWith,
+    bool? inMerge,
+    bool? inLerp,
+    this.lerp,
+    this.merge,
+  })  : inCopyWith = inCopyWith ?? true,
+        inMerge = inMerge ?? true,
+        inLerp = inLerp ?? true;
 
   Map<String, Object?> toJson() {
-    return {"inCopyWith": inCopyWith, "inMerge": inMerge, "inLerp": inLerp, "lerp": lerp, "merge": merge};
+    return {
+      "inCopyWith": inCopyWith,
+      "inMerge": inMerge,
+      "inLerp": inLerp,
+      "lerp": lerp,
+      "merge": merge,
+    };
   }
 }
