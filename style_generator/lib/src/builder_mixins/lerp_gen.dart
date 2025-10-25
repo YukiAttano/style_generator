@@ -6,6 +6,7 @@ import "package:collection/collection.dart";
 import "../annotations/style_key_internal.dart";
 import "../data/annotation_converter.dart";
 import "../data/logger.dart";
+import "../data/method.dart";
 import "../data/variable.dart";
 import "../extensions/dart_type_extension.dart";
 import "../style_builder/style_builder.dart";
@@ -95,7 +96,7 @@ mixin LerpGen {
     DartType d = variable.type.extensionTypeErasure;
     bool isNullable = d.isNullable;
 
-    var typeSystem = lib.typeSystem;
+    //var typeSystem = lib.typeSystem;
 
     String content = b;
     List<String> trailing = [];
@@ -123,67 +124,27 @@ mixin LerpGen {
           trailing.add(_durationLerp);
         }
       } else {
-        MethodElement? lerpMethod = d.element.methods.firstWhereOrNull((method) => method.name == "lerp");
+        ClassMethod? m = d.findMethod("lerp");
 
-        if (lerpMethod != null) {
-          content = _getTypedFunction(typeSystem, d, lerp: lerpMethod, a: a, b: b);
+        if (m != null) {
+          String methodHead = m.methodHead;
+
+          if (m.isStatic) {
+            String suffix = isNullable ? "" : "!";
+
+            content = "$methodHead($a, $b, t)$suffix";
+          } else {
+            if (isNullable) {
+              content = "$a?.$methodHead($b, t) ?? $b";
+            } else {
+              content = "$a.$methodHead($b, t)";
+            }
+          }
         }
       }
     }
 
     return LerpMethodGenResult(content: content, trailing: trailing);
-  }
-
-  /// returns a type-safe lerp function
-  String _getTypedFunction(
-    TypeSystem typeSystem,
-    InterfaceType type, {
-    required MethodElement lerp,
-    required String a,
-    required String b,
-  }) {
-    bool isNullable = type.isNullable;
-    //DartType clazz = typeSystem.promoteToNonNull(d);
-
-    ClassElement enclosingClass = lerp.enclosingElement! as ClassElement;
-
-    // map the typeParameters (T, K, V, ...) to the typeArguments of the object (String, int, double, ...)
-    Map<String, DartType> typeArgs = Map.fromIterables(enclosingClass.typeParameters.map((e) => e.displayName), type.typeArguments);
-
-    List<TypeParameterElement> typeParameters = lerp.typeParameters;
-
-    String methodName = lerp.displayName;
-
-    List<String> typeList = [];
-    String types = "";
-    if (typeParameters.isNotEmpty) {
-
-      for (var t in typeParameters) {
-
-        typeList.add(typeArgs[t.displayName]?.getDisplayString() ?? "Object?");
-      }
-
-      types = "<${typeList.join(",")}>";
-    }
-
-    String function;
-
-    if (lerp.isStatic) {
-      Element enclosingElement = lerp.enclosingElement!;
-      String className = enclosingElement.displayName;
-
-      String suffix = isNullable ? "" : "!";
-
-      function = "$className.$methodName$types($a, $b, t)$suffix";
-    } else {
-      if (isNullable) {
-        function = "$a?.lerp$types($b, t) ?? $b";
-      } else {
-        function = "$a.lerp$types($b, t)";
-      }
-    }
-
-    return function;
   }
 
   String _lerpDurationMethod(bool nullable, String a, String b) {
