@@ -14,6 +14,13 @@ Some useful Links:
 * [Original Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template) The Template on which this is build
 * [intellij plugin dependency](https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html) Explains how the base IDE can be chosen
 
+Some commands:
+* `./gradlew clean build --refresh-dependencies` 
+* `./gradlew tasks --all` list all tasks like clean, build and run
+* `./gradlew wrapper` does something
+* `./gradlew runIde` start project in a new IDE with defined dependencies
+* `./gradlew buildPlugin` build the plugin, must potentially be signed after that
+
 <!-- HOW TO END -->
 
 # Style Generator Templates for Flutter
