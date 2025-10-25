@@ -3,7 +3,7 @@ import "package:analyzer/dart/element/nullability_suffix.dart";
 import "package:analyzer/dart/element/type.dart";
 import "package:collection/collection.dart";
 
-import "../data/method.dart";
+import "../data/class_method.dart";
 
 extension DartTypeExtension on DartType {
   bool get isNullable => nullabilitySuffix == NullabilitySuffix.question;

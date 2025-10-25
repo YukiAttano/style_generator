@@ -1,12 +1,10 @@
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
-import "package:analyzer/dart/element/type_system.dart";
-import "package:collection/collection.dart";
 
 import "../annotations/style_key_internal.dart";
 import "../data/annotation_converter.dart";
+import "../data/class_method.dart";
 import "../data/logger.dart";
-import "../data/method.dart";
 import "../data/variable.dart";
 import "../extensions/dart_type_extension.dart";
 import "../style_builder/style_builder.dart";
