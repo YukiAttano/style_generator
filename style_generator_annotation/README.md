@@ -11,4 +11,6 @@ dart pub add style_generator_annotation dev:style_generator dev:build_runner
 
 For even faster generation, use the Live Template plugin for Android Studio
 
+<div>
 <iframe width="245px" height="48px" src="https://plugins.jetbrains.com/embeddable/install/28833"></iframe>
+</div>
