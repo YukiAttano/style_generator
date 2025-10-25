@@ -1,4 +1,4 @@
-<!-- HOW TO -->
+<!-- HOW TO 
 This Section is for the sad guy who has to deal with this bullshit.
 Imagine you want to share a single XML file and you have to setup a Gradle project.
 To increase the fun, all documentations are somewhat crap.
@@ -21,7 +21,7 @@ Some commands:
 * `./gradlew runIde` start project in a new IDE with defined dependencies
 * `./gradlew buildPlugin` build the plugin, must potentially be signed after that
 
-<!-- HOW TO END -->
+-->
 
 # Style Generator Templates for Flutter
 
