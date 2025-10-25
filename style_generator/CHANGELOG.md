@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Add IntelliJ/Android Studio plugin to ReadMe
+* Support `analyzer: ">=8.1.0 <10.0.0"`
+
 ## 0.1.0
 
 * Initial Release
