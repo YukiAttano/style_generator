@@ -16,3 +16,4 @@ The following templates are provided:
 <!-- Plugin description end -->
 
 See [style_generator on pub.dev](https://pub.dev/packages/style_generator)
+
