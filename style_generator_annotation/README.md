@@ -9,8 +9,4 @@ Docs and Examples can be found there.
 dart pub add style_generator_annotation dev:style_generator dev:build_runner
 ```
 
-For even faster generation, use the Live Template plugin for Android Studio
-
-<div>
-<iframe width="245px" height="48px" src="https://plugins.jetbrains.com/embeddable/install/28833"></iframe>
-</div>
+For even easier generation, use the [Style Generator Templates for Flutter](https://plugins.jetbrains.com/plugin/28833-style-generator-templates-for-flutter) Plugin for Android Studio

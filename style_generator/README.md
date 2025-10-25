@@ -16,6 +16,10 @@ dart pub add dev:style_generator
 dart pub add dev:build_runner
 ```
 
+## Template Plugin
+
+For even easier generation, use the [Style Generator Templates for Flutter](https://plugins.jetbrains.com/plugin/28833-style-generator-templates-for-flutter) Plugin for Android Studio
+
 # ThemeExtensions
 
 ## Minimum Example:
@@ -260,6 +264,9 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 
 Color? customColorLerp(Color? a, Color? b, double t) => b;
 ```
+
+## Custom Merge Functions
+
 
 # Feedback
 

@@ -40,7 +40,7 @@ intellijPlatform({
 dependencies {
     intellijPlatform {
         //local("/Applications/Android Studio.app/")
-        androidStudio("2025.1.4.8")
+        androidStudio("2024.3.2.14")
 
         compatiblePlugin("Dart")
         compatiblePlugin("io.flutter")
