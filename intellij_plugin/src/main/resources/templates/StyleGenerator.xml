@@ -1,0 +1,22 @@
+<templateSet group="StyleGenerator">
+  <template name="style" value="@Style()&#10;class $NAME$ extends ThemeExtension&lt;$NAME$&gt; with _$$$NAME$ {&#10;}" description="Flutter ThemeExtension Style Class" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="capitalize(underscoresToCamelCase(fileNameWithoutExtension()))" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="DART_TOPLEVEL" value="true" />
+    </context>
+  </template>
+  <template name="styof" value="factory $NAME$.of(BuildContext context, [$NAME$? style]) =&gt; _$$$NAME$Of(context, style);" description="Factory of() Constructor" toReformat="true" toShortenFQNames="true">
+    <variable name="NAME" expression="dartClassName()" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="DART" value="true" />
+      <option name="DART_STATEMENT" value="false" />
+      <option name="DART_TOPLEVEL" value="false" />
+    </context>
+  </template>
+  <template name="stypart" value="part '$FILENAME$.style.dart';&#10;" description="Style ThemeExtension part file" toReformat="false" toShortenFQNames="true">
+    <variable name="FILENAME" expression="fileNameWithoutExtension()" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="DART_TOPLEVEL" value="true" />
+    </context>
+  </template>
+</templateSet>
