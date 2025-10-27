@@ -63,7 +63,7 @@ mixin MergeGen {
     if (mergeMethod != null) {
       return "$mergeMethod($a, $b)";
     } else if (d is InterfaceType) {
-      MethodElement? mergeMethod = d.element.methods.firstWhereOrNull((method) => method.name == "merge");
+      MethodElement? mergeMethod = d.findMethod(lib, "merge")?.element;
 
       if (mergeMethod != null) {
         if (mergeMethod.isStatic) {

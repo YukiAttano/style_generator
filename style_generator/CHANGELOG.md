@@ -1,3 +1,7 @@
+## 0.1.4
+
+* Fix finding functions (like lerp and merge) through being expected by extended or inherited classes
+
 ## 0.1.3
 
 * Improve docs

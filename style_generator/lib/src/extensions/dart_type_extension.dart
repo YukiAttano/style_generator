@@ -1,7 +1,6 @@
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/nullability_suffix.dart";
 import "package:analyzer/dart/element/type.dart";
-import "package:collection/collection.dart";
 
 import "../data/class_method.dart";
 
@@ -10,8 +9,8 @@ extension DartTypeExtension on DartType {
 }
 
 extension InterfaceTypeExtension on InterfaceType {
-  ClassMethod? findMethod(String name) {
-    MethodElement? m = element.methods.firstWhereOrNull((m) => m.name == name);
+  ClassMethod? findMethod(LibraryElement lib, String name) {
+    MethodElement? m = element.lookUpMethod(library: lib, name: name);
 
     if (m == null) return null;
 

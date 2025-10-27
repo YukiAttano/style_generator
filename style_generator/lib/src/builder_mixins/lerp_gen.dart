@@ -123,7 +123,7 @@ mixin LerpGen {
           trailing.add(_durationLerp);
         }
       } else {
-        ClassMethod? m = d.findMethod("lerp");
+        ClassMethod? m = d.findMethod(lib, "lerp");
 
         if (m != null) {
           String methodHead = m.methodHead;
