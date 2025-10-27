@@ -292,6 +292,7 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
     this.selectionColor,
   });
 }
+```
 
 # Feedback
 
