@@ -88,7 +88,7 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
   // add YourClass.of(BuildContext context) as a factory constructor
   factory SomeStyle.of(BuildContext context, [SomeStyle? style]) => _$SomeStyleOf(context, style);
 
-  // This will generate this method
+  // That will generate this method
   SomeStyle _$SomeStyleOf(BuildContext context, [SomeStyle? style]) {
     SomeStyle s = SomeStyle.fallback(context);
     s = s.merge(Theme.of(context).extension<SomeStyle>());
@@ -118,8 +118,6 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 ```
 
 Additionally non-nullable parameter and typed parameter are also supported.
-Types that have a lerp function, whether static or not are used for lerp() automatically.
-
 
 ```dart
 @Style()
@@ -127,7 +125,8 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
   final TextStyle titleStyle;
   final TextStyle subtitleStyle;
 
-  // lerp method from Some<T, K> will be used
+  // Types that have a lerp function, whether static or not are used for lerp() automatically.
+  // Here, the lerp() method from Some<T, K> will be used.
   final Some<Color, double>? color;
   final Color? selectionColor;
 
@@ -189,9 +188,9 @@ targets:
           suffix: null          # an optional suffix for the generated mixin and .of method
 ```
 
-## StyleKey
+## StyleKey\<T>
 
-Every field or constructor parameter can be further configured with @StyleKey()
+Every field and constructor parameter can be further configured with @StyleKey\<T>()
 
 ```dart
 @Style()
@@ -223,9 +222,9 @@ Do note, StyleKeys on the constructor override configurations on the field witho
 Sometimes, custom lerp functions are required.
 
 The generator will consider lerpDouble() for integer, double and num fields by default.
-It uses a lerpDuration for Darts Duration method.
+It uses a lerpDuration for Darts Duration class.
 For all other cases, it searches for a .lerp() method inside the types class and applies that.
-If nothing is found, .lerp() will not lerp the field.
+If nothing is found, .lerp() will not lerp the field (and a warning is printed).
 
 Other custom typed .lerp() functions can be applied with StyleKeys.
 (The custom method must be static or a top level method).
@@ -249,6 +248,7 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
   const SomeStyle({
     this.titleStyle, 
     this.color, 
+    this.elevation,
     this.subtitleStyle,
     this.selectionColor,
   });
@@ -267,6 +267,31 @@ Color? customColorLerp(Color? a, Color? b, double t) => b;
 
 ## Custom Merge Functions
 
+Sometimes, like i guess never, custom merge functions are required.
+
+For example, if you don't want to apply the default merge() behavior of a TextStyle.
+
+(The custom method must be static or a top level method).
+
+```dart
+@Style()
+class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
+ 
+  // The function must match the type of the StyleKey. (Which itself should match the type of the field)
+  @StyleKey<TextStyle?>(merge: noMerge)
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
+
+  final Color? color;
+  final Color? selectionColor;
+
+  const SomeStyle({
+    this.titleStyle, 
+    this.color, 
+    this.subtitleStyle,
+    this.selectionColor,
+  });
+}
 
 # Feedback
 

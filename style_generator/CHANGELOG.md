@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Improve docs
+
 ## 0.1.2
 
 * Add StyleKey.merge override parameter

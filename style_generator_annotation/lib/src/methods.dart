@@ -2,8 +2,6 @@
 library;
 
 /// will always return [other]
-///
-/// you could also use [StyleKey.inMerge] = false
 T noMerge<T>(T a, T other) => other;
 
 /// will always return [b]
