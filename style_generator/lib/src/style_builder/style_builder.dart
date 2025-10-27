@@ -19,6 +19,9 @@ import "style_part_generator.dart";
 
  */
 
+// TODO(Yuki): check StyleKeys type against fields/parameters type (and whether a subclass is allowed)
+// TODO(Yuki): generate part file either at the location defined by "part .style.part" directive or merge with ".g.dart"
+
 String get newLine => Platform.lineTerminator;
 
 class StyleBuilder with HeaderGen implements Builder {
