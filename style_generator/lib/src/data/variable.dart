@@ -5,7 +5,9 @@ import "package:analyzer/dart/element/type.dart";
 
 import "../data/annotated_element.dart";
 import "../extensions/element_extension.dart";
+import "../extensions/variable_element_extension.dart";
 import "annotation_converter.dart";
+import "logger.dart";
 
 part "variable_handler.dart";
 
@@ -21,6 +23,8 @@ class Variable {
   }
 
   DartType get type => element.type;
+
+  // ElementKind get kind => element.kind;
 
   String? get name => element.name;
 

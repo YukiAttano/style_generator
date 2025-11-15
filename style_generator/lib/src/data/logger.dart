@@ -1,5 +1,7 @@
 import "dart:async";
 
+import "package:analyzer/dart/constant/value.dart";
+import "package:analyzer/dart/element/type.dart";
 import "package:build/build.dart" as build;
 import "package:logging/logging.dart";
 
@@ -39,4 +41,22 @@ void didNotFindLerpForParameter(Variable variable, {required String clazz}) {
   warn(
     "Class '$clazz' parameter '${variable.type} ${variable.displayName}' has no lerp method. Annotate the parameter with @StyleKey(lerp: noLerp) if this is intended",
   );
+}
+
+void styleKeyTypeMismatch(Variable variable, DartType? styleKey) {
+  warn(
+    "Type mismatch between '${variable.type} ${variable.displayName}' and StyleKey annotation type: '$styleKey'",
+  );
+}
+
+void typeIsNotSubtypeOfInterfaceType(DartType type) {
+  warn("Type ${type.getDisplayString()} is not an interface type (e.g class, interface)");
+}
+
+void typeHasNoTypeArguments(DartType type) {
+  warn("$type has no type arguments (e.g. is not typed like Some<Type1, Type2, ...> ");
+}
+
+void hasNoType(DartObject obj) {
+  warn("$obj has no corresponding type");
 }

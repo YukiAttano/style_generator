@@ -19,7 +19,13 @@ class VariableHandler {
     AnnotatedElement<T>? anno;
     for (var v in merged) {
       anno = _findAnnotation<T>(v, converter);
-      if (anno != null) v._cache._inject(anno);
+
+      if (anno != null) {
+        bool hasMatchingType = v.element.isOfSameTypeAsTypeArgumentFromObject(anno.object, lessStrict: true, allowDynamic: true);
+        if (!hasMatchingType) styleKeyTypeMismatch(v, anno.object.type);
+
+        v._cache._inject(anno);
+      }
     }
   }
 

@@ -13,6 +13,8 @@ class ClassMethod {
   late String types = _getTypes();
   late String methodHead = _getMethodHead();
 
+  ClassMethod({required this.type, required this.element});
+
   /// returns a map of the type parameter (like T, K) from [clazz]
   /// and the corresponding type argument (like int, String) from [type]
   Map<String, DartType> _getTypeArgs() {
@@ -68,5 +70,5 @@ class ClassMethod {
     return head;
   }
 
-  ClassMethod({required this.type, required this.element});
+
 }

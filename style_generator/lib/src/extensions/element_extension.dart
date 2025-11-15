@@ -1,5 +1,6 @@
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
+import "package:analyzer/dart/element/type.dart";
 
 import "../data/annotated_element.dart";
 import "../data/annotation_converter.dart";
