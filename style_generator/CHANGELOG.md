@@ -1,6 +1,6 @@
 ## NEXT
 
-* add warnings if `@StyleKey\<Type\>`s type does not match the annotated fields type
+* add warnings if @StyleKey\<Type\>s type does not match the annotated fields type
 
 ## 0.1.4
 
