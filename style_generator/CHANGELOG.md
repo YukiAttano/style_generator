@@ -1,3 +1,7 @@
+## NEXT
+
+* add warnings if `@StyleKey\<Type\>`s type does not match the annotated fields type
+
 ## 0.1.4
 
 * Fix finding functions (like lerp and merge) through being expected by extended or inherited classes

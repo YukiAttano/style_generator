@@ -1,3 +1,4 @@
+import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:style_generator_annotation/style_generator_annotation.dart";
@@ -28,7 +29,8 @@ class StyleGeneratorResult {
 class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
   static String get _nl => newLine;
 
-  final LibraryElement lib;
+  LibraryElement get libElement => resolvedLib.element;
+  final ResolvedLibraryResult resolvedLib;
   final StyleConfig styleConfig;
   final LookupStore store;
 
@@ -37,13 +39,13 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
   AnnotationConverter<StyleKeyInternal> get styleKeyAnnotation => store.styleKeyAnnoConverter;
 
   StyleGenerator({
-    required this.lib,
+    required this.resolvedLib,
     required this.styleConfig,
     required this.store,
   });
 
   StyleGeneratorResult generate() {
-    List<AnnotatedElement<Style>> classes = _getAnnotatedElements(lib.classes, styleAnnotation);
+    List<AnnotatedElement<Style>> classes = _getAnnotatedElements(libElement.classes, styleAnnotation);
 
     List<String> parts = [];
 
@@ -72,10 +74,9 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
 
     VariableHandler state = VariableHandler(constructorParams: constructorParams, fields: fields);
     state.build(styleKeyAnnotation);
+    state.resolveTypes(resolvedLib);
 
     List<Variable> variables = state.merged;
-
-    //if (variables.isEmpty) throw Exception("Empty Class");
 
     ConstructorElement? fallbackConstructor = _getConstructor(clazz.constructors, config.fallback);
     ConstructorElement? ofConstructor = _getConstructor(clazz.constructors, "of");
@@ -96,10 +97,10 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     String ofContent = !genOf ? "" : generateOf(clazz.displayName, suffix, buildContext, fallback);
     String copyWithContent =
         !genCopyWith ? "" : generateCopyWith(clazz.displayName, constructorName, variables, styleKeyAnnotation);
-    String mergeContent = !genMerge ? "" : generateMerge(lib, clazz.displayName, variables, styleKeyAnnotation);
+    String mergeContent = !genMerge ? "" : generateMerge(resolvedLib, clazz.displayName, variables, styleKeyAnnotation);
     LerpGenResult lerpContent = !genLerp
         ? const LerpGenResult()
-        : generateLerp(lib, clazz.displayName, constructorName, variables, styleKeyAnnotation);
+        : generateLerp(resolvedLib, clazz.displayName, constructorName, variables, styleKeyAnnotation);
 
     return _generatePartClass(
       generatedClassName,
@@ -123,7 +124,7 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
       FormalParameterElement p = params.first;
       if (p.isPositional) {
         if (p.type == store.buildContextType) {
-          return Variable(element: p);
+          return Variable(element: p, fieldElement: null);
         } else {
           return null;
         }
@@ -134,7 +135,7 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
       // This is fine, because the dart analyzer will tell the user whats wrong
       for (var p in params) {
         if (p.type == store.buildContextType) {
-          return Variable(element: p);
+          return Variable(element: p, fieldElement: null);
         }
       }
     }

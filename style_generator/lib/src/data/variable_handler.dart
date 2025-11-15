@@ -9,7 +9,14 @@ class VariableHandler {
   final List<Variable> constructorParams;
   final List<Variable> fields;
 
-  late final List<Variable> _merged = List.of(constructorParams.map((e) => Variable(element: e.element)));
+  late final List<Variable> _merged = List.of(
+    constructorParams.map(
+      (e) => Variable(
+        element: e.element,
+        fieldElement: fields.firstWhere((variable) => variable == e).element as FieldElement,
+      ),
+    ),
+  );
 
   List<Variable> get merged => UnmodifiableListView(_merged);
 
@@ -21,11 +28,18 @@ class VariableHandler {
       anno = _findAnnotation<T>(v, converter);
 
       if (anno != null) {
-        bool hasMatchingType = v.element.isOfSameTypeAsTypeArgumentFromObject(anno.object, lessStrict: true, allowDynamic: true);
+        bool hasMatchingType =
+            v.element.isOfSameTypeAsTypeArgumentFromObject(anno.object, lessStrict: true, allowDynamic: true);
         if (!hasMatchingType) styleKeyTypeMismatch(v, anno.object.type);
 
         v._cache._inject(anno);
       }
+    }
+  }
+
+  void resolveTypes(ResolvedLibraryResult resolvedLib) {
+    for (var v in merged) {
+      v.resolveType(resolvedLib);
     }
   }
 

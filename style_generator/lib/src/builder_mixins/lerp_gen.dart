@@ -1,3 +1,5 @@
+import "package:analyzer/dart/analysis/results.dart";
+import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 
@@ -5,8 +7,10 @@ import "../annotations/style_key_internal.dart";
 import "../data/annotation_converter.dart";
 import "../data/class_method.dart";
 import "../data/logger.dart";
+import "../data/resolved_type.dart";
 import "../data/variable.dart";
 import "../extensions/dart_type_extension.dart";
+import "../extensions/field_element_extension.dart";
 import "../style_builder/style_builder.dart";
 
 class LerpGenResult {
@@ -33,7 +37,7 @@ mixin LerpGen {
   static String get _nl => newLine;
 
   LerpGenResult generateLerp(
-    LibraryElement lib,
+    ResolvedLibraryResult resolvedLib,
     String className,
     String constructor,
     List<Variable> params,
@@ -56,7 +60,7 @@ mixin LerpGen {
 
       prefix = inLerp ? "" : "//";
 
-      method = _getLerpMethod(lib, v, lerpMethod: styleKey?.lerp, className: className, a: "$name", b: "other.$name");
+      method = _getLerpMethod(resolvedLib, v, lerpMethod: styleKey?.lerp, className: className, a: "$name", b: "other.$name");
 
       if (v.isNamed) {
         namedConstructorParams.add("$prefix $name: ${method.content},");
@@ -85,24 +89,25 @@ mixin LerpGen {
   }
 
   LerpMethodGenResult _getLerpMethod(
-    LibraryElement lib,
+    ResolvedLibraryResult resolvedLib,
     Variable variable, {
     String? lerpMethod,
     required String className,
     required String a,
     required String b,
   }) {
-    DartType d = variable.type.extensionTypeErasure;
-    bool isNullable = d.isNullable;
+    ResolvedType resolvedType = variable.resolvedType;
+    DartType d = resolvedType.type.extensionTypeErasure;
+    String typePrefix = resolvedType.typePrefix;
 
-    //var typeSystem = lib.typeSystem;
+    bool isNullable = d.isNullable;
 
     String content = b;
     List<String> trailing = [];
 
     if (lerpMethod != null) {
       // nullability is enforced by type parameters, therefor no check is required here
-      content = "$lerpMethod($a, $b, t)";
+      content = "$typePrefix$lerpMethod($a, $b, t)";
     } else if (d.isDartCoreDouble || d.isDartCoreNum) {
       if (isNullable) {
         content = "lerpDouble($a, $b, t)";
@@ -123,7 +128,7 @@ mixin LerpGen {
           trailing.add(_durationLerp);
         }
       } else {
-        ClassMethod? m = d.findMethod(lib, "lerp");
+        ClassMethod? m = d.findMethod(resolvedLib.element, "lerp");
 
         if (m != null) {
           String methodHead = m.methodHead;
@@ -131,7 +136,7 @@ mixin LerpGen {
           if (m.isStatic) {
             String suffix = isNullable ? "" : "!";
 
-            content = "$methodHead($a, $b, t)$suffix";
+            content = "$typePrefix$methodHead($a, $b, t)$suffix";
           } else {
             if (isNullable) {
               content = "$a?.$methodHead($b, t) ?? $b";

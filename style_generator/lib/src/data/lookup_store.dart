@@ -1,3 +1,6 @@
+import "package:analyzer/dart/analysis/results.dart";
+import "package:analyzer/dart/analysis/session.dart";
+import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 import "package:build/build.dart";
@@ -6,6 +9,7 @@ import "package:style_generator_annotation/style_generator_annotation.dart";
 import "../annotations/style_key_internal.dart";
 import "annotation_converter.dart";
 import "json_annotation_converter.dart";
+import "logger.dart";
 
 class LookupStore {
   static const String annotationPackage = "package:style_generator_annotation/style_generator_annotation.dart";
@@ -39,6 +43,44 @@ class LookupStore {
     AssetId styleAsset = AssetId.resolve(Uri.parse(annotationPackage));
     LibraryElement styleLib = await buildStep.resolver.libraryFor(styleAsset);
 
+    LibraryElement lib = await buildStep.inputLibrary;
+
+    AnalysisSession session = lib.session;
+    ResolvedLibraryResult resolved = await session.getResolvedLibraryByElement(lib) as ResolvedLibraryResult ;
+
+
+    CompilationUnit compilationUnit =
+    await buildStep.resolver.compilationUnitFor(buildStep.inputId);
+    //ResolvedLibraryResult r;
+
+    // var v = TestVisitor();
+    //  compilationUnit.declarations.forEach((element) {
+    //    warn("AST ${element}");
+    //    element.accept(v);
+    //  },);
+
+    // compilationUnit.directives.forEach((element) {
+    //   warn("AST ${element}");
+    //   element.accept(v);
+    // },);
+
+
+    /*
+      for (final unit in resolvedLibrary.units) {
+
+      unit.unit.accept(collector);
+
+      if (collector.prefixName != null) {
+        final prefix = collector.prefixName; // "c"
+        // hier weiterverarbeiten …
+        break;
+      }
+    }
+    */
+
+
+
+
     // create ClassElements of our annotations
     ClassElement? styleElement = styleLib.exportNamespace.get2("Style") as ClassElement?;
     ClassElement? styleKeyElement = styleLib.exportNamespace.get2("StyleKey") as ClassElement?;
@@ -53,7 +95,7 @@ class LookupStore {
     if (styleKeyElement != null) {
       _libraryAnnotations["StyleKey"] = AnnotationConverter<StyleKeyInternal>(
         annotationClass: styleKeyElement,
-        buildAnnotation: createStyleKey,
+        buildAnnotation: (map) => createStyleKey(resolved, compilationUnit, map),
       );
     }
   }

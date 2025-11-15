@@ -45,7 +45,7 @@ void didNotFindLerpForParameter(Variable variable, {required String clazz}) {
 
 void styleKeyTypeMismatch(Variable variable, DartType? styleKey) {
   warn(
-    "Type mismatch between '${variable.type} ${variable.displayName}' and StyleKey annotation type: '$styleKey'",
+    "Type mismatch between '${variable.type} ${variable.displayName}' and '$styleKey' annotation",
   );
 }
 

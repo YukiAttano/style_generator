@@ -1,9 +1,12 @@
+import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 
 import "../../style_generator.dart";
 import "../annotations/style_key_internal.dart";
 import "../data/annotation_converter.dart";
+import "../data/class_method.dart";
+import "../data/resolved_type.dart";
 import "../data/variable.dart";
 import "../extensions/dart_type_extension.dart";
 
@@ -11,7 +14,7 @@ mixin MergeGen {
   static String get _nl => newLine;
 
   String generateMerge(
-    LibraryElement lib,
+    ResolvedLibraryResult resolvedLib,
     String className,
     List<Variable> params,
     AnnotationConverter<StyleKeyInternal> styleKeyAnnotation,
@@ -30,7 +33,7 @@ mixin MergeGen {
       prefix = inMerge ? "" : "//";
 
       copyWithParams.add(
-        "$prefix $name: ${_getMergeMethod(lib, p, mergeMethod: styleKey?.merge, a: name, b: "other.$name")},",
+        "$prefix $name: ${_getMergeMethod(resolvedLib, p, mergeMethod: styleKey?.merge, a: name, b: "other.$name")},",
       );
     }
 
@@ -48,25 +51,25 @@ mixin MergeGen {
   }
 
   String _getMergeMethod(
-    LibraryElement lib,
+    ResolvedLibraryResult resolvedLib,
     Variable variable, {
     String? mergeMethod,
     required String a,
     required String b,
   }) {
-    DartType d = variable.type.extensionTypeErasure;
+    ResolvedType resolvedType = variable.resolvedType;
+    DartType d = resolvedType.type.extensionTypeErasure;
+    String typePrefix = resolvedType.typePrefix;
     bool isNullable = d.isNullable;
-
-    var typeSystem = lib.typeSystem;
 
     if (mergeMethod != null) {
       return "$mergeMethod($a, $b)";
     } else if (d is InterfaceType) {
-      MethodElement? mergeMethod = d.findMethod(lib, "merge")?.element;
+      ClassMethod? mergeMethod = d.findMethod(resolvedLib.element, "merge");
 
       if (mergeMethod != null) {
         if (mergeMethod.isStatic) {
-          return "${typeSystem.promoteToNonNull(d)}.merge($a, $b)";
+          return "$typePrefix${mergeMethod.methodHead}($a, $b)";
         } else {
           if (isNullable) {
             return "$a?.merge($b) ?? $b";

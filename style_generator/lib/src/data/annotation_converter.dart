@@ -10,7 +10,7 @@ class AnnotationConverter<T> {
   final AnnotationFromMap<T> _buildAnnotation;
 
   const AnnotationConverter({required this.annotationClass, required AnnotationFromMap<T> buildAnnotation})
-    : _buildAnnotation = buildAnnotation;
+      : _buildAnnotation = buildAnnotation;
 
   T build(DartObject object) {
     Map<String, DartObject?> map = {};

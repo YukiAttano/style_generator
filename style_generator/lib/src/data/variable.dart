@@ -1,18 +1,26 @@
 import "dart:collection";
 
+import "package:analyzer/dart/analysis/results.dart";
+import "package:analyzer/dart/ast/ast.dart";
+import "package:analyzer/dart/ast/syntactic_entity.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
+import "package:collection/collection.dart";
 
 import "../data/annotated_element.dart";
 import "../extensions/element_extension.dart";
+import "../extensions/field_element_extension.dart";
 import "../extensions/variable_element_extension.dart";
 import "annotation_converter.dart";
 import "logger.dart";
+import "resolved_type.dart";
 
 part "variable_handler.dart";
 
 class Variable {
   final VariableElement element;
+
+  final FieldElement? fieldElement;
 
   FormalParameterElement? get _asParameter {
     assert(
@@ -46,11 +54,42 @@ class Variable {
 
   final _Cache _cache;
 
-  Variable._({required this.element, _Cache? cache}) : _cache = cache ?? _Cache();
+  ResolvedType? _resolvedType;
+  ResolvedType get resolvedType {
+    assert(_resolvedType != null, "resolvedType was never resolved. Call resolveType() first");
+    return _resolvedType!;
+  }
 
-  Variable({required VariableElement element}) : this._(element: element);
+  Variable._({required this.element, required this.fieldElement, _Cache? cache}) : _cache = cache ?? _Cache();
+
+  /// A generalized representation about (mainly) [FormalParameterElement] and [FieldElement]
+  ///
+  /// This class will also be used to merge annotations on constructor parameters and fields.
+  /// In this case, [fieldElement] must be set to not loose the access to the fields information
+  /// like its (probably) prefixed type (accessible via [resolveType]).
+  ///
+  /// if [element] is of type [FieldElement], [fieldElement] is ignored
+  Variable({required VariableElement element, FieldElement? fieldElement})
+      : this._(element: element, fieldElement: (element is FieldElement) ? element : fieldElement);
 
   T? getAnnotationOf<T>(AnnotationConverter<T> converter) => _cache.getAnnotation<T>(element, converter);
+
+  /// will return the (prefixed) type of [fieldElement]
+  ResolvedType resolveType(ResolvedLibraryResult resolvedLib) {
+    ResolvedType? resolvedType = _resolvedType;
+
+    if (resolvedType == null) {
+      if (fieldElement == null) {
+        resolvedType = ResolvedType(type: type, typeAnnotation: null, prefixReference: null);
+      } else {
+        resolvedType = ResolvedType.resolve(resolvedLib: resolvedLib, element: fieldElement!);
+      }
+
+      _resolvedType = resolvedType;
+    }
+
+    return resolvedType;
+  }
 
   @override
   bool operator ==(Object other) {

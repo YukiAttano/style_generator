@@ -1,6 +1,8 @@
 import "dart:async";
 import "dart:io";
 
+import "package:analyzer/dart/analysis/results.dart";
+import "package:analyzer/dart/analysis/session.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:build/build.dart";
 import "package:dart_style/dart_style.dart";
@@ -20,7 +22,7 @@ import "style_part_generator.dart";
  */
 
 // TODO(Yuki): check StyleKeys type against fields/parameters type (and whether a subclass is allowed)
-// TODO(Yuki): generate part file either at the location defined by "part .style.part" directive or merge with ".g.dart"
+// TODO(Yuki): generate part file either at the location defined by "part .style.part" directive
 
 String get newLine => Platform.lineTerminator;
 
@@ -52,8 +54,12 @@ class StyleBuilder with HeaderGen implements Builder {
 
     LibraryElement lib = await buildStep.inputLibrary;
 
+    AnalysisSession session = lib.session;
+    ResolvedLibraryResult resolvedLib = await session.getResolvedLibraryByElement(lib) as ResolvedLibraryResult;
+
+
     StyleGenerator state = StyleGenerator(
-      lib: lib,
+      resolvedLib: resolvedLib,
       styleConfig: styleConfig,
       store: _lookupStore,
     );

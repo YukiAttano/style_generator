@@ -2,8 +2,8 @@ import "../../style_generator.dart";
 import "../annotations/style_key_internal.dart";
 import "../data/annotation_converter.dart";
 import "../data/logger.dart";
+import "../data/resolved_type.dart";
 import "../data/variable.dart";
-import "../extensions/dart_type_extension.dart";
 
 mixin CopyWithGen {
   static String get _nl => newLine;
@@ -22,17 +22,18 @@ mixin CopyWithGen {
     String prefix = "";
     String name;
     bool inCopyWith;
-    String suffix;
+    ResolvedType resolvedType;
     for (var v in parameters) {
+      resolvedType = v.resolvedType;
+
       name = v.name!;
-      suffix = v.type.isNullable ? "" : "?";
 
       styleKey = v.getAnnotationOf(styleKeyAnnotation);
       inCopyWith = _includeVariable(v, styleKey, className);
 
       prefix = inCopyWith ? "" : "//";
 
-      params.add("$prefix ${v.type}$suffix $name,");
+      params.add("$prefix ${resolvedType.displayName} $name,");
       if (v.isNamed) {
         namedConstructorParams.add("$prefix $name: $name ?? this.$name,");
       } else {
@@ -44,8 +45,7 @@ mixin CopyWithGen {
     String positional = positionalConstructorParams.isEmpty ? "" : positionalConstructorParams.join(_nl);
     String named = namedConstructorParams.isEmpty ? "" : namedConstructorParams.join(_nl);
 
-    String function =
-        """
+    String function = """
     $className copyWith($parameter) {
       return $className.$constructor(
        $positional
