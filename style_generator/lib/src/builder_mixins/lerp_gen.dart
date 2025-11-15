@@ -107,7 +107,7 @@ mixin LerpGen {
 
     if (lerpMethod != null) {
       // nullability is enforced by type parameters, therefor no check is required here
-      content = "$typePrefix$lerpMethod($a, $b, t)";
+      content = "$lerpMethod($a, $b, t)";
     } else if (d.isDartCoreDouble || d.isDartCoreNum) {
       if (isNullable) {
         content = "lerpDouble($a, $b, t)";
