@@ -1,7 +1,3 @@
-## NEXT
-
-* Add export lerpDouble from dart:ui so no manual import must be done
-
 ## 0.1.4
 
 * Fix finding functions (like lerp and merge) through being expected by extended or inherited classes
