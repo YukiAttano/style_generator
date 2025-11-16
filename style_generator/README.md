@@ -20,6 +20,24 @@ dart pub add dev:build_runner
 
 For even easier generation, use the [Style Generator Templates for Flutter](https://plugins.jetbrains.com/plugin/28833-style-generator-templates-for-flutter) Plugin for Android Studio
 
+# Index
+
+- [Getting Started](#getting-started)
+- [Template Plugin](#template-plugin)
+- [Index](#index)
+- [ThemeExtensions](#themeextensions)
+    - [Minimum Example](#minimum-example)
+    - [Fallback and of() Constructor](#fallback-and-of-constructor)
+    - [Positional and Named Parameter](#positional-and-named-parameter)
+- [Annotations](#annotations)
+    - [Style](#style)
+      - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml)
+    - [StyleKey\<T>](#stylekeyt)
+    - [Custom Lerp Functions](#custom-lerp-functions)
+    - [Custom Merge Functions](#custom-merge-functions)
+- [Prefixed Imports and static callbacks](#prefixed-imports-and-static-callbacks)
+- [Feedback](#feedback)
+
 # ThemeExtensions
 
 ## Minimum Example:
@@ -170,6 +188,8 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyleGenerated {
 
 ```
 
+### Customize the default behavior with build.yml
+
 You can customize the default behavior in your build.yml
 
 ```yaml
@@ -294,7 +314,7 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 }
 ```
 
-## Prefixed Imports and static callbacks
+# Prefixed Imports and static callbacks
 
 If you use prefixed imports, one restriction apply.
 
