@@ -1,6 +1,4 @@
 import "package:analyzer/dart/analysis/results.dart";
-import "package:analyzer/dart/ast/ast.dart";
-import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 
 import "../annotations/style_key_internal.dart";
@@ -10,7 +8,6 @@ import "../data/logger.dart";
 import "../data/resolved_type.dart";
 import "../data/variable.dart";
 import "../extensions/dart_type_extension.dart";
-import "../extensions/field_element_extension.dart";
 import "../style_builder/style_builder.dart";
 
 class LerpGenResult {
@@ -36,7 +33,6 @@ class LerpMethodGenResult {
 mixin LerpGen {
   static String get _nl => newLine;
   static const String methodName = "lerp";
-
 
   LerpGenResult generateLerp(
     ResolvedLibraryResult resolvedLib,
@@ -127,7 +123,7 @@ mixin LerpGen {
       if (d.element.library.isDartCore) {
         if (d.element.name == "Duration") {
           content = _lerpDurationMethod(d.isNullable, a, b);
-          trailing.add(_durationLerp);
+          trailing.add(_durationLerp(typePrefix));
         }
       } else {
         ClassMethod? m = d.findMethod(resolvedLib.element, methodName);
@@ -178,10 +174,13 @@ mixin LerpGen {
   }
 }
 
-const String _durationLerp = """
-Duration _lerpDuration(Duration a, Duration b, double t) {
-  return Duration(
+String _durationLerp(String prefix) {
+  String duration = "${prefix}Duration";
+  return """
+$duration _lerpDuration($duration a, $duration b, double t) {
+  return $duration(
     microseconds: (a.inMicroseconds + (b.inMicroseconds - a.inMicroseconds) * t).round(),
   );
 }
 """;
+}

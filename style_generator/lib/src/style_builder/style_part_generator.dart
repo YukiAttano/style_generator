@@ -124,7 +124,7 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
       FormalParameterElement p = params.first;
       if (p.isPositional) {
         if (p.type == store.buildContextType) {
-          return Variable(element: p, fieldElement: null);
+          return Variable(element: p);
         } else {
           return null;
         }
@@ -135,7 +135,7 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
       // This is fine, because the dart analyzer will tell the user whats wrong
       for (var p in params) {
         if (p.type == store.buildContextType) {
-          return Variable(element: p, fieldElement: null);
+          return Variable(element: p);
         }
       }
     }

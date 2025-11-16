@@ -2,8 +2,6 @@
 library;
 
 import "package:analyzer/dart/analysis/results.dart";
-import "package:analyzer/dart/ast/ast.dart";
-import "package:analyzer/dart/ast/visitor.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
 
@@ -86,6 +84,13 @@ StyleKeyInternal<T> createStyleKey<T>(ResolvedLibraryResult resolved, Map<String
   );
 }
 
+/// Fallback name lookup if AST lookup fails
+///
+/// Due to the nature of [Element]s, this method does not recognize prefix name imports
+/// (Hence why we search the AST).
+///
+/// The AST lookup should always work and
+/// this function exists solely to have a generalized backup
 String? _getFunctionName(ExecutableElement? function) {
   String? callbackName;
   if (function != null) {

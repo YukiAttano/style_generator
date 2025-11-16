@@ -1,5 +1,3 @@
-import "package:analyzer/dart/analysis/results.dart";
-
 import "../../style_generator.dart";
 import "../data/resolved_type.dart";
 import "../data/variable.dart";
