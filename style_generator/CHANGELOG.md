@@ -1,6 +1,7 @@
 ## NEXT
 
 * add warnings if @StyleKey\<Type\>s type does not match the annotated fields type
+* add support for Constructor callbacks in StyleKey.lerp and StyleKey.merge 
 
 ## 0.1.4
 

@@ -1,6 +1,9 @@
 import "package:style_generator_annotation/style_generator_annotation.dart";
 
 class StyleConfig extends Style {
+
+  static const String srcAnnotationName = "Style";
+
   @override
   bool get genCopyWith => super.genCopyWith!;
 

@@ -6,8 +6,6 @@ import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/ast/visitor.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
-import "package:analyzer/dart/element/visitor2.dart";
-import "package:build/build.dart";
 
 import "../data/logger.dart";
 import "../extensions/dart_object_extension.dart";
@@ -17,6 +15,13 @@ import "../extensions/dart_object_extension.dart";
 /// [StyleKey] forces the [lerp] method to be be correctly typed,
 /// while this internal representation just holds the function name.
 class StyleKeyInternal<T> {
+  static const String srcAnnotationName = "StyleKey";
+  static const String inCopyWithName = "inCopyWith";
+  static const String inMergeName = "inMerge";
+  static const String inLerpName = "inLerp";
+  static const String lerpName = "lerp";
+  static const String mergeName = "merge";
+
   final bool inCopyWith;
   final bool inMerge;
   final bool inLerp;
@@ -33,121 +38,136 @@ class StyleKeyInternal<T> {
 
   Map<String, Object?> toJson() {
     return {
-      "inCopyWith": inCopyWith,
-      "inMerge": inMerge,
-      "inLerp": inLerp,
-      "lerp": lerp,
-      "merge": merge,
+      inCopyWithName: inCopyWith,
+      inMergeName: inMerge,
+      inLerpName: inLerp,
+      lerpName: lerp,
+      mergeName: merge,
     };
   }
 }
 
-StyleKeyInternal<T> createStyleKey<T>(ResolvedLibraryResult resolved, CompilationUnit unit, Map<String, DartObject?> map) {
-  ExecutableElement? lerp = map["lerp"]?.toFunctionValue();
-  ExecutableElement? merge = map["merge"]?.toFunctionValue();
+StyleKeyInternal<T> createStyleKey<T>(
+  ResolvedLibraryResult resolved,
+  CompilationUnit unit,
+  Map<String, DartObject?> map,
+) {
+  const String styleKeyName = StyleKeyInternal.srcAnnotationName;
+  const String lerpName = StyleKeyInternal.lerpName;
+  const String mergeName = StyleKeyInternal.mergeName;
 
-  if (lerp != null) {
-    //resolved.getFragmentDeclaration(lerp.firstFragment,);
+  ExecutableElement? lerp = map[lerpName]?.toFunctionValue();
+  ExecutableElement? merge = map[mergeName]?.toFunctionValue();
 
+  AnnotationParameterLookupVisitor lerpLookup =
+      AnnotationParameterLookupVisitor(parameterName: lerpName, element: lerp);
 
-    // var result = resolved.getFragmentDeclaration(lerp.firstFragment);
-    //
-    // warn("CHECKING $lerp "
-    //     "\nfragment:${result?.fragment}"
-    //     "\nnode:${result?.node}"
-    //     "\ntype:${result.runtimeType}");
-    //
-    // TestVisitor v = TestVisitor(element: lerp);
-    // String? result;
-    //
-    // for (var declaration in unit.declarations) {
-    //   var r = declaration.accept(v);
-    //   if (r != null) warn(r);
-    // }
+  AnnotationParameterLookupVisitor mergeLookup =
+      AnnotationParameterLookupVisitor(parameterName: mergeName, element: merge);
+
+  lerpLookup.run(resolved.units);
+  mergeLookup.run(resolved.units);
+
+  String? lerpFunction = lerpLookup.result;
+  String? mergeFunction = mergeLookup.result;
+
+  if (lerp != null && lerpFunction == null) {
+    couldNotResolveFunction(lerpName, lerp.toString(), styleKeyName);
+    lerpFunction = _getFunctionName(lerp);
+  }
+  if (merge != null && mergeFunction == null) {
+    couldNotResolveFunction(mergeName, merge.toString(), styleKeyName);
+    mergeFunction = _getFunctionName(merge);
   }
 
-
-
-
   return StyleKeyInternal(
-    inLerp: map["inLerp"]!.toValue()! as bool,
-    inMerge: map["inMerge"]!.toValue()! as bool,
-    inCopyWith: map["inCopyWith"]!.toValue()! as bool,
-    lerp: _getFunctionName(lerp),
-    merge: _getFunctionName(merge),
+    inLerp: map[StyleKeyInternal.inLerpName]!.toValue()! as bool,
+    inMerge: map[StyleKeyInternal.inMergeName]!.toValue()! as bool,
+    inCopyWith: map[StyleKeyInternal.inCopyWithName]!.toValue()! as bool,
+    lerp: lerpFunction,
+    merge: mergeFunction,
   );
 }
 
 String? _getFunctionName(ExecutableElement? function) {
   String? callbackName;
-  if (function != null && function.isStatic) {
-    switch (function.kind) {
-      case ElementKind.METHOD:
-        callbackName = "${function.enclosingElement?.displayName ?? ""}.${function.displayName}";
-      case ElementKind.FUNCTION:
-        callbackName = function.displayName;
+  if (function != null) {
+    if (function.isStatic) {
+      switch (function.kind) {
+        case ElementKind.METHOD:
+          callbackName = "${function.enclosingElement?.displayName ?? ""}.${function.displayName}";
+        case ElementKind.FUNCTION:
+          callbackName = function.displayName;
+      }
+    } else {
+      switch (function.kind) {
+        case ElementKind.CONSTRUCTOR:
+          callbackName = function.displayName;
+      }
     }
   }
 
   return callbackName;
 }
 
-
-class TestVisitor extends RecursiveAstVisitor<String?>  {
+class AnnotationParameterLookupVisitor extends RecursiveAstVisitor<void> {
+  final String parameterName;
   final ExecutableElement? element;
+  String? result;
 
-  const TestVisitor({required this.element});
+  AnnotationParameterLookupVisitor({required this.parameterName, required this.element});
 
-  @override
-  String? visitAnnotation(Annotation node) {
-    //warn("\n-----\nnode:${node}\nelement:${node.element}\ngiven:$element");
+  void run(List<ResolvedUnitResult> resolvedUnits) {
+    if (element == null || resolvedUnits.isEmpty) return;
 
+    for (var declaration in resolvedUnits) {
+      declaration.unit.accept(this);
 
-    return super.visitAnnotation(node);
+      if (result != null) break;
+    }
   }
-/*
-  @override
-  String? visitVariableDeclaration(VariableDeclaration node) {
-    warn("\n-----VAR\nnode:${node}\nparent:${node.parent}\ngiven:$element");
-
-
-    return super.visitVariableDeclaration(node);
-  }*/
 
   @override
-  String? visitFieldDeclaration(FieldDeclaration node) {
-    warn("\n-----Field\nnode:${node}\nchildren:${node.childEntities}\nfields:${node.fields}\ngiven:$element");
+  void visitFieldDeclaration(FieldDeclaration node) {
+    if (result != null) return;
 
-    TypeAnnotation? type = node.fields.type;
-    warn("FIELD ${type?.beginToken} $type");
+    for (var meta in node.metadata) {
+      var list = meta.arguments?.arguments ?? [];
+
+      for (var a in list) {
+        if (a is NamedExpression && a.name.label.name == parameterName) {
+          Expression expr = a.expression;
+
+          Element? referred = _getElementFromExpression(expr);
+
+          if (referred is ExecutableElement && element != null && referred == element) {
+            result = expr.toSource();
+          }
+        }
+      }
+    }
 
     return super.visitFieldDeclaration(node);
   }
-
-
 }
 
-class TestElementVisitor extends RecursiveElementVisitor2<void>  {
+Element? _getElementFromExpression(Expression expression) {
+  Element? element;
 
-  @override
-  void visitTypeParameterElement(TypeParameterElement element) {
-    warn("\nVISIT ${element}");
-
-    super.visitTypeParameterElement(element);
+  switch (expression) {
+    case PrefixedIdentifier():
+      element = expression.element;
+    case Identifier():
+      element = expression.element;
+    case PropertyAccess():
+      element = expression.propertyName.element;
+    case FunctionReference():
+      element = _getElementFromExpression(expression.function);
+    case MethodReferenceExpression():
+      element = expression.element;
+    case ConstructorReference():
+      element = expression.constructorName.element;
   }
 
-  @override
-  void visitPrefixElement(PrefixElement element) {
-    warn("\nVISIT ${element}");
-
-    super.visitPrefixElement(element);
-  }
-
-
-  @override
-  void visitGenericFunctionTypeElement(GenericFunctionTypeElement element) {
-    warn("\nVISIT ${element}");
-
-    super.visitGenericFunctionTypeElement(element);
-  }
+  return element;
 }

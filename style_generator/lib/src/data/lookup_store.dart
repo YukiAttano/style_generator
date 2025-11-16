@@ -6,14 +6,18 @@ import "package:analyzer/dart/element/type.dart";
 import "package:build/build.dart";
 import "package:style_generator_annotation/style_generator_annotation.dart";
 
+import "../annotations/style_config.dart";
 import "../annotations/style_key_internal.dart";
 import "annotation_converter.dart";
 import "json_annotation_converter.dart";
-import "logger.dart";
 
 class LookupStore {
   static const String annotationPackage = "package:style_generator_annotation/style_generator_annotation.dart";
   static const String materialPackage = "package:flutter/material.dart";
+
+  static const String styleKeyName = StyleKeyInternal.srcAnnotationName;
+  static const String styleName = StyleConfig.srcAnnotationName;
+  static const String buildContextName = "BuildContext";
 
   final Map<String, AnnotationConverter> _libraryAnnotations = {};
 
@@ -21,12 +25,11 @@ class LookupStore {
 
   bool _isInitialized = false;
 
-  AnnotationConverter<Style> get styleAnnoConverter => _libraryAnnotations["Style"]! as AnnotationConverter<Style>;
+  AnnotationConverter<Style> get styleAnnoConverter => _libraryAnnotations[styleName]! as AnnotationConverter<Style>;
 
-  AnnotationConverter<StyleKeyInternal> get styleKeyAnnoConverter =>
-      _libraryAnnotations["StyleKey"]! as AnnotationConverter<StyleKeyInternal>;
+  AnnotationConverter<StyleKeyInternal> get styleKeyAnnoConverter => _libraryAnnotations[styleKeyName]! as AnnotationConverter<StyleKeyInternal>;
 
-  DartType get buildContextType => _dartTypes["BuildContext"]!;
+  DartType get buildContextType => _dartTypes[buildContextName]!;
 
   LookupStore();
 
@@ -46,54 +49,23 @@ class LookupStore {
     LibraryElement lib = await buildStep.inputLibrary;
 
     AnalysisSession session = lib.session;
-    ResolvedLibraryResult resolved = await session.getResolvedLibraryByElement(lib) as ResolvedLibraryResult ;
+    ResolvedLibraryResult resolved = await session.getResolvedLibraryByElement(lib) as ResolvedLibraryResult;
 
-
-    CompilationUnit compilationUnit =
-    await buildStep.resolver.compilationUnitFor(buildStep.inputId);
-    //ResolvedLibraryResult r;
-
-    // var v = TestVisitor();
-    //  compilationUnit.declarations.forEach((element) {
-    //    warn("AST ${element}");
-    //    element.accept(v);
-    //  },);
-
-    // compilationUnit.directives.forEach((element) {
-    //   warn("AST ${element}");
-    //   element.accept(v);
-    // },);
-
-
-    /*
-      for (final unit in resolvedLibrary.units) {
-
-      unit.unit.accept(collector);
-
-      if (collector.prefixName != null) {
-        final prefix = collector.prefixName; // "c"
-        // hier weiterverarbeiten …
-        break;
-      }
-    }
-    */
-
-
-
+    CompilationUnit compilationUnit = await buildStep.resolver.compilationUnitFor(buildStep.inputId);
 
     // create ClassElements of our annotations
-    ClassElement? styleElement = styleLib.exportNamespace.get2("Style") as ClassElement?;
-    ClassElement? styleKeyElement = styleLib.exportNamespace.get2("StyleKey") as ClassElement?;
+    ClassElement? styleElement = styleLib.exportNamespace.get2(styleName) as ClassElement?;
+    ClassElement? styleKeyElement = styleLib.exportNamespace.get2(styleKeyName) as ClassElement?;
 
     // create converter for the ClassElements to read the configured Annotations from real DartObjects
     if (styleElement != null) {
-      _libraryAnnotations["Style"] = JsonAnnotationConverter<Style>(
+      _libraryAnnotations[styleName] = JsonAnnotationConverter<Style>(
         annotationClass: styleElement,
         buildAnnotation: Style.fromJson,
       );
     }
     if (styleKeyElement != null) {
-      _libraryAnnotations["StyleKey"] = AnnotationConverter<StyleKeyInternal>(
+      _libraryAnnotations[styleKeyName] = AnnotationConverter<StyleKeyInternal>(
         annotationClass: styleKeyElement,
         buildAnnotation: (map) => createStyleKey(resolved, compilationUnit, map),
       );
@@ -103,10 +75,10 @@ class LookupStore {
   Future<void> _initMaterial(BuildStep buildStep) async {
     AssetId materialAsset = AssetId.resolve(Uri.parse(materialPackage));
     LibraryElement materialLib = await buildStep.resolver.libraryFor(materialAsset);
-    ClassElement? buildContextElement = materialLib.exportNamespace.get2("BuildContext") as ClassElement?;
+    ClassElement? buildContextElement = materialLib.exportNamespace.get2(buildContextName) as ClassElement?;
 
     if (buildContextElement != null) {
-      _dartTypes["BuildContext"] = buildContextElement.thisType.extensionTypeErasure;
+      _dartTypes[buildContextName] = buildContextElement.thisType.extensionTypeErasure;
     }
   }
 }

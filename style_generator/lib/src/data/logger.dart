@@ -31,6 +31,10 @@ void warn(Object? message) {
   log(Level.WARNING, message);
 }
 
+void error(Object? message) {
+  log(Level.SEVERE, message);
+}
+
 void cannotIgnorePositionalOrRequiredParameter(Variable variable, {required String clazz, required String method}) {
   warn(
     "Class '$clazz' parameter '${variable.type} ${variable.displayName}' cannot be excluded from $method because it is either a positional or required constructor parameter",
@@ -59,4 +63,28 @@ void typeHasNoTypeArguments(DartType type) {
 
 void hasNoType(DartObject obj) {
   warn("$obj has no corresponding type");
+}
+
+void couldNotResolveFunction(String functionName, String function, String annotation) {
+  error("""
+  ====== Please file an Issue with your use case ======
+  https://github.com/YukiAttano/style_generator/issues/new
+  
+  '$functionName' is set to '$function', but couldn't be resolved.
+  A fallback is applied. In case you are using a prefixed import here, the generated code will fail.
+  
+  You can work around this for now with creating a callback:
+  ```dart
+  import 'package:something/something.dart' as some;
+  
+  Class YourClass {
+    @$annotation($functionName: yourCallback)
+    some.Thing? field;
+  }
+  
+  // create a top level callback method that passes all parameters to your named function
+  some.Thing? yourCallback(...) => some.$functionName(...);
+  ```
+  ====== Please file an Issue with your use case ======
+  """);
 }
