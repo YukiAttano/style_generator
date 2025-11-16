@@ -294,6 +294,54 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 }
 ```
 
+## Prefixed Imports and static callbacks
+
+If you use prefixed imports, one restriction apply.
+
+(1)
+If `dart:ui` is imported with a prefix (e.g. `import 'dart:ui' as ui`)
+AND you use the Dart-Core data types `int`, `num` or `double`, 
+automatically lerping them fails (because `lerpDouble` is not found).
+Consider adding a top level function `lerpDouble` (like in the example below) 
+or apply a `StyleKey(lerp: ...)` manually.
+
+(2)
+Otherwise, all weird combinations should work (if not, the generator will tell you). 
+
+If you use static Callbacks, always write their full scope.
+
+
+```dart
+import 'dart:ui' as ui; // <-- prefixed import
+import 'dart:core' as core; // <-- prefixed import
+
+import 'package:flutter/material.dart';
+import 'package:style_generator_annotation/style_generator_annotation.dart';
+
+part 'some_style.style.dart';
+
+const lerpDouble = ui.lerpDouble; // <-- explained above in (1)
+
+@Style()
+class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
+
+  final core.Duration? animationDuration;
+
+  final core.double? something; // will use lerpDouble which redirects to ui.lerpDouble
+
+  @StyleKey<core.double?>(lerp: ui.lerpDouble) // <-- alternative explained above in (1)
+  final core.double? somewhere;
+
+  @StyleKey<Color?>(lerp: SomeStyle.alwaysRed) //don't write `alwaysRed` only, the mixin won't find it
+  final Color? color;
+
+  const SomeStyle({this.animationDuration, this.something, this.somewhere, this.color});
+
+  static Color? alwaysRed(Color? a, Color? b, core.double t) => Colors.red;
+
+}
+```
+
 # Feedback
 
 Any feedback is welcome :)

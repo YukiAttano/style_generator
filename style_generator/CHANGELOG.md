@@ -2,6 +2,7 @@
 
 * add warnings if @StyleKey\<Type\>s type does not match the annotated fields type
 * add support for Constructor callbacks in StyleKey.lerp and StyleKey.merge 
+* add prefixed import support (e.g. `import 'package:some/some.dart' as some`)
 
 ## 0.1.4
 
