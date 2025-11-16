@@ -35,6 +35,8 @@ class LerpMethodGenResult {
 
 mixin LerpGen {
   static String get _nl => newLine;
+  static const String methodName = "lerp";
+
 
   LerpGenResult generateLerp(
     ResolvedLibraryResult resolvedLib,
@@ -75,7 +77,7 @@ mixin LerpGen {
     String named = namedConstructorParams.isEmpty ? "" : namedConstructorParams.join(_nl);
 
     String function = """
-    $className lerp(covariant ThemeExtension<$className>? other, double t) {
+    $className $methodName(covariant ThemeExtension<$className>? other, double t) {
       if (other is! $className) return this as $className;
     
       return $className.$constructor(
@@ -128,7 +130,7 @@ mixin LerpGen {
           trailing.add(_durationLerp);
         }
       } else {
-        ClassMethod? m = d.findMethod(resolvedLib.element, "lerp");
+        ClassMethod? m = d.findMethod(resolvedLib.element, methodName);
 
         if (m != null) {
           String methodHead = m.methodHead;
@@ -168,7 +170,7 @@ mixin LerpGen {
   bool _includeVariable(Variable v, StyleKeyInternal? styleKey, String clazz) {
     bool include = styleKey?.inLerp ?? true;
     if (!include && (v.isPositional || v.isRequired)) {
-      cannotIgnorePositionalOrRequiredParameter(v, clazz: clazz, method: "lerp");
+      cannotIgnorePositionalOrRequiredParameter(v, clazz: clazz, method: methodName);
       include = true;
     }
 

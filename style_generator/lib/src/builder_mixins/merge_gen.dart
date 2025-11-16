@@ -1,5 +1,4 @@
 import "package:analyzer/dart/analysis/results.dart";
-import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 
 import "../../style_generator.dart";
@@ -12,6 +11,7 @@ import "../extensions/dart_type_extension.dart";
 
 mixin MergeGen {
   static String get _nl => newLine;
+  static const String methodName = "merge";
 
   String generateMerge(
     ResolvedLibraryResult resolvedLib,
@@ -38,7 +38,7 @@ mixin MergeGen {
     }
 
     String function = """
-    $className merge(ThemeExtension<$className>? other) {
+    $className $methodName(ThemeExtension<$className>? other) {
       if (other is! $className) return this as $className;
     
       return copyWith(
@@ -65,16 +65,16 @@ mixin MergeGen {
     if (mergeMethod != null) {
       return "$mergeMethod($a, $b)";
     } else if (d is InterfaceType) {
-      ClassMethod? mergeMethod = d.findMethod(resolvedLib.element, "merge");
+      ClassMethod? mergeMethod = d.findMethod(resolvedLib.element, methodName);
 
       if (mergeMethod != null) {
         if (mergeMethod.isStatic) {
           return "$typePrefix${mergeMethod.methodHead}($a, $b)";
         } else {
           if (isNullable) {
-            return "$a?.merge($b) ?? $b";
+            return "$a?.$methodName($b) ?? $b";
           } else {
-            return "$a.merge($b)";
+            return "$a.$methodName($b)";
           }
         }
       }
