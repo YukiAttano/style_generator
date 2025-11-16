@@ -1,6 +1,5 @@
 import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/analysis/session.dart";
-import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 import "package:build/build.dart";
@@ -10,7 +9,6 @@ import "../annotations/style_config.dart";
 import "../annotations/style_key_internal.dart";
 import "annotation_converter/annotation_converter.dart";
 import "annotation_converter/json_annotation_converter.dart";
-import "logger.dart";
 
 class LookupStore {
   static const String annotationPackage = "package:style_generator_annotation/style_generator_annotation.dart";
