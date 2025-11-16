@@ -1,6 +1,7 @@
-<templateSet group="StyleGenerator">
-  <template name="styclass" value="@Style()&#10;class $NAME$ extends ThemeExtension&lt;$NAME$&gt; with _$$$NAME$ {&#10;}" description="Flutter ThemeExtension Style Class" toReformat="false" toShortenFQNames="true">
+<templateSet group="StyleGenerator_">
+  <template name="styclass" value="@Style()&#10;class $NAME$ extends ThemeExtension&lt;$NAME$&gt; with _$$$NAME$ {&#10;&#10;  $_JUMP$&#10;&#10;}" description="Flutter ThemeExtension Style Class" toReformat="false" toShortenFQNames="true">
     <variable name="NAME" expression="capitalize(underscoresToCamelCase(fileNameWithoutExtension()))" defaultValue="" alwaysStopAt="true" />
+    <variable name="_JUMP" expression="" defaultValue="" alwaysStopAt="true" />
     <context>
       <option name="DART_TOPLEVEL" value="true" />
     </context>
@@ -19,15 +20,19 @@
       <option name="DART_TOPLEVEL" value="true" />
     </context>
   </template>
-  <template name="styfile" value="import 'package:flutter/material.dart';&#10;import 'package:style_generator_annotation/style_generator_annotation.dart';&#10;&#10;part '$FILENAME$.style.dart';&#10;&#10;@Style()&#10;class $NAME$ extends ThemeExtension&lt;$NAME$&gt; with _$$$NAME$ {&#10;&#10;  const $NAME$({});&#10;  &#10;  factory $NAME$.fallback(BuildContext context) {&#10;    ThemeData theme = Theme.of(context);&#10;    ColorScheme scheme = theme.colorScheme;&#10;    TextTheme textTheme = theme.textTheme;&#10;    &#10;    return $NAME$();&#10;  }&#10;&#10;  factory $NAME$.of(BuildContext context, [$NAME$? style]) =&gt; _$$$NAME$Of(context, style);&#10;}" description="Ready to use Style File" toReformat="false" toShortenFQNames="true">
+  <template name="styfile" value="import 'package:flutter/material.dart';&#10;import 'package:style_generator_annotation/style_generator_annotation.dart';&#10;&#10;part '$FILENAME$.style.dart';&#10;&#10;@Style()&#10;class $NAME$ extends ThemeExtension&lt;$NAME$&gt; with _$$$NAME$ {&#10;&#10;  $_JUMP$&#10;&#10;  const $NAME$({$_END$});&#10;  &#10;  factory $NAME$.fallback(BuildContext context) {&#10;    ThemeData theme = Theme.of(context);&#10;    ColorScheme scheme = theme.colorScheme;&#10;    TextTheme textTheme = theme.textTheme;&#10;    &#10;    return $NAME$();&#10;  }&#10;&#10;  factory $NAME$.of(BuildContext context, [$NAME$? style]) =&gt; _$$$NAME$Of(context, style);&#10;}" description="Ready to use Style File" toReformat="false" toShortenFQNames="true">
     <variable name="FILENAME" expression="fileNameWithoutExtension()" defaultValue="" alwaysStopAt="false" />
     <variable name="NAME" expression="capitalize(underscoresToCamelCase(fileNameWithoutExtension()))" defaultValue="" alwaysStopAt="true" />
+    <variable name="_JUMP" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="_END" expression="" defaultValue="" alwaysStopAt="true" />
     <context>
       <option name="DART_TOPLEVEL" value="true" />
     </context>
   </template>
-  <template name="style" value="@Style()&#10;class $NAME$ extends ThemeExtension&lt;$NAME$&gt; with _$$$NAME$ {&#10;&#10;  const $NAME$({});&#10;  &#10;  factory $NAME$.fallback(BuildContext context) {&#10;    ThemeData theme = Theme.of(context);&#10;    ColorScheme scheme = theme.colorScheme;&#10;    TextTheme textTheme = theme.textTheme;&#10;    &#10;    return $NAME$();&#10;  }&#10;&#10;  factory $NAME$.of(BuildContext context, [$NAME$? style]) =&gt; _$$$NAME$Of(context, style);&#10;}" description="Ready to use Style Class" toReformat="false" toShortenFQNames="true">
+  <template name="style" value="@Style()&#10;class $NAME$ extends ThemeExtension&lt;$NAME$&gt; with _$$$NAME$ {&#10;&#10;  $_JUMP$&#10;&#10;  const $NAME$({$_END$});&#10;  &#10;  factory $NAME$.fallback(BuildContext context) {&#10;    ThemeData theme = Theme.of(context);&#10;    ColorScheme scheme = theme.colorScheme;&#10;    TextTheme textTheme = theme.textTheme;&#10;    &#10;    return $NAME$();&#10;  }&#10;&#10;  factory $NAME$.of(BuildContext context, [$NAME$? style]) =&gt; _$$$NAME$Of(context, style);&#10;}" description="Ready to use Style Class" toReformat="false" toShortenFQNames="true">
     <variable name="NAME" expression="capitalize(underscoresToCamelCase(fileNameWithoutExtension()))" defaultValue="" alwaysStopAt="true" />
+    <variable name="_JUMP" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="_END" expression="" defaultValue="" alwaysStopAt="true" />
     <context>
       <option name="DART_TOPLEVEL" value="true" />
     </context>

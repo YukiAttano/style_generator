@@ -3,12 +3,23 @@ This Section is for the sad guy who has to deal with this bullshit.
 Imagine you want to share a single XML file and you have to setup a Gradle project.
 To increase the fun, all documentations are somewhat crap.
 
+How to export:
+* First go into `Settings` -> ... -> `Live Templates` and rename the template (only edited changes on templates will be exported)
+* Open `Help` and search for `Export Settings`
+* Export `Live templates (schemes)`
+* The template is somewhere in that .zip as a .xml file
+
 The important files:
 * `src/main/resources/META-INF/plugin.xml` defines where to find the Live Templates
 * `src/main/resources/templates/StyleGenerator.xml` is the delivered Live Template. More templates must be spit into this folder and defined in the plugin.xml
 * `gradle/libs.version.toml` some random dependency definitions. The file is purely used as a lookup table
 * `build.gradle.kts` Everything that happens, happens here
 * `build/distributions` The exported file after `./gradlew buildPlugin`
+
+Increase the version:
+* In CHANGELOG.md
+* In src/main/resources/META-INF/plugin.xml
+* In gradle.properties
 
 Some useful Links:
 * [Original Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template) The Template on which this is build

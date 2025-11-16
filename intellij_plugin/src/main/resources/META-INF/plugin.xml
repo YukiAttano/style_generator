@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>attano.yukiteru.stylegenerator.livetemplates</id>
     <name>Style Generator Templates for Flutter</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <vendor email="yukiattano@memeozer.com" url="https://github.com/YukiAttano">YukiAttano</vendor>
 
     <description>
