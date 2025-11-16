@@ -308,6 +308,7 @@ or apply a `StyleKey(lerp: ...)` manually.
 (2)
 Otherwise, all weird combinations should work (if not, the generator will tell you). 
 
+(3)
 If you use static Callbacks, always write their full scope.
 
 
