@@ -200,12 +200,12 @@ targets:
         enabled: true
         options:
           constructor: null     # The constructor for .copyWith and .lerp to use. The default is `null`
-          fallback: "fallback"  # The constructor for .of to use.        The default is `null`
-          gen_copy_with: true   # whether .copyWith should be generated, The default is `true`
-          gen_merge: true       # whether .merge should be generated,    The default is `true`
-          gen_lerp: true        # whether .lerp should be generated,     The default is `true`
-          gen_of: null          # whether .of should be generated,       The default is `null` (will only generate if the fallback constructor and a factory .of() constructor is found)
-          suffix: null          # an optional suffix for the generated mixin and .of method, The default is `null`
+          fallback: "fallback"  # The constructor for .of to use,        The default is `null`
+          gen_copy_with: true   # whether .copyWith should be generated. The default is `true`
+          gen_merge: true       # whether .merge    should be generated. The default is `true`
+          gen_lerp: true        # whether .lerp     should be generated. The default is `true`
+          gen_of: null          # whether .of       should be generated. The default is `null` (will only generate if the fallback constructor and a factory .of() constructor is found)
+          suffix: null          # an optional suffix for the generated mixin and .of method. The default is `null`
 ```
 
 ## StyleKey\<T>
