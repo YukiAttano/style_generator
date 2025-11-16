@@ -1,11 +1,14 @@
 import "dart:async";
 
+import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/type.dart";
 import "package:build/build.dart" as build;
 import "package:logging/logging.dart";
 
 import "variable.dart";
+
+const String _issueUrl = "https://github.com/YukiAttano/style_generator/issues/new";
 
 void log(
   Level level,
@@ -68,7 +71,7 @@ void hasNoType(DartObject obj) {
 void couldNotResolveFunction(String functionName, String function, String annotation) {
   error("""
   ====== Please file an Issue with your use case ======
-  https://github.com/YukiAttano/style_generator/issues/new
+  $_issueUrl
   
   '$functionName' is set to '$function', but couldn't be resolved.
   A fallback is applied. In case you are using a prefixed import here, the generated code will fail.
@@ -87,4 +90,10 @@ void couldNotResolveFunction(String functionName, String function, String annota
   ```
   ====== Please file an Issue with your use case ======
   """);
+}
+
+void unrecognizedExpression(Expression expression, AstNode node) {
+  warn(
+    "Unexpected expression '$expression' for node '$node'. If you think this is an error, please file an issue at $_issueUrl",
+  );
 }

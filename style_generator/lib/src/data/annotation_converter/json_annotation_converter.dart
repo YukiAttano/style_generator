@@ -1,6 +1,6 @@
 import "package:analyzer/dart/constant/value.dart";
 
-import "../extensions/dart_object_extension.dart";
+import "../../extensions/dart_object_extension.dart";
 import "annotation_converter.dart";
 
 typedef AnnotationFromJson<T> = T Function(Map<String, Object?> json);

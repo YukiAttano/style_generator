@@ -1,6 +1,6 @@
 import "../../style_generator.dart";
 import "../annotations/style_key_internal.dart";
-import "../data/annotation_converter.dart";
+import "../data/annotation_converter/annotation_converter.dart";
 import "../data/logger.dart";
 import "../data/resolved_type.dart";
 import "../data/variable.dart";

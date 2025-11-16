@@ -7,6 +7,7 @@ import "package:analyzer/dart/ast/visitor.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
 
+import "../data/ast_visitor/annotation_parameter_lookup_visitor.dart";
 import "../data/logger.dart";
 import "../extensions/dart_object_extension.dart";
 
@@ -47,11 +48,7 @@ class StyleKeyInternal<T> {
   }
 }
 
-StyleKeyInternal<T> createStyleKey<T>(
-  ResolvedLibraryResult resolved,
-  CompilationUnit unit,
-  Map<String, DartObject?> map,
-) {
+StyleKeyInternal<T> createStyleKey<T>(ResolvedLibraryResult resolved, Map<String, DartObject?> map) {
   const String styleKeyName = StyleKeyInternal.srcAnnotationName;
   const String lerpName = StyleKeyInternal.lerpName;
   const String mergeName = StyleKeyInternal.mergeName;
@@ -108,66 +105,4 @@ String? _getFunctionName(ExecutableElement? function) {
   }
 
   return callbackName;
-}
-
-class AnnotationParameterLookupVisitor extends RecursiveAstVisitor<void> {
-  final String parameterName;
-  final ExecutableElement? element;
-  String? result;
-
-  AnnotationParameterLookupVisitor({required this.parameterName, required this.element});
-
-  void run(List<ResolvedUnitResult> resolvedUnits) {
-    if (element == null || resolvedUnits.isEmpty) return;
-
-    for (var declaration in resolvedUnits) {
-      declaration.unit.accept(this);
-
-      if (result != null) break;
-    }
-  }
-
-  @override
-  void visitFieldDeclaration(FieldDeclaration node) {
-    if (result != null) return;
-
-    for (var meta in node.metadata) {
-      var list = meta.arguments?.arguments ?? [];
-
-      for (var a in list) {
-        if (a is NamedExpression && a.name.label.name == parameterName) {
-          Expression expr = a.expression;
-
-          Element? referred = _getElementFromExpression(expr);
-
-          if (referred is ExecutableElement && element != null && referred == element) {
-            result = expr.toSource();
-          }
-        }
-      }
-    }
-
-    return super.visitFieldDeclaration(node);
-  }
-}
-
-Element? _getElementFromExpression(Expression expression) {
-  Element? element;
-
-  switch (expression) {
-    case PrefixedIdentifier():
-      element = expression.element;
-    case Identifier():
-      element = expression.element;
-    case PropertyAccess():
-      element = expression.propertyName.element;
-    case FunctionReference():
-      element = _getElementFromExpression(expression.function);
-    case MethodReferenceExpression():
-      element = expression.element;
-    case ConstructorReference():
-      element = expression.constructorName.element;
-  }
-
-  return element;
 }

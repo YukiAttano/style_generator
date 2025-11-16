@@ -4,7 +4,7 @@ import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 
 import "../annotations/style_key_internal.dart";
-import "../data/annotation_converter.dart";
+import "../data/annotation_converter/annotation_converter.dart";
 import "../data/class_method.dart";
 import "../data/logger.dart";
 import "../data/resolved_type.dart";

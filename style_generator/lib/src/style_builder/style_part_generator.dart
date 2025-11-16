@@ -12,7 +12,7 @@ import "../builder_mixins/lerp_gen.dart";
 import "../builder_mixins/merge_gen.dart";
 import "../builder_mixins/of_gen.dart";
 import "../data/annotated_element.dart";
-import "../data/annotation_converter.dart";
+import "../data/annotation_converter/annotation_converter.dart";
 import "../data/lookup_store.dart";
 import "../data/variable.dart";
 import "../extensions/element_annotation_extension.dart";

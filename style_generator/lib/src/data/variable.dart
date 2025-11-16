@@ -11,7 +11,7 @@ import "../data/annotated_element.dart";
 import "../extensions/element_extension.dart";
 import "../extensions/field_element_extension.dart";
 import "../extensions/variable_element_extension.dart";
-import "annotation_converter.dart";
+import "annotation_converter/annotation_converter.dart";
 import "logger.dart";
 import "resolved_type.dart";
 
