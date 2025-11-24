@@ -21,6 +21,8 @@ import "style_part_generator.dart";
 
  */
 
+// TODO(Yuki): add invertedMerge
+// TODO(Yuki): maybe design merge method to work inverted to current implementation because some (maybe all?) flutter internal merge functions work like that
 // TODO(Yuki): maybe check whether StyleKeys type is a subclass of the fields/parameters type
 // TODO(Yuki): generate part file either at the location defined by "part .style.part" directive
 
