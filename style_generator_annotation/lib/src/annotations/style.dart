@@ -47,7 +47,7 @@ class Style {
   ///
   /// Example:
   /// ```dart
-  /// @Style(mixinSuffix: "S")
+  /// @Style(suffix: "S")
   /// class SomeStyle extends ThemeExtension<Style> with _$SomeStyleS {}
   ///
   /// // generates
