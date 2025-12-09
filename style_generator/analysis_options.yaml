@@ -109,7 +109,7 @@ linter:
     implicit_reopen: true
     invalid_case_patterns: true
     #invalid_runtime_check_with_js_interop_types: true # Flutter
-    join_return_with_assignment: true
+    join_return_with_assignment: false
     leading_newlines_in_multiline_strings: true
     library_annotations: true
     library_names: true

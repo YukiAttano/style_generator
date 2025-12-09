@@ -16,7 +16,21 @@ builders:
         gen_lerp: true
         gen_of: null
         suffix: null
+  copy_with_builder:
+    import: "package:style_generator/style_generator.dart"
+    builder_factories: [ "copyWithBuilder" ]
+    build_extensions: { ".dart": [ ".copy_with.dart" ] }
+    build_to: source
+    auto_apply: root_package
+    defaults:
+      options:
+        run_only_if_triggered: true
+        constructor: null
+        asExtension: null
+        suffix: null
 
 triggers:
   style_generator:style_builder:
     - annotation Style
+  style_generator:copy_with_builder:
+    - annotation CopyWith

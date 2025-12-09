@@ -5,6 +5,7 @@ import "package:analyzer/dart/element/type.dart";
 import "package:build/build.dart";
 import "package:style_generator_annotation/style_generator_annotation.dart";
 
+import "../annotations/copy_with_config.dart";
 import "../annotations/style_config.dart";
 import "../annotations/style_key_internal.dart";
 import "annotation_converter/annotation_converter.dart";
@@ -16,6 +17,7 @@ class LookupStore {
 
   static const String styleKeyName = StyleKeyInternal.srcAnnotationName;
   static const String styleName = StyleConfig.srcAnnotationName;
+  static const String copyWithName = CopyWithConfig.srcAnnotationName;
   static const String buildContextName = "BuildContext";
 
   final Map<String, AnnotationConverter> _libraryAnnotations = {};
@@ -27,6 +29,8 @@ class LookupStore {
   AnnotationConverter<Style> get styleAnnoConverter => _libraryAnnotations[styleName]! as AnnotationConverter<Style>;
 
   AnnotationConverter<StyleKeyInternal> get styleKeyAnnoConverter => _libraryAnnotations[styleKeyName]! as AnnotationConverter<StyleKeyInternal>;
+
+  AnnotationConverter<CopyWith> get copyWithAnnoConverter => _libraryAnnotations[copyWithName]! as AnnotationConverter<CopyWith>;
 
   DartType get buildContextType => _dartTypes[buildContextName]!;
 
@@ -66,6 +70,7 @@ class LookupStore {
     // create ClassElements of our annotations
     ClassElement? styleElement = styleLib.exportNamespace.get2(styleName) as ClassElement?;
     ClassElement? styleKeyElement = styleLib.exportNamespace.get2(styleKeyName) as ClassElement?;
+    ClassElement? copyWithElement = styleLib.exportNamespace.get2(copyWithName) as ClassElement?;
 
     // create converter for the ClassElements to read the configured Annotations from real DartObjects
     if (styleElement != null) {
@@ -78,6 +83,12 @@ class LookupStore {
       _libraryAnnotations[styleKeyName] = AnnotationConverter<StyleKeyInternal>(
         annotationClass: styleKeyElement,
         buildAnnotation: (map) => createStyleKey(resolvedLibrary, map),
+      );
+    }
+    if (copyWithElement != null) {
+      _libraryAnnotations[copyWithName] = JsonAnnotationConverter<CopyWith>(
+        annotationClass: copyWithElement,
+        buildAnnotation: CopyWith.fromJson,
       );
     }
   }

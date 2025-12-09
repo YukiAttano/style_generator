@@ -15,6 +15,7 @@ import "../data/annotated_element.dart";
 import "../data/annotation_converter/annotation_converter.dart";
 import "../data/lookup_store.dart";
 import "../data/variable.dart";
+import "../extensions/class_element_extension.dart";
 import "../extensions/element_annotation_extension.dart";
 import "../extensions/string_constructor_extension.dart";
 
@@ -70,7 +71,7 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     if (constructor == null) throw Exception("No Constructor found");
 
     List<Variable> constructorParams = constructor.formalParameters.map((e) => Variable(element: e)).toList();
-    List<Variable> fields = _getFields(clazz.fields).map((e) => Variable(element: e)).toList();
+    List<Variable> fields = clazz.getPropertyFields().map((e) => Variable(element: e)).toList();
 
     VariableHandler state = VariableHandler(constructorParams: constructorParams, fields: fields);
     state.build(styleKeyAnnotation);
@@ -191,25 +192,12 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     return list;
   }
 
-  List<FieldElement> _getFields(List<FieldElement> fields) {
-    List<FieldElement> list = [];
-
-    for (var f in fields) {
-      if (f.isStatic || f.isSynthetic || f.isPrivate) {
-        continue;
-      }
-
-      list.add(f);
-    }
-
-    return list;
-  }
 
   ConstructorElement? _getConstructor(List<ConstructorElement> constructors, String? name) {
     ConstructorElement? constructor;
 
     if (name == null) {
-      constructor = _getPrimaryConstructor(constructors);
+      constructor = constructors.getPrimaryConstructor();
     } else {
       //  // ignore:  parameter_assignments .
       //  if (name == "") name = "new"; // Default Constructor name
@@ -223,21 +211,5 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     }
 
     return constructor;
-  }
-
-  ConstructorElement _getPrimaryConstructor(List<ConstructorElement> constructors) {
-    ConstructorElement? primaryConstructor;
-
-    for (var c in constructors) {
-      if (primaryConstructor == null) {
-        primaryConstructor = c;
-      } else if (c.isPublic) {
-        if (primaryConstructor.isPrivate) {
-          primaryConstructor = c;
-        }
-      }
-    }
-
-    return primaryConstructor!;
   }
 }
