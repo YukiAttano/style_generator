@@ -14,8 +14,6 @@ import "../../data/lookup_store.dart";
 import "../../data/resolved_import.dart";
 import "copy_with_generator.dart";
 
-// TODO(Yuki): add imports for all libraries to the generated extension class
-
 class CopyWithBuilder with HeaderGen implements Builder {
   static const String outExtension = ".copy_with.dart";
 
