@@ -1,4 +1,3 @@
-import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:style_generator_annotation/copy_with_generator_annotation.dart";
@@ -10,82 +9,52 @@ import "../builder_mixins/copy_with_gen.dart";
 import "../builder_mixins/fields_gen.dart";
 import "../data/annotated_element.dart";
 import "../data/annotation_converter/annotation_converter.dart";
-import "../data/lookup_store.dart";
 import "../data/variable.dart";
 import "../extensions/class_element_extension.dart";
 import "../extensions/element_annotation_extension.dart";
 import "../extensions/string_constructor_extension.dart";
+import "generator.dart";
 
-class CopyWithGeneratorResult {
+class CopyWithGeneratorResult extends GeneratorResult {
   final bool addPartDirective;
-  final List<String> parts;
 
-  bool get isEmpty => parts.isEmpty;
-
-  const CopyWithGeneratorResult({required this.addPartDirective, required this.parts});
+  const CopyWithGeneratorResult({required this.addPartDirective, required super.parts});
 }
 
-class _GenResult {
+class _GenResult extends PartGenResult {
   final bool addPartDirective;
-  final String part;
 
-  const _GenResult({required this.addPartDirective, required this.part});
+  const _GenResult({required this.addPartDirective, required super.part});
 }
 
-class CopyWithGenerator with FieldsGen, CopyWithGen {
+final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, CopyWithConfig> with FieldsGen, CopyWithGen {
   static String get _nl => newLine;
 
-  LibraryElement get libElement => resolvedLib.element;
-  final ResolvedLibraryResult resolvedLib;
-  final CopyWithConfig copyWithConfig;
-  final LookupStore store;
+  @override
+  AnnotationConverter<CopyWith> get annotation => store.copyWithAnnoConverter;
 
-  AnnotationConverter<CopyWith> get copyWithAnnotation => store.copyWithAnnoConverter;
-
-  AnnotationConverter<CopyWithKeyInternal> get copyWithKeyAnnotation => store.copyWithKeyAnnoConverter;
+  @override
+  AnnotationConverter<CopyWithKeyInternal> get keyAnnotation => store.copyWithKeyAnnoConverter;
 
   CopyWithGenerator({
-    required this.resolvedLib,
-    required this.copyWithConfig,
-    required this.store,
+    required super.resolvedLib,
+    required super.store,
+    required super.config,
   });
 
+  @override
   CopyWithGeneratorResult generate() {
-    List<AnnotatedElement<CopyWith>> classes = _getAnnotatedElements(libElement.classes, copyWithAnnotation);
-
-    bool addPartDirective = false;
-    List<String> parts = [];
-
-    _GenResult result;
-    CopyWithConfig config;
-    for (var c in classes) {
-      config = copyWithConfig.apply(c.annotation);
-
-      result = _generateForClass(c, config);
-
-      addPartDirective = addPartDirective || result.addPartDirective;
-      parts.add(result.part);
-    }
-
-    return CopyWithGeneratorResult(addPartDirective: addPartDirective, parts: parts);
+    return super.generate() as CopyWithGeneratorResult;
   }
 
-  _GenResult _generateForClass(AnnotatedElement<CopyWith> annotatedClazz, CopyWithConfig config) {
-    ClassElement clazz = annotatedClazz.element as ClassElement;
-    ConstructorElement? constructor = _getConstructor(clazz.constructors, config.constructor?.asConstructorName);
+  @override
+  _GenResult generateForClass(AnnotatedElement<CopyWith> annotatedClazz, CopyWithConfig config) {
+    AnalyzedClass c = analyzeClass(annotatedClazz, config.constructor?.asConstructorName);
+    ClassElement clazz = c.clazz;
 
-    if (constructor == null) throw Exception("No Constructor found");
+    List<Variable> variables = c.variables;
 
-    List<Variable> constructorParams = constructor.formalParameters.map((e) => Variable(element: e)).toList();
-    List<Variable> fields = clazz.getPropertyFields().map((e) => Variable(element: e)).toList();
-
-    VariableHandler state = VariableHandler(constructorParams: constructorParams, fields: fields);
-    state.build(copyWithKeyAnnotation);
-    state.resolveTypes(resolvedLib);
-
-    List<Variable> variables = state.merged;
-
-    String constructorName = (config.constructor ?? constructor.name!).asConstructorName;
+    String constructorName = (config.constructor ?? c.constructor.name!).asConstructorName;
     bool asExtension = config.asExtension ?? true;
     bool genFields = !asExtension;
     String suffix = config.suffix;
@@ -96,7 +65,7 @@ class CopyWithGenerator with FieldsGen, CopyWithGen {
       clazz.displayName,
       constructorName,
       variables,
-      (v) => v.getAnnotationOf(copyWithKeyAnnotation)?.inCopyWith,
+      (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
     );
 
     return _GenResult(
@@ -108,6 +77,16 @@ class CopyWithGenerator with FieldsGen, CopyWithGen {
         copyWith: copyWithContent,
         copyWithAsExtension: asExtension,
       ),
+    );
+  }
+
+  @override
+  CopyWithGeneratorResult mergeParts(List<PartGenResult> parts) {
+    List<_GenResult> results = List.from(parts, growable: false);
+
+    return CopyWithGeneratorResult(
+      addPartDirective: results.fold(false, (p, result) => p || result.addPartDirective),
+      parts: parts.map((e) => e.part).toList(growable: false),
     );
   }
 
@@ -157,41 +136,4 @@ class CopyWithGenerator with FieldsGen, CopyWithGen {
     return partClass;
   }
 
-  List<AnnotatedElement<T>> _getAnnotatedElements<T>(List<Element> elements, AnnotationConverter<T> builder) {
-    List<AnnotatedElement<T>> list = [];
-
-    for (var e in elements) {
-      for (var annotationClass in e.metadata.annotations) {
-        if (annotationClass.isOfType(builder.annotationClass)) {
-          DartObject annotationObject = annotationClass.computeConstantValue()!;
-
-          list.add(
-            AnnotatedElement<T>(element: e, object: annotationObject, annotation: builder.build(annotationObject)),
-          );
-        }
-      }
-    }
-
-    return list;
-  }
-
-  ConstructorElement? _getConstructor(List<ConstructorElement> constructors, String? name) {
-    ConstructorElement? constructor;
-
-    if (name == null) {
-      constructor = constructors.getPrimaryConstructor();
-    } else {
-      //  // ignore:  parameter_assignments .
-      //  if (name == "") name = "new"; // Default Constructor name
-
-      for (var c in constructors) {
-        if (c.name == name && c.name != null) {
-          constructor = c;
-          break;
-        }
-      }
-    }
-
-    return constructor;
-  }
 }

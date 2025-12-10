@@ -48,8 +48,8 @@ class CopyWithBuilder with HeaderGen implements Builder {
 
     CopyWithGenerator state = CopyWithGenerator(
       resolvedLib: resolvedLib,
-      copyWithConfig: copyWithConfig,
       store: _lookupStore,
+      config: copyWithConfig,
     );
 
     String partClass;

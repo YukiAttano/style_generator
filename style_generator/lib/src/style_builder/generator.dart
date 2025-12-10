@@ -42,19 +42,19 @@ class AnalyzedClass {
   });
 }
 
-abstract base class Generator<A, K> {
+abstract base class Generator<A, K, C extends Config<A>> {
   LibraryElement get libElement => resolvedLib.element;
   final ResolvedLibraryResult resolvedLib;
   final LookupStore store;
-  final AnnotationConverter<A> annotation;
-  final AnnotationConverter<K>? keyAnnotation;
-  final Config<A> config;
+
+  AnnotationConverter<A> get annotation;
+  AnnotationConverter<K>? get keyAnnotation;
+
+  final C config;
 
   Generator({
     required this.resolvedLib,
     required this.store,
-    required this.annotation,
-    this.keyAnnotation,
     required this.config,
   });
 
@@ -64,9 +64,9 @@ abstract base class Generator<A, K> {
     List<PartGenResult> parts = [];
 
     PartGenResult result;
-    Config<A> conf;
+    C conf;
     for (var c in classes) {
-      conf= config.apply(c.annotation);
+      conf = config.apply(c.annotation) as C;
 
       result = generateForClass(c, conf);
 
@@ -76,7 +76,7 @@ abstract base class Generator<A, K> {
     return mergeParts(parts);
   }
 
-  PartGenResult generateForClass(AnnotatedElement<A> annotatedClazz, Config<A> config);
+  PartGenResult generateForClass(AnnotatedElement<A> annotatedClazz, C config);
 
   GeneratorResult mergeParts(List<PartGenResult> parts);
 
