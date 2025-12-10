@@ -13,7 +13,6 @@ import "../../builder_mixins/header_gen.dart";
 import "../../data/lookup_store.dart";
 import "copy_with_generator.dart";
 
-// TODO(Yuki): reduce copied code between the generator classes
 // TODO(Yuki): add imports for all libraries to the generated extension class
 
 class CopyWithBuilder with HeaderGen implements Builder {
