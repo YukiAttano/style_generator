@@ -1,14 +1,25 @@
 import "../../style_generator.dart";
 import "../data/logger.dart";
+import "../data/resolved_import.dart";
 import "../data/resolved_type.dart";
 import "../data/variable.dart";
 import "../extensions/dart_type_extension.dart";
+
+class CopyWithGenResult {
+  /// the generated function
+  final String content;
+
+  /// additional code that [content] depends on
+  final Iterable<ResolvedImport> imports;
+
+  const CopyWithGenResult({this.content = "", this.imports = const []});
+}
 
 mixin CopyWithGen {
   static String get _nl => newLine;
   static const String methodName = "copyWith";
 
-  String generateCopyWith(
+  CopyWithGenResult generateCopyWith(
     String className,
     String constructor,
     List<Variable> parameters,
@@ -18,11 +29,15 @@ mixin CopyWithGen {
     List<String> namedConstructorParams = [];
     List<String> positionalConstructorParams = [];
 
+    List<ResolvedImport> imports = [];
+
     String prefix = "";
     String name;
     bool inCopyWith;
     ResolvedType? resolvedType;
     String suffix;
+
+    ResolvedImport import;
     for (var v in parameters) {
       resolvedType = v.resolvedType;
 
@@ -32,6 +47,13 @@ mixin CopyWithGen {
       inCopyWith = _includeVariable(v, inCopyWithCallback, className);
 
       prefix = inCopyWith ? "" : "//";
+
+      import = resolvedType.import;
+
+      if (name.toLowerCase().contains("style")) print("${v.name} ${v.type} ${v.fieldElement.hashCode} ${resolvedType.import}");
+      if (import.hasPrefix || !resolvedType.type.isDartCore) {
+        imports.add(import);
+      }
 
       params.add("$prefix ${resolvedType.displayName}$suffix $name,");
       if (v.isNamed) {
@@ -54,7 +76,10 @@ mixin CopyWithGen {
     }
     """;
 
-    return function;
+    return CopyWithGenResult(
+      imports: imports,
+      content: function,
+    );
   }
 
   bool _includeVariable(Variable v,  bool? Function(Variable v) inCopyWithCallback, String clazz) {

@@ -68,8 +68,8 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
     String generatedClassName = clazz.displayName + suffix;
     String fieldContent = !genFields ? "" : generateFieldGetter(variables);
     String ofContent = !genOf ? "" : generateOf(clazz.displayName, suffix, buildContext, fallback);
-    String copyWithContent = !genCopyWith
-        ? ""
+    CopyWithGenResult copyWithContent = !genCopyWith
+        ? const CopyWithGenResult()
         : generateCopyWith(
             clazz.displayName,
             constructorName,
@@ -86,7 +86,7 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
         generatedClassName,
         fields: fieldContent,
         of: ofContent,
-        copyWith: copyWithContent,
+        copyWith: copyWithContent.content,
         merge: mergeContent,
         lerp: lerpContent.content,
         trailing: [...lerpContent.trailing],

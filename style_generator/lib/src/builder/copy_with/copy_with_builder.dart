@@ -11,6 +11,7 @@ import "../../../style_generator.dart";
 import "../../annotations/copy_with_config.dart";
 import "../../builder_mixins/header_gen.dart";
 import "../../data/lookup_store.dart";
+import "../../data/resolved_import.dart";
 import "copy_with_generator.dart";
 
 // TODO(Yuki): add imports for all libraries to the generated extension class
@@ -55,7 +56,9 @@ class CopyWithBuilder with HeaderGen implements Builder {
     CopyWithGeneratorResult result = state.generate();
     String filename = basename(inputId.path);
     String header = generateHeader();
-    
+    Set<ResolvedImport> imports = result.imports.toSet();
+    imports.add(ResolvedImport(uri: lib.uri));
+
     if (result.isEmpty) {
       return;
     }
@@ -63,9 +66,16 @@ class CopyWithBuilder with HeaderGen implements Builder {
     partClass = """
     $header
     
-    ${result.addPartDirective ? 'part of "$filename";' : "import '${lib.uri}';"}
-    
+    ${() {
+      if (result.addPartDirective) {
+        return 'part of "$filename";';
+      } else {
+        return imports.map((e) => "import $e;",).join(newLine);
+      }
+    }()}
+
     ${result.parts.join("$newLine$newLine")}
+
     """;
 
     partClass = formatter.format(partClass);

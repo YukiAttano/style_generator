@@ -55,6 +55,7 @@ class Variable {
   final _Cache _cache;
 
   ResolvedType? _resolvedType;
+
   ResolvedType get resolvedType {
     assert(_resolvedType != null, "resolvedType was never resolved. Call resolveType() first");
     return _resolvedType!;
@@ -81,8 +82,12 @@ class Variable {
     if (resolvedType == null) {
       if (fieldElement == null) {
         resolvedType = ResolvedType(
-            library: library!,
-            type: type, typeAnnotation: null, prefixReference: null);
+          library: library!,
+          type: type,
+          typeAnnotation: null,
+          prefixReference: null,
+          importDirective: null,
+        );
       } else {
         resolvedType = ResolvedType.resolve(resolvedLib: resolvedLib, element: fieldElement!);
       }
