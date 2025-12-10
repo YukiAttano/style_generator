@@ -1,4 +1,3 @@
-import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:style_generator_annotation/copy_with_generator_annotation.dart";
 
@@ -10,8 +9,6 @@ import "../builder_mixins/fields_gen.dart";
 import "../data/annotated_element.dart";
 import "../data/annotation_converter/annotation_converter.dart";
 import "../data/variable.dart";
-import "../extensions/class_element_extension.dart";
-import "../extensions/element_annotation_extension.dart";
 import "../extensions/string_constructor_extension.dart";
 import "generator.dart";
 
@@ -21,15 +18,13 @@ class CopyWithGeneratorResult extends GeneratorResult {
   const CopyWithGeneratorResult({required this.addPartDirective, required super.parts});
 }
 
-class _GenResult extends PartGenResult {
+class GenResult extends PartGenResult {
   final bool addPartDirective;
 
-  const _GenResult({required this.addPartDirective, required super.part});
+  const GenResult({required this.addPartDirective, required super.part});
 }
 
 final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, CopyWithConfig> with FieldsGen, CopyWithGen {
-  static String get _nl => newLine;
-
   @override
   AnnotationConverter<CopyWith> get annotation => store.copyWithAnnoConverter;
 
@@ -48,7 +43,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
   }
 
   @override
-  _GenResult generateForClass(AnnotatedElement<CopyWith> annotatedClazz, CopyWithConfig config) {
+  GenResult generateForClass(AnnotatedElement<CopyWith> annotatedClazz, CopyWithConfig config) {
     AnalyzedClass c = analyzeClass(annotatedClazz, config.constructor?.asConstructorName);
     ClassElement clazz = c.clazz;
 
@@ -68,7 +63,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
       (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
     );
 
-    return _GenResult(
+    return GenResult(
       addPartDirective: !asExtension,
       part: _generatePartClass(
         generatedClassName,
@@ -82,7 +77,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
 
   @override
   CopyWithGeneratorResult mergeParts(List<PartGenResult> parts) {
-    List<_GenResult> results = List.from(parts, growable: false);
+    List<GenResult> results = List.from(parts, growable: false);
 
     return CopyWithGeneratorResult(
       addPartDirective: results.fold(false, (p, result) => p || result.addPartDirective),

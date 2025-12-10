@@ -1,6 +1,7 @@
 import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
+import "package:meta/meta.dart";
 
 import "../data/annotated_element.dart";
 import "../data/annotation_converter/annotation_converter.dart";
@@ -63,6 +64,7 @@ abstract base class Generator<A, K, C extends Config<A>> {
     required this.config,
   });
 
+  @protected
   GeneratorResult generate() {
     List<AnnotatedElement<A>> classes = getAnnotatedElements(libElement.classes, annotation);
 
