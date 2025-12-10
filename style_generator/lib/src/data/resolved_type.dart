@@ -97,6 +97,7 @@ class ResolvedType {
     // we can safely use _searchImportDirectiveIn without the library check.
     // we prevent lookups for FieldElements that are defined in the same library,
     // because multiple import directives could cause false positives. See [_importImportsType] for an explanation.
+    // This wouldn't be 'wrong', but because we only need this as a fallback if no explicit prefix on the type is given, right now, we can also safe some computing resources here.
     if (resolvedLib.element.library != element.library) {
       importDirective  = _searchImportDirectiveIn(resolvedLib, element);
     }
