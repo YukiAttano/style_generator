@@ -11,8 +11,9 @@ import "../extensions/dart_object_extension.dart";
 
 /// The internal representation of [StyleKey]
 ///
-/// [StyleKey] forces the [lerp] method to be be correctly typed,
+/// [StyleKey] forces the [lerp] method to be be typed,
 /// while this internal representation just holds the function name.
+/// (The type of this annotation and of the field are checked later to be matching types)
 class StyleKeyInternal<T> {
   static const String srcAnnotationName = "StyleKey";
   static const String inCopyWithName = "inCopyWith";

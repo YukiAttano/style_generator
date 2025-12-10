@@ -13,7 +13,6 @@ import "../builder_mixins/header_gen.dart";
 import "../data/lookup_store.dart";
 import "copy_with_generator.dart";
 
-// TODO(Yuki): Allow copy_with_gen to operate with different configuration keys
 // TODO(Yuki): reduce copied code between the generator classes
 
 class CopyWithBuilder with HeaderGen implements Builder {

@@ -3,21 +3,25 @@ import "package:analyzer/dart/analysis/session.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 import "package:build/build.dart";
+import "package:style_generator_annotation/copy_with_generator_annotation.dart";
 import "package:style_generator_annotation/style_generator_annotation.dart";
 
 import "../annotations/copy_with_config.dart";
+import "../annotations/copy_with_key_internal.dart";
 import "../annotations/style_config.dart";
 import "../annotations/style_key_internal.dart";
 import "annotation_converter/annotation_converter.dart";
 import "annotation_converter/json_annotation_converter.dart";
 
 class LookupStore {
-  static const String annotationPackage = "package:style_generator_annotation/style_generator_annotation.dart";
+  static const String styleAnnotationPackage = "package:style_generator_annotation/style_generator_annotation.dart";
+  static const String copyWithAnnotationPackage = "package:style_generator_annotation/copy_with_generator_annotation.dart";
   static const String materialPackage = "package:flutter/material.dart";
 
   static const String styleKeyName = StyleKeyInternal.srcAnnotationName;
   static const String styleName = StyleConfig.srcAnnotationName;
   static const String copyWithName = CopyWithConfig.srcAnnotationName;
+  static const String copyWithKeyName = CopyWithKeyInternal.srcAnnotationName;
   static const String buildContextName = "BuildContext";
 
   final Map<String, AnnotationConverter> _libraryAnnotations = {};
@@ -31,6 +35,9 @@ class LookupStore {
   AnnotationConverter<StyleKeyInternal> get styleKeyAnnoConverter => _libraryAnnotations[styleKeyName]! as AnnotationConverter<StyleKeyInternal>;
 
   AnnotationConverter<CopyWith> get copyWithAnnoConverter => _libraryAnnotations[copyWithName]! as AnnotationConverter<CopyWith>;
+
+  AnnotationConverter<CopyWithKeyInternal> get copyWithKeyAnnoConverter => _libraryAnnotations[copyWithKeyName]! as AnnotationConverter<CopyWithKeyInternal>;
+
 
   DartType get buildContextType => _dartTypes[buildContextName]!;
 
@@ -64,31 +71,38 @@ class LookupStore {
   }
 
   Future<void> _initStyle(BuildStep buildStep) async {
-    AssetId styleAsset = AssetId.resolve(Uri.parse(annotationPackage));
+    AssetId styleAsset = AssetId.resolve(Uri.parse(styleAnnotationPackage));
+    AssetId copyWithAsset = AssetId.resolve(Uri.parse(copyWithAnnotationPackage));
     LibraryElement styleLib = await buildStep.resolver.libraryFor(styleAsset);
+    LibraryElement copyWithLib = await buildStep.resolver.libraryFor(copyWithAsset);
 
-    // create ClassElements of our annotations
-    ClassElement? styleElement = styleLib.exportNamespace.get2(styleName) as ClassElement?;
-    ClassElement? styleKeyElement = styleLib.exportNamespace.get2(styleKeyName) as ClassElement?;
-    ClassElement? copyWithElement = styleLib.exportNamespace.get2(copyWithName) as ClassElement?;
-
+    // create ClassElements of our annotations and
     // create converter for the ClassElements to read the configured Annotations from real DartObjects
-    if (styleElement != null) {
-      _libraryAnnotations[styleName] = JsonAnnotationConverter<Style>(
-        annotationClass: styleElement,
-        buildAnnotation: Style.fromJson,
+
+    _createAnnotationFromJson<Style>(styleLib, styleName, Style.fromJson);
+    _createAnnotationFromMap<StyleKeyInternal>(styleLib, styleKeyName,  (map) => createStyleKey(resolvedLibrary, map));
+    _createAnnotationFromJson<CopyWith>(copyWithLib, copyWithName, CopyWith.fromJson);
+    _createAnnotationFromJson<CopyWithKeyInternal>(copyWithLib, copyWithKeyName, CopyWithKeyInternal.fromJson);
+  }
+
+  void _createAnnotationFromJson<T>(LibraryElement library, String annoName, AnnotationFromJson<T> fromJson) {
+    ClassElement? annoElement = library.exportNamespace.get2(annoName) as ClassElement?;
+
+    if (annoElement != null) {
+      _libraryAnnotations[annoName] = JsonAnnotationConverter<T>(
+        annotationClass: annoElement,
+        buildAnnotation: fromJson,
       );
     }
-    if (styleKeyElement != null) {
-      _libraryAnnotations[styleKeyName] = AnnotationConverter<StyleKeyInternal>(
-        annotationClass: styleKeyElement,
-        buildAnnotation: (map) => createStyleKey(resolvedLibrary, map),
-      );
-    }
-    if (copyWithElement != null) {
-      _libraryAnnotations[copyWithName] = JsonAnnotationConverter<CopyWith>(
-        annotationClass: copyWithElement,
-        buildAnnotation: CopyWith.fromJson,
+  }
+
+  void _createAnnotationFromMap<T>(LibraryElement library, String annoName, AnnotationFromMap<T> fromMap) {
+    ClassElement? annoElement = library.exportNamespace.get2(annoName) as ClassElement?;
+
+    if (annoElement != null) {
+      _libraryAnnotations[annoName] = AnnotationConverter<T>(
+        annotationClass: annoElement,
+        buildAnnotation: fromMap,
       );
     }
   }

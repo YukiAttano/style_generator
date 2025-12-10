@@ -96,8 +96,14 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     String generatedClassName = clazz.displayName + suffix;
     String fieldContent = !genFields ? "" : generateFieldGetter(variables);
     String ofContent = !genOf ? "" : generateOf(clazz.displayName, suffix, buildContext, fallback);
-    String copyWithContent =
-        !genCopyWith ? "" : generateCopyWith(clazz.displayName, constructorName, variables, styleKeyAnnotation);
+    String copyWithContent = !genCopyWith
+        ? ""
+        : generateCopyWith(
+            clazz.displayName,
+            constructorName,
+            variables,
+            (v) => v.getAnnotationOf(styleKeyAnnotation)?.inCopyWith,
+          );
     String mergeContent = !genMerge ? "" : generateMerge(resolvedLib, clazz.displayName, variables, styleKeyAnnotation);
     LerpGenResult lerpContent = !genLerp
         ? const LerpGenResult()
@@ -191,7 +197,6 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
 
     return list;
   }
-
 
   ConstructorElement? _getConstructor(List<ConstructorElement> constructors, String? name) {
     ConstructorElement? constructor;

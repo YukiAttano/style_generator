@@ -1,6 +1,4 @@
 import "../../style_generator.dart";
-import "../annotations/style_key_internal.dart";
-import "../data/annotation_converter/annotation_converter.dart";
 import "../data/logger.dart";
 import "../data/resolved_type.dart";
 import "../data/variable.dart";
@@ -14,13 +12,12 @@ mixin CopyWithGen {
     String className,
     String constructor,
     List<Variable> parameters,
-    AnnotationConverter<StyleKeyInternal> styleKeyAnnotation,
+    bool? Function(Variable v) inCopyWithCallback,
   ) {
     List<String> params = [];
     List<String> namedConstructorParams = [];
     List<String> positionalConstructorParams = [];
 
-    StyleKeyInternal? styleKey;
     String prefix = "";
     String name;
     bool inCopyWith;
@@ -32,8 +29,7 @@ mixin CopyWithGen {
       name = v.name!;
       suffix = v.type.isNullable ? "" : "?";
 
-      styleKey = v.getAnnotationOf(styleKeyAnnotation);
-      inCopyWith = _includeVariable(v, styleKey, className);
+      inCopyWith = _includeVariable(v, inCopyWithCallback, className);
 
       prefix = inCopyWith ? "" : "//";
 
@@ -61,8 +57,8 @@ mixin CopyWithGen {
     return function;
   }
 
-  bool _includeVariable(Variable v, StyleKeyInternal? styleKey, String clazz) {
-    bool include = styleKey?.inCopyWith ?? true;
+  bool _includeVariable(Variable v,  bool? Function(Variable v) inCopyWithCallback, String clazz) {
+    bool include = inCopyWithCallback(v) ?? true;
     if (!include && (v.isPositional || v.isRequired)) {
       cannotIgnorePositionalOrRequiredParameter(v, clazz: clazz, method: methodName);
       include = true;

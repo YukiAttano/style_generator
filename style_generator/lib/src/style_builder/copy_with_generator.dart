@@ -1,11 +1,11 @@
 import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
-import "package:style_generator_annotation/style_generator_annotation.dart";
+import "package:style_generator_annotation/copy_with_generator_annotation.dart";
 
 import "../../style_generator.dart";
 import "../annotations/copy_with_config.dart";
-import "../annotations/style_key_internal.dart";
+import "../annotations/copy_with_key_internal.dart";
 import "../builder_mixins/copy_with_gen.dart";
 import "../builder_mixins/fields_gen.dart";
 import "../data/annotated_element.dart";
@@ -42,7 +42,7 @@ class CopyWithGenerator with FieldsGen, CopyWithGen {
 
   AnnotationConverter<CopyWith> get copyWithAnnotation => store.copyWithAnnoConverter;
 
-  AnnotationConverter<StyleKeyInternal> get styleKeyAnnotation => store.styleKeyAnnoConverter;
+  AnnotationConverter<CopyWithKeyInternal> get copyWithKeyAnnotation => store.copyWithKeyAnnoConverter;
 
   CopyWithGenerator({
     required this.resolvedLib,
@@ -80,7 +80,7 @@ class CopyWithGenerator with FieldsGen, CopyWithGen {
     List<Variable> fields = clazz.getPropertyFields().map((e) => Variable(element: e)).toList();
 
     VariableHandler state = VariableHandler(constructorParams: constructorParams, fields: fields);
-    state.build(copyWithAnnotation);
+    state.build(copyWithKeyAnnotation);
     state.resolveTypes(resolvedLib);
 
     List<Variable> variables = state.merged;
@@ -92,7 +92,12 @@ class CopyWithGenerator with FieldsGen, CopyWithGen {
 
     String generatedClassName = clazz.displayName + suffix;
     String fieldContent = !genFields ? "" : generateFieldGetter(variables);
-    String copyWithContent = generateCopyWith(clazz.displayName, constructorName, variables, styleKeyAnnotation);
+    String copyWithContent = generateCopyWith(
+      clazz.displayName,
+      constructorName,
+      variables,
+      (v) => v.getAnnotationOf(copyWithKeyAnnotation)?.inCopyWith,
+    );
 
     return _GenResult(
       addPartDirective: !asExtension,
@@ -106,11 +111,7 @@ class CopyWithGenerator with FieldsGen, CopyWithGen {
     );
   }
 
-  String _generateMixin(
-    String generatedClassName, {
-    required String fields,
-    required String copyWith
-  }) {
+  String _generateMixin(String generatedClassName, {required String fields, required String copyWith}) {
     return """
       mixin _\$$generatedClassName {
       
@@ -121,10 +122,7 @@ class CopyWithGenerator with FieldsGen, CopyWithGen {
     """;
   }
 
-  String _generateExtension(
-      String generatedClassName, String className, {
-        required String copyWith
-      }) {
+  String _generateExtension(String generatedClassName, String className, {required String copyWith}) {
     return """
       extension \$${generatedClassName}Extension on $className {
         $copyWith
@@ -133,7 +131,8 @@ class CopyWithGenerator with FieldsGen, CopyWithGen {
   }
 
   String _generatePartClass(
-    String generatedClassName, String className,{
+    String generatedClassName,
+    String className, {
     required String fields,
     required String copyWith,
     required bool copyWithAsExtension,
