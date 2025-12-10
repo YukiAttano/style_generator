@@ -7,6 +7,7 @@ import "package:analyzer/dart/element/type.dart";
 import "../extensions/field_element_extension.dart";
 
 class ResolvedType {
+  final LibraryElement library;
   final DartType type;
   final TypeAnnotation? typeAnnotation;
   final ImportPrefixReference? prefixReference;
@@ -23,12 +24,18 @@ class ResolvedType {
   /// Example: `fake.TextStyle`
   String get displayName => "$typePrefix${type.getDisplayString()}";
 
-  const ResolvedType({required this.type, required this.typeAnnotation, required this.prefixReference});
+  const ResolvedType({
+    required this.library,
+    required this.type,
+    required this.typeAnnotation,
+    required this.prefixReference,
+  });
 
   factory ResolvedType.resolve({required ResolvedLibraryResult resolvedLib, required FieldElement element}) {
     TypeAnnotation? typeAnnotation = _getPrefixType(resolvedLib, element);
 
     return ResolvedType(
+      library: element.library,
       type: element.type,
       typeAnnotation: typeAnnotation,
       prefixReference: _getPrefixReference(typeAnnotation),
@@ -66,6 +73,7 @@ class ResolvedType {
   }
 
   ResolvedType get extensionTypeErasure => ResolvedType(
+        library: library,
         type: type.extensionTypeErasure,
         typeAnnotation: typeAnnotation,
         prefixReference: prefixReference,

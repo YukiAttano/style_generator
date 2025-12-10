@@ -1,6 +1,8 @@
 import "package:style_generator_annotation/copy_with_generator_annotation.dart";
 
-class CopyWithConfig extends CopyWith {
+import "../style_builder/config.dart";
+
+class CopyWithConfig extends CopyWith implements Config<CopyWith> {
 
   static const String srcAnnotationName = "CopyWith";
 

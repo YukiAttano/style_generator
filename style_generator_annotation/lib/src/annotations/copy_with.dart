@@ -13,11 +13,11 @@ class CopyWith {
 
   /// will generate the as an extension
   ///
-  /// * `true` generates as extension method (no `with _$SomeCopyWith` required)
+  /// * `true` generates as extension method (default)
   /// * `null` will depend on the build.yml value
-  /// * `false` generates as mixin (default)
+  /// * `false` generates as mixin (requires `with _$[ClassName]CopyWith` on the class)
   ///
-  /// If `true`, [suffix] will be applied to the name of the method
+  /// If `true`, [suffix] will be applied to the name of the extension class
   final bool? asExtension;
 
   /// The suffix is applied to the generated mixin

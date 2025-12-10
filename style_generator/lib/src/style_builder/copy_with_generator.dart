@@ -86,7 +86,7 @@ class CopyWithGenerator with FieldsGen, CopyWithGen {
     List<Variable> variables = state.merged;
 
     String constructorName = (config.constructor ?? constructor.name!).asConstructorName;
-    bool asExtension = config.asExtension ?? false;
+    bool asExtension = config.asExtension ?? true;
     bool genFields = !asExtension;
     String suffix = config.suffix;
 

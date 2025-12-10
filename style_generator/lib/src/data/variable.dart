@@ -25,6 +25,11 @@ class Variable {
     return element is FormalParameterElement ? element as FormalParameterElement : null;
   }
 
+  /// if this is null, [resolveType] will fail
+  ///
+  /// a library element is defined to be only null on pseudo elements like [MultiplyDefinedElement]
+  LibraryElement? get library => element.library;
+
   DartType get type => element.type;
 
   // ElementKind get kind => element.kind;
@@ -75,7 +80,9 @@ class Variable {
 
     if (resolvedType == null) {
       if (fieldElement == null) {
-        resolvedType = ResolvedType(type: type, typeAnnotation: null, prefixReference: null);
+        resolvedType = ResolvedType(
+            library: library!,
+            type: type, typeAnnotation: null, prefixReference: null);
       } else {
         resolvedType = ResolvedType.resolve(resolvedLib: resolvedLib, element: fieldElement!);
       }
