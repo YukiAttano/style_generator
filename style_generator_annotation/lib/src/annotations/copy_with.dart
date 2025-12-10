@@ -18,6 +18,8 @@ class CopyWith {
   /// * `false` generates as mixin (requires `with _$[ClassName]CopyWith` on the class)
   ///
   /// If `true`, [suffix] will be applied to the name of the extension class
+  ///
+  /// If 'false', type definitions of super classes have to be imported manually
   final bool? asExtension;
 
   /// The suffix is applied to the generated mixin
