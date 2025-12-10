@@ -18,73 +18,49 @@ import "../data/variable.dart";
 import "../extensions/class_element_extension.dart";
 import "../extensions/element_annotation_extension.dart";
 import "../extensions/string_constructor_extension.dart";
+import "generator.dart";
 
-class StyleGeneratorResult {
-  final List<String> parts;
-
-  bool get isEmpty => parts.isEmpty;
-
-  const StyleGeneratorResult({required this.parts});
+class StyleGeneratorResult extends GeneratorResult {
+  const StyleGeneratorResult({required super.parts});
 }
 
-class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
+final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfig>
+    with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
   static String get _nl => newLine;
 
-  LibraryElement get libElement => resolvedLib.element;
-  final ResolvedLibraryResult resolvedLib;
-  final StyleConfig styleConfig;
-  final LookupStore store;
+  AnnotationConverter<Style> get annotation => store.styleAnnoConverter;
 
-  AnnotationConverter<Style> get styleAnnotation => store.styleAnnoConverter;
-
-  AnnotationConverter<StyleKeyInternal> get styleKeyAnnotation => store.styleKeyAnnoConverter;
+  AnnotationConverter<StyleKeyInternal> get keyAnnotation => store.styleKeyAnnoConverter;
 
   StyleGenerator({
-    required this.resolvedLib,
-    required this.styleConfig,
-    required this.store,
+    required super.resolvedLib,
+    required super.store,
+    required super.config,
   });
 
+  @override
   StyleGeneratorResult generate() {
-    List<AnnotatedElement<Style>> classes = _getAnnotatedElements(libElement.classes, styleAnnotation);
-
-    List<String> parts = [];
-
-    StyleConfig config;
-    for (var c in classes) {
-      config = styleConfig.apply(c.annotation);
-
-      if (config.isDisabled) continue;
-
-      parts.add(
-        _generateForClass(c, config),
-      );
-    }
-
-    return StyleGeneratorResult(parts: parts);
+    return super.generate() as StyleGeneratorResult;
   }
 
-  String _generateForClass(AnnotatedElement<Style> annotatedClazz, StyleConfig config) {
-    ClassElement clazz = annotatedClazz.element as ClassElement;
-    ConstructorElement? constructor = _getConstructor(clazz.constructors, config.constructor?.asConstructorName);
+  @override
+  StyleGeneratorResult mergeParts(List<PartGenResult> parts) {
+    return StyleGeneratorResult(parts: parts.map((e) => e.part).toList(growable: false));
+  }
 
-    if (constructor == null) throw Exception("No Constructor found");
+  @override
+  PartGenResult generateForClass(AnnotatedElement<Style> annotatedClazz, StyleConfig config) {
+    AnalyzedClass c = analyzeClass(annotatedClazz, config.constructor?.asConstructorName);
+    ClassElement clazz = c.clazz;
 
-    List<Variable> constructorParams = constructor.formalParameters.map((e) => Variable(element: e)).toList();
-    List<Variable> fields = clazz.getPropertyFields().map((e) => Variable(element: e)).toList();
-
-    VariableHandler state = VariableHandler(constructorParams: constructorParams, fields: fields);
-    state.build(styleKeyAnnotation);
-    state.resolveTypes(resolvedLib);
-
-    List<Variable> variables = state.merged;
+    List<Variable> variables = c.variables;
 
     ConstructorElement? fallbackConstructor = _getConstructor(clazz.constructors, config.fallback);
     ConstructorElement? ofConstructor = _getConstructor(clazz.constructors, "of");
 
     Variable? buildContext = _getBuildContextParameterFrom(fallback: fallbackConstructor, of: ofConstructor);
 
-    String constructorName = (config.constructor ?? constructor.name!).asConstructorName;
+    String constructorName = (config.constructor ?? c.constructor.name!).asConstructorName;
     String fallback = (config.fallback ?? "").asConstructorName;
     bool genFields = config.genFields;
     bool genCopyWith = config.genCopyWith;
@@ -102,21 +78,23 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
             clazz.displayName,
             constructorName,
             variables,
-            (v) => v.getAnnotationOf(styleKeyAnnotation)?.inCopyWith,
+            (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
           );
-    String mergeContent = !genMerge ? "" : generateMerge(resolvedLib, clazz.displayName, variables, styleKeyAnnotation);
+    String mergeContent = !genMerge ? "" : generateMerge(resolvedLib, clazz.displayName, variables, keyAnnotation);
     LerpGenResult lerpContent = !genLerp
         ? const LerpGenResult()
-        : generateLerp(resolvedLib, clazz.displayName, constructorName, variables, styleKeyAnnotation);
+        : generateLerp(resolvedLib, clazz.displayName, constructorName, variables, keyAnnotation);
 
-    return _generatePartClass(
-      generatedClassName,
-      fields: fieldContent,
-      of: ofContent,
-      copyWith: copyWithContent,
-      merge: mergeContent,
-      lerp: lerpContent.content,
-      trailing: [...lerpContent.trailing],
+    return PartGenResult(
+      part: _generatePartClass(
+        generatedClassName,
+        fields: fieldContent,
+        of: ofContent,
+        copyWith: copyWithContent,
+        merge: mergeContent,
+        lerp: lerpContent.content,
+        trailing: [...lerpContent.trailing],
+      ),
     );
   }
 
@@ -178,24 +156,6 @@ class StyleGenerator with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
     """;
 
     return partClass;
-  }
-
-  List<AnnotatedElement<T>> _getAnnotatedElements<T>(List<Element> elements, AnnotationConverter<T> builder) {
-    List<AnnotatedElement<T>> list = [];
-
-    for (var e in elements) {
-      for (var annotationClass in e.metadata.annotations) {
-        if (annotationClass.isOfType(builder.annotationClass)) {
-          DartObject annotationObject = annotationClass.computeConstantValue()!;
-
-          list.add(
-            AnnotatedElement<T>(element: e, object: annotationObject, annotation: builder.build(annotationObject)),
-          );
-        }
-      }
-    }
-
-    return list;
   }
 
   ConstructorElement? _getConstructor(List<ConstructorElement> constructors, String? name) {

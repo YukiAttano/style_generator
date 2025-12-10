@@ -42,6 +42,11 @@ class AnalyzedClass {
   });
 }
 
+/// Base class to reduce copied code between generator
+///
+/// - 'A' - Annotation
+/// - 'K' - KeyAnnotation
+/// - 'C' - Config
 abstract base class Generator<A, K, C extends Config<A>> {
   LibraryElement get libElement => resolvedLib.element;
   final ResolvedLibraryResult resolvedLib;

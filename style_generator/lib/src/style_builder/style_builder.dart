@@ -60,8 +60,8 @@ class StyleBuilder with HeaderGen implements Builder {
 
     StyleGenerator state = StyleGenerator(
       resolvedLib: resolvedLib,
-      styleConfig: styleConfig,
       store: _lookupStore,
+      config: styleConfig,
     );
 
     String partClass;

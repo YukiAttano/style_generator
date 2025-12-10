@@ -1,6 +1,8 @@
 import "package:style_generator_annotation/style_generator_annotation.dart";
 
-class StyleConfig extends Style {
+import "../style_builder/config.dart";
+
+class StyleConfig extends Style implements Config<StyleConfig> {
 
   static const String srcAnnotationName = "Style";
 
@@ -47,6 +49,7 @@ class StyleConfig extends Style {
     );
   }
 
+  @override
   StyleConfig apply(Style other) {
     return StyleConfig(
       constructor: other.constructor ?? constructor,
