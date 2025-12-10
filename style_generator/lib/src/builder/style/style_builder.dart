@@ -8,10 +8,10 @@ import "package:build/build.dart";
 import "package:dart_style/dart_style.dart";
 import "package:path/path.dart" hide Style;
 
-import "../annotations/style_config.dart";
-import "../builder_mixins/header_gen.dart";
-import "../data/lookup_store.dart";
-import "style_part_generator.dart";
+import "../../annotations/style_config.dart";
+import "../../builder_mixins/header_gen.dart";
+import "../../data/lookup_store.dart";
+import "style_generator.dart";
 
 /*
     // Lookup classes from packages

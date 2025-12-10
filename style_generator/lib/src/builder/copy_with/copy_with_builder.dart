@@ -7,10 +7,10 @@ import "package:build/build.dart";
 import "package:dart_style/dart_style.dart";
 import "package:path/path.dart";
 
-import "../../style_generator.dart";
-import "../annotations/copy_with_config.dart";
-import "../builder_mixins/header_gen.dart";
-import "../data/lookup_store.dart";
+import "../../../style_generator.dart";
+import "../../annotations/copy_with_config.dart";
+import "../../builder_mixins/header_gen.dart";
+import "../../data/lookup_store.dart";
 import "copy_with_generator.dart";
 
 // TODO(Yuki): reduce copied code between the generator classes

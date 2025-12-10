@@ -8,7 +8,7 @@ import "../data/logger.dart";
 import "../data/resolved_type.dart";
 import "../data/variable.dart";
 import "../extensions/dart_type_extension.dart";
-import "../style_builder/style_builder.dart";
+import "../builder/style/style_builder.dart";
 
 class LerpGenResult {
   /// the generated function

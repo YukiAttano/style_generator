@@ -1,6 +1,6 @@
 import "package:style_generator_annotation/copy_with_generator_annotation.dart";
 
-import "../style_builder/config.dart";
+import "../builder/config.dart";
 
 class CopyWithConfig extends CopyWith implements Config<CopyWith> {
 

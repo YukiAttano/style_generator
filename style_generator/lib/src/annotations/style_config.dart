@@ -1,6 +1,6 @@
 import "package:style_generator_annotation/style_generator_annotation.dart";
 
-import "../style_builder/config.dart";
+import "../builder/config.dart";
 
 class StyleConfig extends Style implements Config<StyleConfig> {
 

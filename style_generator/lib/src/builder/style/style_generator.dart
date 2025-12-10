@@ -1,24 +1,20 @@
-import "package:analyzer/dart/analysis/results.dart";
-import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:style_generator_annotation/style_generator_annotation.dart";
 
-import "../../style_generator.dart";
-import "../annotations/style_config.dart";
-import "../annotations/style_key_internal.dart";
-import "../builder_mixins/copy_with_gen.dart";
-import "../builder_mixins/fields_gen.dart";
-import "../builder_mixins/lerp_gen.dart";
-import "../builder_mixins/merge_gen.dart";
-import "../builder_mixins/of_gen.dart";
-import "../data/annotated_element.dart";
-import "../data/annotation_converter/annotation_converter.dart";
-import "../data/lookup_store.dart";
-import "../data/variable.dart";
-import "../extensions/class_element_extension.dart";
-import "../extensions/element_annotation_extension.dart";
-import "../extensions/string_constructor_extension.dart";
-import "generator.dart";
+import "../../../style_generator.dart";
+import "../../annotations/style_config.dart";
+import "../../annotations/style_key_internal.dart";
+import "../../builder_mixins/copy_with_gen.dart";
+import "../../builder_mixins/fields_gen.dart";
+import "../../builder_mixins/lerp_gen.dart";
+import "../../builder_mixins/merge_gen.dart";
+import "../../builder_mixins/of_gen.dart";
+import "../../data/annotated_element.dart";
+import "../../data/annotation_converter/annotation_converter.dart";
+import "../../data/variable.dart";
+import "../../extensions/class_element_extension.dart";
+import "../../extensions/string_constructor_extension.dart";
+import "../generator.dart";
 
 class StyleGeneratorResult extends GeneratorResult {
   const StyleGeneratorResult({required super.parts});

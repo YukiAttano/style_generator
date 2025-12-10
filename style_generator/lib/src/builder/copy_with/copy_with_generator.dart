@@ -1,16 +1,16 @@
 import "package:analyzer/dart/element/element.dart";
 import "package:style_generator_annotation/copy_with_generator_annotation.dart";
 
-import "../../style_generator.dart";
-import "../annotations/copy_with_config.dart";
-import "../annotations/copy_with_key_internal.dart";
-import "../builder_mixins/copy_with_gen.dart";
-import "../builder_mixins/fields_gen.dart";
-import "../data/annotated_element.dart";
-import "../data/annotation_converter/annotation_converter.dart";
-import "../data/variable.dart";
-import "../extensions/string_constructor_extension.dart";
-import "generator.dart";
+import "../../../style_generator.dart";
+import "../../annotations/copy_with_config.dart";
+import "../../annotations/copy_with_key_internal.dart";
+import "../../builder_mixins/copy_with_gen.dart";
+import "../../builder_mixins/fields_gen.dart";
+import "../../data/annotated_element.dart";
+import "../../data/annotation_converter/annotation_converter.dart";
+import "../../data/variable.dart";
+import "../../extensions/string_constructor_extension.dart";
+import "../generator.dart";
 
 class CopyWithGeneratorResult extends GeneratorResult {
   final bool addPartDirective;
