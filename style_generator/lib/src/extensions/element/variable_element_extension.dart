@@ -2,8 +2,8 @@ import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 
-import "../data/logger.dart";
-import "dart_type_extension.dart";
+import "../../data/logger.dart";
+import "../dart_type_extension.dart";
 
 extension VariableElementExtension on VariableElement {
   bool isOfSameTypeAsTypeArgumentFromObject(DartObject object, {bool? lessStrict, bool? allowDynamic}) {

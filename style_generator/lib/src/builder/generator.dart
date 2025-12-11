@@ -1,14 +1,17 @@
 import "package:analyzer/dart/analysis/results.dart";
+import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
+import "package:analyzer/src/dart/ast/ast.dart";
 import "package:meta/meta.dart";
 
 import "../data/annotated_element.dart";
 import "../data/annotation_converter/annotation_converter.dart";
 import "../data/lookup_store.dart";
 import "../data/variable.dart";
-import "../extensions/class_element_extension.dart";
+import "../extensions/element/class_element_extension.dart";
 import "../extensions/element_annotation_extension.dart";
+import "../extensions/resolved_library_result_extension.dart";
 import "config.dart";
 
 class GeneratorResult {
@@ -93,10 +96,8 @@ abstract base class Generator<A, K, C extends Config<A>> {
 
     if (constructor == null) throw Exception("No Constructor found");
 
-    List<Variable> constructorParams = constructor.formalParameters.map((e) => Variable(element: e)).toList();
-    List<Variable> fields = clazz.getPropertyFields().map((e) => Variable(element: e)).toList();
-
-    VariableHandler state = VariableHandler(constructorParams: constructorParams, fields: fields);
+    VariableHandler state = VariableHandler(clazz: clazz, constructor: constructor);
+    state.mapParameterToFields(resolvedLib);
     if (keyAnnotation != null) state.build(keyAnnotation!);
     state.resolveTypes(resolvedLib);
 

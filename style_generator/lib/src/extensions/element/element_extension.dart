@@ -1,9 +1,9 @@
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
 
-import "../data/annotated_element.dart";
-import "../data/annotation_converter/annotation_converter.dart";
-import "element_annotation_extension.dart";
+import "../../data/annotated_element.dart";
+import "../../data/annotation_converter/annotation_converter.dart";
+import "../element_annotation_extension.dart";
 
 extension ElementExtension on Element {
   List<AnnotatedElement<T>> getAnnotationsOf<T>(AnnotationConverter<T> converter) {

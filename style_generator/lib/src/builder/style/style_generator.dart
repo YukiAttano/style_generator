@@ -12,10 +12,10 @@ import "../../builder_mixins/of_gen.dart";
 import "../../data/annotated_element.dart";
 import "../../data/annotation_converter/annotation_converter.dart";
 import "../../data/variable.dart";
-import "../../extensions/class_element_extension.dart";
+import "../../extensions/element/class_element_extension.dart";
 import "../../extensions/string_constructor_extension.dart";
-import "../../extensions/type_parameter_element_list_extension_.dart";
-import "../../extensions/type_parameterized_element_extension.dart";
+import "../../extensions/element/type_parameter_element_list_extension_.dart";
+import "../../extensions/element/type_parameterized_element_extension.dart";
 import "../generator.dart";
 
 class StyleGeneratorResult extends GeneratorResult {

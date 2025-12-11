@@ -1,11 +1,17 @@
+import "dart:convert";
+
 import "package:analyzer/dart/analysis/results.dart";
+import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 import "package:collection/collection.dart";
 
 import "../data/annotated_element.dart";
-import "../extensions/element_extension.dart";
-import "../extensions/variable_element_extension.dart";
+import "../extensions/constructor_declaration_extension.dart";
+import "../extensions/element/class_element_extension.dart";
+import "../extensions/element/element_extension.dart";
+import "../extensions/element/variable_element_extension.dart";
+import "../extensions/resolved_library_result_extension.dart";
 import "annotation_converter/annotation_converter.dart";
 import "logger.dart";
 import "resolved_type.dart";
@@ -71,7 +77,20 @@ class Variable {
   ///
   /// if [element] is of type [FieldElement], [fieldElement] is ignored
   Variable({required VariableElement element, FieldElement? fieldElement})
-      : this._(element: element, fieldElement: (element is FieldElement) ? element : fieldElement);
+      : this._(element: element, fieldElement: _getFieldElement(element) ?? fieldElement);
+
+  static FieldElement? _getFieldElement(VariableElement element) {
+    switch (element) {
+      case FieldElement():
+        return element;
+      case FieldFormalParameterElement():
+        return element.field;
+      case SuperFormalParameterElement():
+        return _getFieldElement(element.superConstructorParameter!);
+    }
+
+    return null;
+  }
 
   T? getAnnotationOf<T>(AnnotationConverter<T> converter) => _cache.getAnnotation<T>(element, converter);
 

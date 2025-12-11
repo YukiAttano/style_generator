@@ -36,14 +36,18 @@ mixin CopyWithGen {
     String name;
     bool inCopyWith;
     ResolvedType? resolvedType;
-    String suffix;
+    String typeSuffix;
+    String fieldName;
 
     ResolvedImport import;
     for (var v in parameters) {
+
       resolvedType = v.resolvedType;
 
       name = v.name!;
-      suffix = v.type.isNullable ? "" : "?";
+      typeSuffix = resolvedType.type.isNullable ? "" : "?";
+
+      fieldName = v.fieldElement?.displayName ?? name;
 
       inCopyWith = _includeVariable(v, inCopyWithCallback, className);
 
@@ -55,11 +59,11 @@ mixin CopyWithGen {
         imports.add(import);
       }
 
-      params.add("$prefix ${resolvedType.displayName}$suffix $name,");
+      params.add("$prefix ${resolvedType.displayName}$typeSuffix $name,");
       if (v.isNamed) {
-        namedConstructorParams.add("$prefix $name: $name ?? this.$name,");
+        namedConstructorParams.add("$prefix $name: $name ?? this.$fieldName,");
       } else {
-        positionalConstructorParams.add("$prefix $name ?? this.$name,");
+        positionalConstructorParams.add("$prefix $name ?? this.$fieldName,");
       }
     }
 
