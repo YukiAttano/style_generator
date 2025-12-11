@@ -172,10 +172,11 @@ class Some<T, K> {
 # Annotations
 
 ## Style
-The Style annotation allows customizing the generation of the style class.
-For example, you can disable the .copyWith generation and use another Package for its generation.
+<details>
+<summary> The Style annotation allows customizing the generation of the style class. </summary>
+For example, you can disable the `copyWith()` generation and use another package for it.
 
-See the Style documentation for more info.
+See the [`Style` annotation](https://github.com/YukiAttano/style_generator/blob/main/style_generator_annotation/lib/src/annotations/style.dart) documentation for more info. 
 
 ```dart
 @Style(constructor: "_", fallback: "custom", genCopyWith: true, genMerge: true, genLerp: true, genOf: true, suffix: "Generated")
@@ -193,6 +194,7 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyleGenerated {
 }
 
 ```
+</details>
 
 ### Customize the default behavior with build.yml
 
