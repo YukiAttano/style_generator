@@ -160,14 +160,20 @@ class ResolvedType {
     List<ImportDirective> imports =
         unit.unit.sortedDirectivesAndDeclarations.whereType<ImportDirective>().toList(growable: false);
 
-    for (var i in imports) {
+    loop: for (var i in imports) {
       if (lookupLibrary == i.libraryImport?.importedLibrary) {
         if (i.combinators.isEmpty) {
           directive = i;
           break;
-        } else if (_importImportsType(i, element.type) ?? true) {
-          directive = i;
-          break;
+        } else  {
+
+          switch (_isImportImportingType(i, element.type)) {
+            case null:
+            case true:
+              directive = i;
+              break loop;
+            case false:
+          }
         }
       }
     }
@@ -188,10 +194,10 @@ class ResolvedType {
   /// Example:
   /// ```dart
   /// import: 'some.dart' show Some;      // explicit import of Some
-  /// import: 'some.dart' as show Some;  // explicit import of Some
+  /// import: 'some.dart' as show Some;   // explicit import of Some
   /// import: 'some.dart;                 // implicit import of Some
   /// ```
-  static bool? _importImportsType(ImportDirective i, DartType type) {
+  static bool? _isImportImportingType(ImportDirective i, DartType type) {
     bool? imports;
 
     for (var c in i.combinators) {
