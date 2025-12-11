@@ -50,7 +50,6 @@ mixin CopyWithGen {
 
       import = resolvedType.import;
 
-      if (name.toLowerCase().contains("style")) print("${v.name} ${v.type} ${v.fieldElement.hashCode} ${resolvedType.import}");
       if (import.hasPrefix || !resolvedType.type.isDartCore) {
         imports.add(import);
       }
