@@ -122,7 +122,8 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 
 ## Positional and Named Parameter
 
-A mix of positional and named parameter are supported.
+<details>
+<summary> A mix of positional and named parameter are supported. </summary>
 
 ```dart
 @Style()
@@ -165,6 +166,8 @@ class Some<T, K> {
   }
 }
 ```
+
+</details>
 
 # Annotations
 
