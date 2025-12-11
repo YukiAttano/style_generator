@@ -11,6 +11,8 @@ import "../../data/annotation_converter/annotation_converter.dart";
 import "../../data/resolved_import.dart";
 import "../../data/variable.dart";
 import "../../extensions/string_constructor_extension.dart";
+import "../../extensions/type_parameter_element_list_extension_.dart";
+import "../../extensions/type_parameterized_element_extension.dart";
 import "../generator.dart";
 
 class CopyWithGeneratorResult extends GeneratorResult {
@@ -27,7 +29,8 @@ class GenResult extends PartGenResult {
   const GenResult({required this.addPartDirective, required this.imports, required super.part});
 }
 
-final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, CopyWithConfig> with FieldsGen, CopyWithGen {
+final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, CopyWithConfig>
+    with FieldsGen, CopyWithGen {
   @override
   AnnotationConverter<CopyWith> get annotation => store.copyWithAnnoConverter;
 
@@ -61,6 +64,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
     String fieldContent = !genFields ? "" : generateFieldGetter(variables);
     CopyWithGenResult copyWithContent = generateCopyWith(
       clazz.displayName,
+      clazz.typeParameters.typesToString(),
       constructorName,
       variables,
       (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
@@ -71,7 +75,8 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
       imports: copyWithContent.imports,
       part: _generatePartClass(
         generatedClassName,
-        clazz.displayName,
+        clazz.getTypedName(),
+        clazz.typeParameters.typesToString(),
         fields: fieldContent,
         copyWith: copyWithContent.content,
         copyWithAsExtension: asExtension,
@@ -90,9 +95,9 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
     );
   }
 
-  String _generateMixin(String generatedClassName, {required String fields, required String copyWith}) {
+  String _generateMixin(String generatedClassName, String types, {required String fields, required String copyWith}) {
     return """
-      mixin _\$$generatedClassName {
+      mixin _\$$generatedClassName$types {
       
         $fields
         
@@ -101,9 +106,9 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
     """;
   }
 
-  String _generateExtension(String generatedClassName, String className, {required String copyWith}) {
+  String _generateExtension(String generatedClassName, String className, String types, {required String copyWith}) {
     return """
-      extension \$${generatedClassName}Extension on $className {
+      extension \$${generatedClassName}Extension$types on $className {
         $copyWith
       }
     """;
@@ -111,7 +116,8 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
 
   String _generatePartClass(
     String generatedClassName,
-    String className, {
+    String className,
+    String types, {
     required String fields,
     required String copyWith,
     required bool copyWithAsExtension,
@@ -122,8 +128,8 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
     String extension;
     bool hasMixin = !copyWithAsExtension || trailing.isNotEmpty;
 
-    mixin = _generateMixin(generatedClassName, fields: fields, copyWith: copyWith);
-    extension = _generateExtension(generatedClassName, className, copyWith: copyWith);
+    mixin = _generateMixin(generatedClassName, types, fields: fields, copyWith: copyWith);
+    extension = _generateExtension(generatedClassName, className, types, copyWith: copyWith);
 
     partClass = """
        
@@ -135,5 +141,4 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
 
     return partClass;
   }
-
 }

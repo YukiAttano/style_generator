@@ -11,10 +11,15 @@ class VariableHandler {
 
   late final List<Variable> _merged = List.of(
     constructorParams.map(
-      (e) => Variable(
-        element: e.element,
-        fieldElement: fields.firstWhere((variable) => variable == e).element as FieldElement,
-      ),
+      (e) {
+        FieldElement? field = fields.firstWhereOrNull((variable) => variable == e)?.element as FieldElement?;
+        if (field == null) throw Exception("Could not find field definition for '$e' in $fields");
+
+        return Variable(
+          element: e.element,
+          fieldElement: field,
+        );
+      }
     ),
   );
 

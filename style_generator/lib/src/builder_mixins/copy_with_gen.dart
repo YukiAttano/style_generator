@@ -21,6 +21,7 @@ mixin CopyWithGen {
 
   CopyWithGenResult generateCopyWith(
     String className,
+    String classTypes,
     String constructor,
     List<Variable> parameters,
     bool? Function(Variable v) inCopyWithCallback,
@@ -67,7 +68,7 @@ mixin CopyWithGen {
     String named = namedConstructorParams.isEmpty ? "" : namedConstructorParams.join(_nl);
 
     String function = """
-    $className $methodName($parameter) {
+    $className$classTypes $methodName($parameter) {
       return $className.$constructor(
        $positional
        $named

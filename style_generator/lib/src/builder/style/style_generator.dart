@@ -14,6 +14,8 @@ import "../../data/annotation_converter/annotation_converter.dart";
 import "../../data/variable.dart";
 import "../../extensions/class_element_extension.dart";
 import "../../extensions/string_constructor_extension.dart";
+import "../../extensions/type_parameter_element_list_extension_.dart";
+import "../../extensions/type_parameterized_element_extension.dart";
 import "../generator.dart";
 
 class StyleGeneratorResult extends GeneratorResult {
@@ -65,13 +67,14 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
     bool genOf = config.genOf ?? buildContext != null;
     String suffix = config.suffix;
 
-    String generatedClassName = clazz.displayName + suffix;
+    String generatedClassName = clazz.getTypedName(suffix: suffix);
     String fieldContent = !genFields ? "" : generateFieldGetter(variables);
     String ofContent = !genOf ? "" : generateOf(clazz.displayName, suffix, buildContext, fallback);
     CopyWithGenResult copyWithContent = !genCopyWith
         ? const CopyWithGenResult()
         : generateCopyWith(
             clazz.displayName,
+            clazz.typeParameters.typesToString(),
             constructorName,
             variables,
             (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
