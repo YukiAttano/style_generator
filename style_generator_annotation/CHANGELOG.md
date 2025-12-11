@@ -1,6 +1,6 @@
-## NEXT
+## 0.1.3
 
-- Increase StyleKey dependency from ^0.1.2 to ^0.1.3 (required since 0.1.2)
+- Add CopyWith and CopyWithKey annotation
 
 ## 0.1.2
 

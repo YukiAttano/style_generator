@@ -33,6 +33,9 @@ For even easier generation, use the [Style Generator Templates for Flutter](http
     - [Style](#style)
       - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml)
     - [StyleKey\<T>](#stylekeyt)
+    - [CopyWith](#copywith)
+      - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml-1)
+    - [CopyWithKey](#copywithkey)
     - [Custom Lerp Functions](#custom-lerp-functions)
     - [Custom Merge Functions](#custom-merge-functions)
 - [Prefixed Imports and static callbacks](#prefixed-imports-and-static-callbacks)
@@ -236,6 +239,157 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 Only StyleKeys on fields and the constructor matching Style.constructor are considered.
 
 Do note, StyleKeys on the constructor override configurations on the field without further warning.
+
+## CopyWith
+
+Since a `copyWith()` method is required by a `ThemeExtension`, i've added a `@CopyWith()` annotation 
+that generates a standalone `copyWith()` Extension
+
+```dart
+import 'package:style_generator_annotation/copy_with_generator_annotation.dart';
+
+@CopyWith()
+class Profile {
+  final String firstname;
+  final String lastname;
+
+  String get name => "$firstname $lastname";
+
+  final DateTime? birthday;
+
+  int get age => birthday != null ? DateTime.now().difference(birthday!).inDays ~/ 365 : 0;
+
+  const Profile({this.firstname = "", this.lastname = "", this.birthday});
+}
+```
+
+which generates:
+```dart
+import 'package:test_generation/src/data/profile.dart';
+
+extension $ProfileExtension on Profile {
+  Profile copyWith({
+    String? firstname,
+    String? lastname,
+    DateTime? birthday,
+  }) {
+    return Profile.new(
+      firstname: firstname ?? this.firstname,
+      lastname: lastname ?? this.lastname,
+      birthday: birthday ?? this.birthday,
+    );
+  }
+}
+```
+
+### Customize the default behavior with build.yml
+
+You can customize the default behavior in your build.yml
+
+```yaml
+targets:
+  $default:
+    builders:
+      style_generator|copy_with_builder:
+        enabled: true
+        options:
+          constructor: null     # The constructor for .copyWith to use. The default is `null`
+          asExtension: null     # whether an Extension method or a mixin should be generated. The default is `null` (will generate an Extension)
+          suffix: null          # an optional suffix for the generated extension or mixin. The default is `null`
+```
+
+## CopyWithKey
+
+The generation of the `copyWith()` method can be further customized
+
+a more complex example: 
+```dart
+import 'package:style_generator_annotation/copy_with_generator_annotation.dart';
+import 'package:test_generation/src/question_style.dart';
+import '../fake.dart' as fake;
+
+class Profile {
+  final String firstname;
+  @CopyWithKey(inCopyWith: false) // this will hide lastname in subclasses too
+  final String lastname;
+
+  String get name => "$firstname $lastname";
+
+  final DateTime? birthday;
+
+  int get age => birthday != null ? DateTime.now().difference(birthday!).inDays ~/ 365 : 0;
+
+  const Profile({
+    @CopyWithKey(inCopyWith: false) this.firstname = "", // this will hide firstname only it its own class
+    this.lastname = "", 
+    this.birthday,
+  });
+}
+
+
+class UserProfile extends Profile {
+  final String id;
+
+  final String firstName; // don't get confused with 'firstName' and 'firstname'
+
+  final fake.TextStyle? style;
+  final QuestionStyle? question;
+
+  UserProfile({
+    this.id = "", 
+    this.firstName = "", 
+    super.lastname, // this is hidden through its super class, annotate it in the constructor with @CopyWithKey(inCopyWith: true) to override the behavior
+    this.style, 
+    this.question, 
+    super.birthday, 
+    super.firstname,
+  });
+}
+```
+
+The generated code adds all necessary imports and comments out what is not included in your `copyWith()`
+```dart
+import 'dart:core';
+import 'package:test_generation/src/fake.dart' as fake;
+import 'package:test_generation/src/question_style.dart';
+import 'package:test_generation/src/data/profile.dart';
+
+extension $ProfileExtension on Profile {
+  Profile copyWith({
+    // String? firstname,
+    // String? lastname,
+    DateTime? birthday,
+  }) {
+    return Profile.new(
+      // firstname: firstname ?? this.firstname,
+      // lastname: lastname ?? this.lastname,
+      birthday: birthday ?? this.birthday,
+    );
+  }
+}
+
+extension $UserProfileExtension on UserProfile {
+  UserProfile copyWith({
+    String? id,
+    String? firstName,
+    fake.TextStyle? style, // prefixed imports are supported
+    QuestionStyle? question,
+    // String? lastname,
+    DateTime? birthday,
+    String? firstname,
+  }) {
+    return UserProfile.new(
+      id: id ?? this.id,
+      firstName: firstName ?? this.firstName,
+      style: style ?? this.style,
+      question: question ?? this.question,
+      // lastname: lastname ?? this.lastname,
+      birthday: birthday ?? this.birthday,
+      firstname: firstname ?? this.firstname,
+    );
+  }
+}
+```
 
 ## Custom Lerp Functions
 

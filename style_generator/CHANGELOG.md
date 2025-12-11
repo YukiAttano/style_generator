@@ -1,3 +1,7 @@
+## 0.2.1
+
+* add CopyWith and CopyWithKey annotation
+
 ## 0.2.0
 
 * add warnings if @StyleKey\<Type\>s type does not match the annotated fields type

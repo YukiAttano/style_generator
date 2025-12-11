@@ -17,3 +17,8 @@ dart pub add style_generator_annotation dev:style_generator dev:build_runner
 ```
 
 For even easier generation, use the [Style Generator Templates for Flutter](https://plugins.jetbrains.com/plugin/28833-style-generator-templates-for-flutter) Plugin for Android Studio
+
+# Annotations
+
+- Style and StyleKey (for generating ThemeExtension classes)
+- CopyWith and CopyWithKey (for generating CopyWith Extensions only)

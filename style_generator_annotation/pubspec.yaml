@@ -1,11 +1,12 @@
 name: style_generator_annotation
 description: "The Annotations for style_generator to generate ThemeExtensions"
-version: 0.1.2
+version: 0.1.3
 repository: https://github.com/YukiAttano/style_generator/tree/main/style_generator_annotation
 issue_tracker: https://github.com/YukiAttano/style_generator/issues
 topics:
   - theme
   - style
+  - copy_with
   - extension
   - codegen
 
