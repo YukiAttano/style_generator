@@ -21,4 +21,4 @@ For even easier generation, use the [Style Generator Templates for Flutter](http
 # Annotations
 
 - Style and StyleKey (for generating ThemeExtension classes)
-- CopyWith and CopyWithKey (for generating CopyWith Extensions only)
+- CopyWith and CopyWithKey (for generating standalone CopyWith Extensions or Mixins)

@@ -1,3 +1,7 @@
+## 0.1.4
+
+- Improve explanation of CopyWith annotation in ReadMe
+
 ## 0.1.3
 
 - Add CopyWith and CopyWithKey annotation
