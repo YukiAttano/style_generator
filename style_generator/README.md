@@ -68,7 +68,9 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 
 ## Fallback and of() Constructor:
 
-This package supports generating a quick constructor to retrieve your Style from BuildContext.
+<details>
+
+<summary> This package supports generating a quick constructor to retrieve your Style from BuildContext. </summary>
 
 ```dart
 import "package:flutter/widgets.dart";
@@ -119,6 +121,8 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
   }
 }
 ```
+
+</details>
 
 ## Positional and Named Parameter
 
