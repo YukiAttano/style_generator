@@ -33,11 +33,11 @@ For even easier generation, use the [Style Generator Templates for Flutter](http
     - [Style](#style)
       - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml)
     - [StyleKey\<T>](#stylekeyt)
+      - [Custom Lerp Functions](#custom-lerp-functions)
+      - [Custom Merge Functions](#custom-merge-functions)
     - [CopyWith](#copywith)
       - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml-1)
     - [CopyWithKey](#copywithkey)
-    - [Custom Lerp Functions](#custom-lerp-functions)
-    - [Custom Merge Functions](#custom-merge-functions)
 - [Prefixed Imports and static callbacks](#prefixed-imports-and-static-callbacks)
 - [Feedback](#feedback)
 
@@ -248,6 +248,91 @@ Only StyleKeys on fields and the constructor matching Style.constructor are cons
 Do note, StyleKeys on the constructor override configurations on the field without further warning.
 </details>
 
+### Custom Lerp Functions
+
+<details>
+
+<summary> Sometimes, custom lerp functions are required. </summary>
+
+The generator will consider lerpDouble() for integer, double and num fields by default.
+It uses a lerpDuration for Darts Duration class.
+For all other cases, it searches for a .lerp() method inside the types class and applies that.
+If nothing is found, .lerp() will not lerp the field (and a warning is printed).
+
+Other custom typed .lerp() functions can be applied with StyleKeys.
+(The custom method must be static or a top level method).
+
+```dart
+@Style()
+class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
+ 
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
+
+  // The function must match the type of the StyleKey. (Which itself should match the type of the field)
+  @StyleKey<WidgetStateProperty<double?>?>(lerp: lerpWidgetStateProperty)
+  final WidgetStateProperty<double?>? elevation;
+  
+  // Here, a custom color lerp function is used
+  @StyleKey<Color?>(lerp: customColorLerp)
+  final Color? color;
+  final Color? selectionColor;
+
+  const SomeStyle({
+    this.titleStyle, 
+    this.color, 
+    this.elevation,
+    this.subtitleStyle,
+    this.selectionColor,
+  });
+
+  static WidgetStateProperty<double?>? lerpWidgetStateProperty(
+      WidgetStateProperty<double?>? a,
+      WidgetStateProperty<double?>? b,
+      double t,
+      ) {
+    return WidgetStateProperty.lerp<double?>(a, b, t, lerpDouble);
+  }
+}
+
+Color? customColorLerp(Color? a, Color? b, double t) => b;
+```
+
+</details>
+
+### Custom Merge Functions
+
+<details>
+
+<summary> Sometimes, custom merge functions are required. </summary>
+
+For example, if you don't want to apply the default merge() behavior of a TextStyle.
+
+(The custom method must be static or a top level method).
+
+```dart
+@Style()
+class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
+ 
+  // The function must match the type of the StyleKey. (Which itself should match the type of the field)
+  @StyleKey<TextStyle?>(merge: noMerge)
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
+
+  final Color? color;
+  final Color? selectionColor;
+
+  const SomeStyle({
+    this.titleStyle, 
+    this.color, 
+    this.subtitleStyle,
+    this.selectionColor,
+  });
+}
+```
+
+</details>
+
 ## CopyWith
 
 <details>
@@ -312,9 +397,11 @@ targets:
 
 ## CopyWithKey
 
-The generation of the `copyWith()` method can be further customized
+<details>
 
-a more complex example: 
+<summary> The generation of the `copyWith()` method can be further customized </summary>
+
+a more complex example:
 ```dart
 import 'package:style_generator_annotation/copy_with_generator_annotation.dart';
 import 'package:test_generation/src/question_style.dart';
@@ -403,99 +490,26 @@ extension $UserProfileExtension on UserProfile {
 }
 ```
 
-## Custom Lerp Functions
-
-Sometimes, custom lerp functions are required.
-
-The generator will consider lerpDouble() for integer, double and num fields by default.
-It uses a lerpDuration for Darts Duration class.
-For all other cases, it searches for a .lerp() method inside the types class and applies that.
-If nothing is found, .lerp() will not lerp the field (and a warning is printed).
-
-Other custom typed .lerp() functions can be applied with StyleKeys.
-(The custom method must be static or a top level method).
-
-```dart
-@Style()
-class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
- 
-  final TextStyle? titleStyle;
-  final TextStyle? subtitleStyle;
-
-  // The function must match the type of the StyleKey. (Which itself should match the type of the field)
-  @StyleKey<WidgetStateProperty<double?>?>(lerp: lerpWidgetStateProperty)
-  final WidgetStateProperty<double?>? elevation;
-  
-  // Here, a custom color lerp function is used
-  @StyleKey<Color?>(lerp: customColorLerp)
-  final Color? color;
-  final Color? selectionColor;
-
-  const SomeStyle({
-    this.titleStyle, 
-    this.color, 
-    this.elevation,
-    this.subtitleStyle,
-    this.selectionColor,
-  });
-
-  static WidgetStateProperty<double?>? lerpWidgetStateProperty(
-      WidgetStateProperty<double?>? a,
-      WidgetStateProperty<double?>? b,
-      double t,
-      ) {
-    return WidgetStateProperty.lerp<double?>(a, b, t, lerpDouble);
-  }
-}
-
-Color? customColorLerp(Color? a, Color? b, double t) => b;
-```
-
-## Custom Merge Functions
-
-Sometimes, like i guess never, custom merge functions are required.
-
-For example, if you don't want to apply the default merge() behavior of a TextStyle.
-
-(The custom method must be static or a top level method).
-
-```dart
-@Style()
-class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
- 
-  // The function must match the type of the StyleKey. (Which itself should match the type of the field)
-  @StyleKey<TextStyle?>(merge: noMerge)
-  final TextStyle? titleStyle;
-  final TextStyle? subtitleStyle;
-
-  final Color? color;
-  final Color? selectionColor;
-
-  const SomeStyle({
-    this.titleStyle, 
-    this.color, 
-    this.subtitleStyle,
-    this.selectionColor,
-  });
-}
-```
+</details>
 
 # Prefixed Imports and static callbacks
 
-If you use prefixed imports, one restriction apply.
+<details>
+
+<summary> If you use prefixed imports, one restriction apply. </summary>
 
 (1)
 If `dart:ui` is imported with a prefix (e.g. `import 'dart:ui' as ui`)
-AND you use the Dart-Core data types `int`, `num` or `double`, 
+AND you use the Dart-Core data types `int`, `num` or `double`,
 automatically lerping them fails (because `lerpDouble` is not found).
-Consider adding a top level function `lerpDouble` (like in the example below) 
+Consider adding a top level function `lerpDouble` (like in the example below)
 or apply a `StyleKey(lerp: ...)` manually.
 
 (2)
-Otherwise, all weird combinations should work (if not, the generator will tell you). 
+Otherwise, all weird combinations should work (if not, the generator will tell you).
 
 (3)
-If you use static Callbacks, always write their full scope.
+If you use static callbacks, always write their full scope.
 
 
 ```dart
@@ -525,9 +539,10 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
   const SomeStyle({this.animationDuration, this.something, this.somewhere, this.color});
 
   static Color? alwaysRed(Color? a, Color? b, core.double t) => Colors.red;
-
 }
 ```
+
+</details>
 
 # Feedback
 
