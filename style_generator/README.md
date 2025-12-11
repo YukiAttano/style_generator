@@ -220,7 +220,7 @@ targets:
 
 <details>
 
-<summary> Every field and constructor parameter can be further configured with @StyleKey\<\T>() </summary>
+<summary> Every field and constructor parameter can be further configured with @StyleKey&lt;T>() </summary>
 
 ```dart
 @Style()
@@ -250,8 +250,10 @@ Do note, StyleKeys on the constructor override configurations on the field witho
 
 ## CopyWith
 
-Since a `copyWith()` method is required by a `ThemeExtension`, i've added a `@CopyWith()` annotation 
-that generates a standalone `copyWith()` Extension
+<details>
+
+<summary> Since a `copyWith()` method is required by a `ThemeExtension`, i've added a `@CopyWith()` annotation 
+that generates a standalone `copyWith()` Extension </summary>
 
 ```dart
 import 'package:style_generator_annotation/copy_with_generator_annotation.dart';
@@ -289,6 +291,8 @@ extension $ProfileExtension on Profile {
   }
 }
 ```
+
+</details>
 
 ### Customize the default behavior with build.yml
 
