@@ -218,7 +218,9 @@ targets:
 
 ## StyleKey\<T>
 
-Every field and constructor parameter can be further configured with @StyleKey\<T>()
+<details>
+
+<summary> Every field and constructor parameter can be further configured with @StyleKey\<\T>() </summary>
 
 ```dart
 @Style()
@@ -244,6 +246,7 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 Only StyleKeys on fields and the constructor matching Style.constructor are considered.
 
 Do note, StyleKeys on the constructor override configurations on the field without further warning.
+</details>
 
 ## CopyWith
 
