@@ -63,6 +63,8 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
   final Color? selectionColor;
 
   const SomeStyle({this.titleStyle, this.color, this.subtitleStyle, this.selectionColor});
+
+  // factory SomeStyle.of(BuildContext context, [SomeStyle? style]) => _$SomeStyleOf(context, style); // <-- will generate even more functionality
 }
 ```
 
@@ -341,8 +343,8 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 
 <details>
 
-<summary> Since a `copyWith()` method is required by a `ThemeExtension`, i've added a `@CopyWith()` annotation 
-that generates a standalone `copyWith()` Extension </summary>
+<summary> Since we already generating a `copyWith()` for `ThemeExtension`s, i've added a standalone `@CopyWith()` annotation 
+that generates standalone `copyWith()` Extensions (or Mixins) </summary>
 
 ```dart
 import 'package:style_generator_annotation/copy_with_generator_annotation.dart';
