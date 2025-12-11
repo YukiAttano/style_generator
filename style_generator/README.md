@@ -36,6 +36,7 @@ For even easier generation, use the [Style Generator Templates for Flutter](http
       - [Custom Lerp Functions](#custom-lerp-functions)
       - [Custom Merge Functions](#custom-merge-functions)
     - [CopyWith](#copywith)
+      - [CopyWith as Mixin](#copywith-as-mixin)
       - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml-1)
     - [CopyWithKey](#copywithkey)
 - [Prefixed Imports and static callbacks](#prefixed-imports-and-static-callbacks)
@@ -382,7 +383,51 @@ extension $ProfileExtension on Profile {
   }
 }
 ```
+</details>
 
+### CopyWith as Mixin
+
+<details>
+
+<summary> `copyWith()` as a Mixin is possible but comes with some drawbacks </summary>
+
+- More boilerplate for you (adding the `part` declaration and `with _$[ClassName]` modifier manually)
+- Subclasses won't be able to override the `copyWith()` method if their parameters differ
+
+```dart
+import 'package:style_generator_annotation/copy_with_generator_annotation.dart';
+
+part 'some_user.copy_with.dart';
+
+@CopyWith(asExtension: false)
+class SomeUser with _$SomeUser {
+  final String firstname;
+  final String lastname;
+  final DateTime? birthday;
+
+  const SomeUser(this.firstname, this.lastname, this.birthday);
+}
+```
+
+which generates:
+```dart
+part of "some_user.dart";
+
+mixin _$SomeUser {
+  String get firstname;
+  String get lastname;
+  DateTime? get birthday;
+
+  SomeUser copyWith({String? firstname, String? lastname, DateTime? birthday}) {
+    return SomeUser.new(
+      firstname ?? this.firstname,
+      lastname ?? this.lastname,
+      birthday ?? this.birthday,
+    );
+  }
+}
+
+```
 </details>
 
 ### Customize the default behavior with build.yml
