@@ -16,6 +16,9 @@ import "annotation_converter/annotation_converter.dart";
 import "logger.dart";
 import "resolved_type.dart";
 
+import 'dart:core' hide print;
+import 'dart:core' as c show print;
+
 part "variable_handler.dart";
 
 class Variable {

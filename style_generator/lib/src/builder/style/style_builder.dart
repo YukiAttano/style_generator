@@ -59,13 +59,14 @@ class StyleBuilder with HeaderGen implements Builder {
     ResolvedLibraryResult resolvedLib = await session.getResolvedLibraryByElement(lib) as ResolvedLibraryResult;
 
     StyleGenerator state = StyleGenerator(
+      resolver: buildStep.resolver,
       resolvedLib: resolvedLib,
       store: _lookupStore,
       config: styleConfig,
     );
 
     String partClass;
-    StyleGeneratorResult result = state.generate();
+    StyleGeneratorResult result = await state.generate();
     String filename = basename(inputId.path);
     String header = generateHeader();
 

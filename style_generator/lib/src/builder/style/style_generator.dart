@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:analyzer/dart/element/element.dart";
 import "package:style_generator_annotation/style_generator_annotation.dart";
 
@@ -31,14 +33,15 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
   AnnotationConverter<StyleKeyInternal> get keyAnnotation => store.styleKeyAnnoConverter;
 
   StyleGenerator({
+    required super.resolver,
     required super.resolvedLib,
     required super.store,
     required super.config,
   });
 
   @override
-  StyleGeneratorResult generate() {
-    return super.generate() as StyleGeneratorResult;
+  Future<StyleGeneratorResult> generate() async {
+    return (await super.generate()) as StyleGeneratorResult;
   }
 
   @override
@@ -47,8 +50,8 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
   }
 
   @override
-  PartGenResult generateForClass(AnnotatedElement<Style> annotatedClazz, StyleConfig config) {
-    AnalyzedClass c = analyzeClass(annotatedClazz, config.constructor?.asConstructorName);
+  Future<PartGenResult> generateForClass(AnnotatedElement<Style> annotatedClazz, StyleConfig config) async {
+    AnalyzedClass c = await analyzeClass(annotatedClazz, config.constructor?.asConstructorName);
     ClassElement clazz = c.clazz;
 
     List<Variable> variables = c.variables;

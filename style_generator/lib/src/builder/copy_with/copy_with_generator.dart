@@ -1,7 +1,8 @@
+import "dart:async";
+
 import "package:analyzer/dart/element/element.dart";
 import "package:style_generator_annotation/copy_with_generator_annotation.dart";
 
-import "../../../style_generator.dart";
 import "../../annotations/copy_with_config.dart";
 import "../../annotations/copy_with_key_internal.dart";
 import "../../builder_mixins/copy_with_gen.dart";
@@ -10,9 +11,9 @@ import "../../data/annotated_element.dart";
 import "../../data/annotation_converter/annotation_converter.dart";
 import "../../data/resolved_import.dart";
 import "../../data/variable.dart";
-import "../../extensions/string_constructor_extension.dart";
 import "../../extensions/element/type_parameter_element_list_extension_.dart";
 import "../../extensions/element/type_parameterized_element_extension.dart";
+import "../../extensions/string_constructor_extension.dart";
 import "../generator.dart";
 
 class CopyWithGeneratorResult extends GeneratorResult {
@@ -38,19 +39,31 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
   AnnotationConverter<CopyWithKeyInternal> get keyAnnotation => store.copyWithKeyAnnoConverter;
 
   CopyWithGenerator({
+    required super.resolver,
     required super.resolvedLib,
     required super.store,
     required super.config,
   });
 
   @override
-  CopyWithGeneratorResult generate() {
-    return super.generate() as CopyWithGeneratorResult;
+  Future<CopyWithGeneratorResult> generate() async {
+    return (await super.generate()) as CopyWithGeneratorResult;
   }
 
   @override
-  GenResult generateForClass(AnnotatedElement<CopyWith> annotatedClazz, CopyWithConfig config) {
-    AnalyzedClass c = analyzeClass(annotatedClazz, config.constructor?.asConstructorName);
+  CopyWithGeneratorResult mergeParts(List<PartGenResult> parts) {
+    List<GenResult> results = List.from(parts, growable: false);
+
+    return CopyWithGeneratorResult(
+      imports: results.fold<Set<ResolvedImport>>({}, (p, item) => p..addAll(item.imports)),
+      addPartDirective: results.fold(false, (p, result) => p || result.addPartDirective),
+      parts: results.map((e) => e.part).toList(growable: false),
+    );
+  }
+
+  @override
+  Future<GenResult> generateForClass(AnnotatedElement<CopyWith> annotatedClazz, CopyWithConfig config) async {
+    AnalyzedClass c = await analyzeClass(annotatedClazz, config.constructor?.asConstructorName);
     ClassElement clazz = c.clazz;
 
     List<Variable> variables = c.variables;
@@ -81,17 +94,6 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
         copyWith: copyWithContent.content,
         copyWithAsExtension: asExtension,
       ),
-    );
-  }
-
-  @override
-  CopyWithGeneratorResult mergeParts(List<PartGenResult> parts) {
-    List<GenResult> results = List.from(parts, growable: false);
-
-    return CopyWithGeneratorResult(
-      imports: results.fold<Set<ResolvedImport>>({}, (p, item) => p..addAll(item.imports)),
-      addPartDirective: results.fold(false, (p, result) => p || result.addPartDirective),
-      parts: results.map((e) => e.part).toList(growable: false),
     );
   }
 

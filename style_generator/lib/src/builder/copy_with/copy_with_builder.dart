@@ -45,13 +45,14 @@ class CopyWithBuilder with HeaderGen implements Builder {
     ResolvedLibraryResult resolvedLib = await session.getResolvedLibraryByElement(lib) as ResolvedLibraryResult;
 
     CopyWithGenerator state = CopyWithGenerator(
+      resolver: buildStep.resolver,
       resolvedLib: resolvedLib,
       store: _lookupStore,
       config: copyWithConfig,
     );
 
     String partClass;
-    CopyWithGeneratorResult result = state.generate();
+    CopyWithGeneratorResult result = await state.generate();
     String filename = basename(inputId.path);
     String header = generateHeader();
     Set<ResolvedImport> imports = result.imports.toSet();

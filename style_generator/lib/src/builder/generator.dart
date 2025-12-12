@@ -1,8 +1,11 @@
+import "dart:async";
+
 import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/src/dart/ast/ast.dart";
+import "package:build/build.dart";
 import "package:meta/meta.dart";
 
 import "../data/annotated_element.dart";
@@ -52,6 +55,8 @@ class AnalyzedClass {
 /// - 'K' - KeyAnnotation
 /// - 'C' - Config
 abstract base class Generator<A, K, C extends Config<A>> {
+
+  final Resolver resolver;
   LibraryElement get libElement => resolvedLib.element;
   final ResolvedLibraryResult resolvedLib;
   final LookupStore store;
@@ -62,13 +67,14 @@ abstract base class Generator<A, K, C extends Config<A>> {
   final C config;
 
   Generator({
+    required this.resolver,
     required this.resolvedLib,
     required this.store,
     required this.config,
   });
 
   @protected
-  GeneratorResult generate() {
+  Future<GeneratorResult> generate() async {
     List<AnnotatedElement<A>> classes = getAnnotatedElements(libElement.classes, annotation);
 
     List<PartGenResult> parts = [];
@@ -78,7 +84,7 @@ abstract base class Generator<A, K, C extends Config<A>> {
     for (var c in classes) {
       conf = config.apply(c.annotation) as C;
 
-      result = generateForClass(c, conf);
+      result = await generateForClass(c, conf);
 
       parts.add(result);
     }
@@ -86,11 +92,11 @@ abstract base class Generator<A, K, C extends Config<A>> {
     return mergeParts(parts);
   }
 
-  PartGenResult generateForClass(AnnotatedElement<A> annotatedClazz, C config);
+  Future<PartGenResult> generateForClass(AnnotatedElement<A> annotatedClazz, C config);
 
   GeneratorResult mergeParts(List<PartGenResult> parts);
 
-  AnalyzedClass analyzeClass(AnnotatedElement<A> annotatedClazz, String? constructorName) {
+  Future<AnalyzedClass> analyzeClass(AnnotatedElement<A> annotatedClazz, String? constructorName) async {
     ClassElement clazz = annotatedClazz.element as ClassElement;
     ConstructorElement? constructor = findConstructor(clazz.constructors, constructorName);
 

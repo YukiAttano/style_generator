@@ -51,9 +51,31 @@ class VariableHandler {
     return element;
   }
 
+  bool debug = false;
+  void print(dynamic v) {
+    if (debug) c.print(v);
+  }
+
   void mapParameterToFields(ResolvedLibraryResult resolvedLib) {
     ConstructorDeclaration? d = resolvedLib.resolve<ConstructorDeclaration>(constructor.firstFragment);
     if (d == null) throw Exception("ConstructorDeclaration not found for '$constructor'");
+
+    debug = constructor.displayName.toLowerCase().contains("somechild");
+
+    for (var p in constructor.formalParameters) {
+
+      switch (p) {
+        case SuperFormalParameterElement():
+          var su = p.superConstructorParameter;
+          FieldElement? target;
+          if (su is FieldFormalParameterElement) {
+            target = su.field;
+          }
+          print("${p.runtimeType} | ${p} -- ${p.superConstructorParameter} -- ${target}");
+        case FormalParameterElement():
+      }
+
+    }
 
     _lookupParamToField.clear();
 
