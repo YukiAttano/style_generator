@@ -79,6 +79,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
       clazz.displayName,
       clazz.typeParameters.typesToString(),
       constructorName,
+      resolvedLib,
       variables,
       (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
     );

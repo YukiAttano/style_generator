@@ -79,6 +79,7 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
             clazz.displayName,
             clazz.typeParameters.typesToString(),
             constructorName,
+            resolvedLib,
             variables,
             (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
           );

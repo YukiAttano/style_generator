@@ -1,3 +1,6 @@
+import "package:analyzer/dart/analysis/results.dart";
+import "package:analyzer/dart/element/type.dart";
+
 import "../../style_generator.dart";
 import "../data/logger.dart";
 import "../data/resolved_import.dart";
@@ -23,6 +26,7 @@ mixin CopyWithGen {
     String className,
     String classTypes,
     String constructor,
+    ResolvedLibraryResult resolvedLib,
     List<Variable> parameters,
     bool? Function(Variable v) inCopyWithCallback,
   ) {
@@ -58,6 +62,7 @@ mixin CopyWithGen {
       if (import.hasPrefix || !resolvedType.type.isDartCore) {
         imports.add(import);
       }
+      imports.addAll(resolvedType.typeArgumentImports);
 
       params.add("$prefix ${resolvedType.displayName}$typeSuffix $name,");
       if (v.isNamed) {

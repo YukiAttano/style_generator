@@ -1,6 +1,44 @@
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 
+import "resolved_type.dart";
+/*
+class TypedElement {
+  final InterfaceType type;
+  final ClassElement element;
+  final ResolvedType Function(DartType argument) getTypeForArgument;
+
+  String get displayName => element.displayName;
+
+  late Map<String, DartType> typeArgs = _getTypeArgs();
+  late String types = _getTypes();
+
+  TypedElement({required this.type, required this.element, required this.getTypeForArgument});
+
+  /// returns a map of the type parameter (like T, K) from [element]
+  /// and the corresponding type argument (like int, String) from [type]
+  Map<String, DartType> _getTypeArgs() {
+    return Map.fromIterables(element.typeParameters.map((e) => e.displayName), type.typeArguments);
+  }
+
+  String _getTypes() {
+    List<TypeParameterElement> typeParameters = element.typeParameters;
+
+    List<String> typeList = [];
+    String types = "";
+    if (typeParameters.isNotEmpty) {
+      for (var t in typeParameters) {
+        typeList.add(typeArgs[t.displayName]?.getDisplayString() ?? "Object?");
+      }
+
+      types = "<${typeList.join(",")}>";
+    }
+
+    return types;
+  }
+}
+*/
+
 class ClassMethod {
   final InterfaceType type;
   final MethodElement element;

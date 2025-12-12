@@ -4,12 +4,28 @@ import "package:analyzer/dart/ast/syntactic_entity.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 
-import "../extensions/element/field_element_extension.dart";
+import "../extensions/dart_type_extension.dart";
+import "../extensions/element/element_extension.dart";
+import "class_method.dart";
 import "resolved_import.dart";
+
+class TypeInformation {
+  final String parameter;
+  final ResolvedType argument;
+
+  const TypeInformation(this.parameter, this.argument);
+}
 
 class ResolvedType {
   final LibraryElement library;
   final DartType type;
+
+  // TypedElement get typedElement => TypedElement(
+  //       type: type as InterfaceType,
+  //       element: type.element! as ClassElement,
+  //       getTypeForArgument: (argument) => typeArguments.firstWhere((element) => element.type == argument),
+  //     );
+
   final TypeAnnotation? typeAnnotation;
 
   /// set, if the [type] is defined with a prefix `pre.Type variable`
@@ -39,6 +55,15 @@ class ResolvedType {
   /// }
   /// ```
   final ImportDirective? importDirective;
+
+  /// if [type] has type arguments, these are the imports of them
+  ///
+  /// Example:
+  /// `Map<SomeType, SomeOtherType>`
+  List<ResolvedImport> get typeArgumentImports =>
+      typeArguments.fold<List<ResolvedImport>>([], (p, element) => p..add(element.import));
+
+  final List<ResolvedType> typeArguments;
 
   ResolvedImport get prefixedFieldImport => ResolvedImport(
         prefix: prefixReference?.name.lexeme ?? "",
@@ -73,6 +98,16 @@ class ResolvedType {
   ///
   /// Example: `fake.TextStyle`
   String get displayName => "$typePrefix${type.getDisplayString()}";
+  //"$typePrefix${type.element?.displayName}$typeArgumentsAsString${type.isNullable ? "?" : ""}";
+
+  String get typeArgumentsAsString {
+    if (typeArguments.isEmpty) return "";
+
+    // return typedElement.types;
+    //print(typedElement.element.runtimeType.toString() + " .. " + typedElement.displayName + typedElement.types);
+    //return typeArguments.map((e) => e.displayName).toString();
+    return "<${typeArguments.map((e) => e.displayName).join(",")}>";
+  }
 
   ResolvedImport get import {
     if (prefixReference != null) return prefixedFieldImport;
@@ -86,19 +121,20 @@ class ResolvedType {
     required this.typeAnnotation,
     required this.prefixReference,
     required this.importDirective,
+    required this.typeArguments,
   });
 
-  factory ResolvedType.resolve({required ResolvedLibraryResult resolvedLib, required FieldElement element}) {
+  factory ResolvedType.resolve({required ResolvedLibraryResult resolvedLib, required PropertyInducingElement element}) {
     TypeAnnotation? typeAnnotation = _getPrefixType(resolvedLib, element);
 
     ImportDirective? importDirective;
 
     // we can safely use _searchImportDirectiveIn without the library check.
     // we prevent lookups for FieldElements that are defined in the same library,
-    // because multiple import directives could cause false positives. See [_importImportsType] for an explanation.
+    // because multiple import directives could cause false positives. See [DartTypeExtension._importImportsType] for an explanation.
     // This wouldn't be 'wrong', but because we only need this as a fallback if no explicit prefix on the type is given, right now, we can also safe some computing resources here.
     if (resolvedLib.element.library != element.library) {
-      importDirective  = _searchImportDirectiveIn(resolvedLib, element);
+      importDirective = element.type.searchImportDirectiveIn(resolvedLib);
     }
 
     return ResolvedType(
@@ -107,6 +143,36 @@ class ResolvedType {
       typeAnnotation: typeAnnotation,
       prefixReference: _getPrefixReference(typeAnnotation),
       importDirective: importDirective,
+      // typeArgumentImports:
+      //     element.type is InterfaceType ? (element.type as InterfaceType).resolveImports(resolvedLib) : const [],
+      typeArguments:
+          element.type is InterfaceType ? (element.type as InterfaceType).resolveTypeArguments(resolvedLib) : const [],
+    );
+  }
+
+  factory ResolvedType.resolveInterfaceType({required ResolvedLibraryResult resolvedLib, required InterfaceType type}) {
+    TypeAnnotation? typeAnnotation = _getPrefixType(resolvedLib, type.element);
+
+    InterfaceElement element = type.element;
+
+    ImportDirective? importDirective;
+
+    // we can safely use _searchImportDirectiveIn without the library check.
+    // we prevent lookups for FieldElements that are defined in the same library,
+    // because multiple import directives could cause false positives. See [DartTypeExtension._importImportsType] for an explanation.
+    // This wouldn't be 'wrong', but because we only need this as a fallback if no explicit prefix on the type is given, right now, we can also safe some computing resources here.
+    if (resolvedLib.element.library != element.library) {
+      importDirective = type.searchImportDirectiveIn(resolvedLib);
+    }
+
+    return ResolvedType(
+      library: element.library,
+      type: type,
+      typeAnnotation: typeAnnotation,
+      prefixReference: _getPrefixReference(typeAnnotation),
+      importDirective: importDirective,
+      //typeArgumentImports: type.resolveImports(resolvedLib),
+      typeArguments: type.resolveTypeArguments(resolvedLib),
     );
   }
 
@@ -122,7 +188,7 @@ class ResolvedType {
   /// fake.Color color;
   /// ```
   /// The type annotations in the example are `TextStyle?` and `fake.Color`
-  static TypeAnnotation? _getPrefixType(ResolvedLibraryResult resolvedLib, FieldElement element) {
+  static TypeAnnotation? _getPrefixType(ResolvedLibraryResult resolvedLib, Element element) {
     return element.getPrefixedType(resolvedLib);
   }
 
@@ -140,94 +206,12 @@ class ResolvedType {
     return null;
   }
 
-  /// if [element]s [DartType] is not defined in the current [resolvedLib] (e.g. the class definition is not in this file),
-  /// we will lookup the current imports in [resolvedLib] to find one that matches the [DartType] of element.
-  ///
-  /// This is necessary, to allow prefixing imports of types that are defined in super classes.
-  ///
-  /// The returned directive may be wrong, if the defined import has a 'show' token which limits
-  static ImportDirective? _searchImportDirectiveIn(ResolvedLibraryResult resolvedLib, FieldElement element) {
-    ImportDirective? directive;
-
-    LibraryElement? lookupLibrary = element.type.element?.library;
-
-    if (resolvedLib.element != element.library) {
-      lookupLibrary = element.type.element?.library;
-    }
-
-    ResolvedUnitResult unit = resolvedLib.units.first;
-    List<ImportDirective> imports =
-        unit.unit.sortedDirectivesAndDeclarations.whereType<ImportDirective>().toList(growable: false);
-
-    loop: for (var i in imports) {
-      if (lookupLibrary == i.libraryImport?.importedLibrary) {
-        if (i.combinators.isEmpty) {
-          directive = i;
-          break;
-        } else  {
-
-          switch (_isImportImportingType(i, element.type)) {
-            case null:
-            case true:
-              directive = i;
-              break loop;
-            case false:
-          }
-        }
-      }
-    }
-
-    return directive;
-  }
-
-  /// checks if [i] imports [type]
-  ///
-  /// - true - if the [type] is explicitly shown
-  /// - true - if the import has 'hide' combinators but [type] is not contained
-  /// - false - if the [type] is explicitly hidden
-  /// - false - if the import has 'show' combinators but [type] is not contained
-  /// and `null` otherwise.
-  ///
-  /// this method may return false positives and false negatives
-  /// if multiple imports consider to show the same [type] either explicitly or implicitly
-  /// Example:
-  /// ```dart
-  /// import: 'some.dart' show Some;      // explicit import of Some
-  /// import: 'some.dart' as show Some;   // explicit import of Some
-  /// import: 'some.dart;                 // implicit import of Some
-  /// ```
-  static bool? _isImportImportingType(ImportDirective i, DartType type) {
-    bool? imports;
-
-    for (var c in i.combinators) {
-      switch (c) {
-        case ShowCombinator():
-          imports = false;
-          for (var name in c.shownNames) {
-            if (name.element == type.element) {
-              imports = true;
-              break;
-            }
-          }
-        case HideCombinator():
-          imports = true;
-          for (var name in c.hiddenNames) {
-            if (name.element == type.element) {
-              imports = false;
-              break;
-            }
-          }
-      }
-    }
-
-    return imports;
-  }
-
   ResolvedType get extensionTypeErasure => ResolvedType(
         library: library,
         type: type.extensionTypeErasure,
         typeAnnotation: typeAnnotation,
         prefixReference: prefixReference,
         importDirective: importDirective,
+        typeArguments: typeArguments,
       );
 }
