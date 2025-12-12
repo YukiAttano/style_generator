@@ -1,9 +1,10 @@
-import "dart:convert";
+import "dart:async";
 
 import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
+import "package:build/build.dart";
 import "package:collection/collection.dart";
 
 import "../data/annotated_element.dart";
@@ -15,9 +16,6 @@ import "../extensions/resolved_library_result_extension.dart";
 import "annotation_converter/annotation_converter.dart";
 import "logger.dart";
 import "resolved_type.dart";
-
-import 'dart:core' hide print;
-import 'dart:core' as c show print;
 
 part "variable_handler.dart";
 
@@ -82,14 +80,17 @@ class Variable {
   Variable({required VariableElement element, FieldElement? fieldElement})
       : this._(element: element, fieldElement: _getFieldElement(element) ?? fieldElement);
 
-  static FieldElement? _getFieldElement(VariableElement element) {
+  /// This is not exhaustive
+  ///
+  /// To correctly find all elements, [VariableHandler] with a full list of fields is required
+  static FieldElement? _getFieldElement(VariableElement element, [int depth = 0]) {
     switch (element) {
       case FieldElement():
         return element;
       case FieldFormalParameterElement():
         return element.field;
       case SuperFormalParameterElement():
-        return _getFieldElement(element.superConstructorParameter!);
+        return _getFieldElement(element.superConstructorParameter!, depth + 1);
     }
 
     return null;

@@ -1,7 +1,7 @@
 import "package:analyzer/dart/ast/ast.dart";
+import "package:analyzer/dart/element/element.dart";
 
 extension ConstructorDeclarationExtension on ConstructorDeclaration {
-
   /// maps the constructor initializer parameter names to their corresponding field names
   ///
   /// That is the part behind the colon `:`
@@ -20,7 +20,11 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
   ///     super(lastname: last, birthday: birth ?? DateTime.now());
   /// ```
   ///
-  Map<String, String> mapParameterToField() {
+  /// Since one part of the initializers is for class-local field initialization and the other one for super-class parameters,
+  /// the [lookup] method is required to look trough the structure of a super constructor to find the correct field.
+  Map<String, String> mapParameterToField({
+    required String Function(FormalParameterElement element) lookup,
+  }) {
     Map<String, String> map = {};
 
     for (var i in initializers) {
@@ -46,6 +50,8 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
             Expression? expr;
 
             switch (argument) {
+              case SimpleIdentifier():
+                expr = argument;
               case NamedExpression():
                 expr = argument.expression;
             }
@@ -54,7 +60,8 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
 
             switch (expr) {
               case SimpleIdentifier():
-                map[expr.name] = argument.correspondingParameter!.displayName;
+                map[expr.name] = lookup(argument.correspondingParameter!);
+              //argument.correspondingParameter!.displayName;
             }
           }
 

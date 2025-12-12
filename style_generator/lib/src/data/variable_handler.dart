@@ -9,7 +9,8 @@ class VariableHandler {
   final ClassElement clazz;
   final ConstructorElement constructor;
 
-  final Map<String, String> _lookupParamToField = {};
+  /// map constructor elements and their declaration for [_lookupField]
+  final Map<ConstructorElement, ConstructorDeclaration> _constructors = {};
 
   late final List<Variable> constructorParams;
   late final List<Variable> fields;
@@ -31,55 +32,55 @@ class VariableHandler {
   }
 
   FieldElement _lookupField(Variable parameter) {
-    FieldElement? element = parameter.fieldElement;
-    // the field element is inherently known by the constructor parameter, see [Variable._getFieldElement]
-    if (element != null) return element;
+    // short circuit lookup if the field is already assigned
+    if (parameter.fieldElement != null) return parameter.fieldElement!;
 
-    String? fieldName = _lookupParamToField[parameter.displayName];
-    if (fieldName != null) {
-      element = fields.firstWhereOrNull((variable) => variable.displayName == fieldName)?.element as FieldElement?;
+    return _lookupTree(parameter.element);
+  }
+
+  FieldElement _lookupTree(VariableElement element) {
+    FieldElement? field;
+
+    switch (element) {
+      case FieldElement():
+        field = element;
+      case FieldFormalParameterElement():
+        field = element.field;
+      case SuperFormalParameterElement():
+        field = _lookupTree(element.superConstructorParameter!);
+      case FormalParameterElement():
+        var constructorElement = element.enclosingElement;
+        ConstructorDeclaration? d = _constructors[constructorElement];
+
+        if (d != null) {
+          var map = d.mapParameterToField(lookup: (superParameter) => _lookupTree(superParameter).displayName);
+
+          String fieldName = map[element.displayName]!;
+          field = fields.firstWhereOrNull((f) => f.displayName == fieldName)?.fieldElement;
+        }
     }
 
-    // the field element is found through the lookup map
-    if (element != null) return element;
-
-    element = fields.firstWhereOrNull((variable) => variable == parameter)?.element as FieldElement?;
-
-    // as our last resort, we map constructor parameters with fields if they are considered 'equal'
-    // in practise, this can only happen if the lookup map is not exhaustive which means the function must add missing cases
-    if (element == null)  throw Exception("Could not find field definition for '$parameter' in $fields");
-    return element;
+    return field!;
   }
 
-  bool debug = false;
-  void print(dynamic v) {
-    if (debug) c.print(v);
-  }
-
-  void mapParameterToFields(ResolvedLibraryResult resolvedLib) {
+  FutureOr<void> indexConstructorDeclarations(Resolver resolver, ResolvedLibraryResult resolvedLib) async {
     ConstructorDeclaration? d = resolvedLib.resolve<ConstructorDeclaration>(constructor.firstFragment);
     if (d == null) throw Exception("ConstructorDeclaration not found for '$constructor'");
 
-    debug = constructor.displayName.toLowerCase().contains("somechild");
+    _constructors.clear();
+    _constructors[constructor] = d;
 
-    for (var p in constructor.formalParameters) {
+    ConstructorElement? superConstructor = constructor.superConstructor;
 
-      switch (p) {
-        case SuperFormalParameterElement():
-          var su = p.superConstructorParameter;
-          FieldElement? target;
-          if (su is FieldFormalParameterElement) {
-            target = su.field;
-          }
-          print("${p.runtimeType} | ${p} -- ${p.superConstructorParameter} -- ${target}");
-        case FormalParameterElement():
+    while (superConstructor != null && (!superConstructor.library.isDartCore && !superConstructor.library.isDartAsync)) {
+      ConstructorDeclaration? superDeclaration = await resolver.astNodeFor(superConstructor.firstFragment, resolve: true) as ConstructorDeclaration?;
+
+      if (superDeclaration != null) {
+        _constructors[superConstructor] = superDeclaration;
       }
 
+      superConstructor = superConstructor.superConstructor;
     }
-
-    _lookupParamToField.clear();
-
-    _lookupParamToField.addAll(d.mapParameterToField());
   }
 
   void build<T>(AnnotationConverter<T> converter) {

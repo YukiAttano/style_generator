@@ -28,6 +28,8 @@ class CopyWithBuilder with HeaderGen implements Builder {
     ".dart": [outExtension],
   };
 
+  // TODO(Yuki): import types from generic arguments
+
   @override
   Future<void> build(BuildStep buildStep) async {
     await _lookupStore.init(buildStep);

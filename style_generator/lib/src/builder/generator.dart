@@ -103,7 +103,7 @@ abstract base class Generator<A, K, C extends Config<A>> {
     if (constructor == null) throw Exception("No Constructor found");
 
     VariableHandler state = VariableHandler(clazz: clazz, constructor: constructor);
-    state.mapParameterToFields(resolvedLib);
+    await state.indexConstructorDeclarations(resolver, resolvedLib);
     if (keyAnnotation != null) state.build(keyAnnotation!);
     state.resolveTypes(resolvedLib);
 
