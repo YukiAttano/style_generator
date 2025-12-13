@@ -4,6 +4,7 @@ library;
 import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/element/element.dart";
+import "package:build/build.dart";
 
 extension ResolvedLibraryResultExtension on ResolvedLibraryResult {
 
@@ -42,5 +43,33 @@ extension ResolvedLibraryResultExtension on ResolvedLibraryResult {
     if (fragment == null) return null;
 
     return getFragmentDeclaration(fragment)?.node as R?;
+  }
+
+  List<PartDirective> getPartDirectives() {
+
+    List<PartDirective> list = [];
+
+    for (var u in units) {
+      for (var directive in u.unit.directives) {
+        if (directive is PartDirective) {
+          list.add(directive);
+        }
+      }
+    }
+
+    return list;
+  }
+
+  bool containsPart(AssetId sourceId, AssetId lookupPart) {
+    List<PartDirective> parts = getPartDirectives();
+
+    AssetId partId;
+    for (var p in parts) {
+      partId = AssetId.resolve(Uri.parse(p.uri.stringValue!), from: sourceId);
+
+      return partId.uri.toString() == lookupPart.uri.toString();
+    }
+
+    return false;
   }
 }

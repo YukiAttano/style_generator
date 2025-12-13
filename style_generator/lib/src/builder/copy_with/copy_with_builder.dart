@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/analysis/session.dart";
+import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:build/build.dart";
 import "package:dart_style/dart_style.dart";
@@ -10,8 +11,10 @@ import "package:path/path.dart";
 import "../../../style_generator.dart";
 import "../../annotations/copy_with_config.dart";
 import "../../builder_mixins/header_gen.dart";
+import "../../data/logger.dart";
 import "../../data/lookup_store.dart";
 import "../../data/resolved_import.dart";
+import "../../extensions/resolved_library_result_extension.dart";
 import "copy_with_generator.dart";
 
 class CopyWithBuilder with HeaderGen implements Builder {
@@ -61,6 +64,11 @@ class CopyWithBuilder with HeaderGen implements Builder {
     if (result.isEmpty) {
       return;
     }
+
+    bool hasPartDirective = resolvedLib.containsPart(inputId, outputId);
+
+    if (result.addPartDirective && !hasPartDirective) missingPartDeclaration(basename(outputId.path));
+
 
     partClass = """
     $header

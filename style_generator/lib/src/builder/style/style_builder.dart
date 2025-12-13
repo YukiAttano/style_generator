@@ -10,7 +10,9 @@ import "package:path/path.dart" hide Style;
 
 import "../../annotations/style_config.dart";
 import "../../builder_mixins/header_gen.dart";
+import "../../data/logger.dart";
 import "../../data/lookup_store.dart";
+import "../../extensions/resolved_library_result_extension.dart";
 import "style_generator.dart";
 
 /*
@@ -73,6 +75,10 @@ class StyleBuilder with HeaderGen implements Builder {
     if (result.isEmpty) {
       return;
     }
+
+    bool hasPartDirective = resolvedLib.containsPart(inputId, outputId);
+
+    if (!hasPartDirective) missingPartDeclaration(basename(outputId.path));
 
     partClass = """
     $header

@@ -69,6 +69,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
     List<Variable> variables = c.variables;
 
     String constructorName = (config.constructor ?? c.constructor.name!).asConstructorName;
+    bool constructorIsPrivate = constructorName.startsWith("_");
     bool asExtension = config.asExtension ?? true;
     bool genFields = !asExtension;
     String suffix = config.suffix;
@@ -85,7 +86,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
     );
 
     return GenResult(
-      addPartDirective: !asExtension,
+      addPartDirective: !asExtension || constructorIsPrivate,
       imports: copyWithContent.imports,
       part: _generatePartClass(
         generatedClassName,

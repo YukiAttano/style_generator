@@ -97,3 +97,7 @@ void unrecognizedExpression(Expression expression, AstNode node) {
     "Unexpected expression '$expression' for node '$node'. If you think this is an error, please file an issue at $_issueUrl",
   );
 }
+
+void missingPartDeclaration(String part) {
+  error("Add missing part declaration 'part $part'");
+}
