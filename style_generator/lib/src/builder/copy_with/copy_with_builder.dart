@@ -79,7 +79,7 @@ class CopyWithBuilder with HeaderGen implements Builder {
 
     """;
 
-    partClass = formatter.format(partClass);
+    partClass = formatter.format(partClass, uri: outputId.uri);
 
     await buildStep.writeAsString(outputId, partClass);
   }

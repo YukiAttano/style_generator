@@ -82,7 +82,7 @@ class StyleBuilder with HeaderGen implements Builder {
     ${result.parts.join("$newLine$newLine")}
     """;
 
-    partClass = formatter.format(partClass);
+    partClass = formatter.format(partClass, uri: outputId.uri);
 
     await buildStep.writeAsString(outputId, partClass);
   }
