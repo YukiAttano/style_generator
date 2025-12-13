@@ -64,7 +64,7 @@ mixin CopyWithGen {
       }
       imports.addAll(resolvedType.typeArgumentImports);
 
-      params.add("$prefix ${resolvedType.displayName}$typeSuffix $name,");
+      params.add("$prefix ${resolvedType.getDisplayString()}$typeSuffix $name,");
       if (v.isNamed) {
         namedConstructorParams.add("$prefix $name: $name ?? this.$fieldName,");
       } else {

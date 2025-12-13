@@ -33,7 +33,6 @@ extension DartTypeExtension on DartType {
       isDartCoreSymbol ||
       isDartCoreType;
 
-
   /// if `this` is not defined in the current [resolvedLib] (e.g. the class definition is not in this file),
   /// we will lookup the current imports in [resolvedLib] to find one that matches `this`.
   ///
@@ -49,15 +48,15 @@ extension DartTypeExtension on DartType {
 
     ResolvedUnitResult unit = resolvedLib.units.first;
     List<ImportDirective> imports =
-    unit.unit.sortedDirectivesAndDeclarations.whereType<ImportDirective>().toList(growable: false);
+        unit.unit.sortedDirectivesAndDeclarations.whereType<ImportDirective>().toList(growable: false);
 
-    loop: for (var i in imports) {
+    loop:
+    for (var i in imports) {
       if (lookupLibrary == i.libraryImport?.importedLibrary) {
         if (i.combinators.isEmpty) {
           directive = i;
           break;
-        } else  {
-
+        } else {
           switch (_isImportImportingType(i, this)) {
             case null:
             case true:
@@ -170,6 +169,34 @@ extension InterfaceTypeExtension on InterfaceType {
       }
     }
 
-    return imports.toList();
+    return imports;
+  }
+
+  List<TypeInformation> resolveTypeInformation(ResolvedLibraryResult resolvedLib, [List<TypeInformation>? infos]) {
+    infos ??= [];
+
+    TypeParameterElement typeParameter;
+    DartType typeArgument;
+    ResolvedType resolvedTypeArgument;
+
+    List<TypeParameterElement> typeParameters = element.typeParameters;
+    int maxLength = typeParameters.length;
+
+    for (int index = 0; index < maxLength; index++) {
+      typeParameter = typeParameters[index];
+      typeArgument = typeArguments[index];
+      switch (typeArgument) {
+        case TypeParameterType():
+          resolvedTypeArgument = ResolvedType.resolveTypeParameterType(resolvedLib: resolvedLib, type: typeArgument);
+        case InterfaceType():
+          resolvedTypeArgument = ResolvedType.resolveInterfaceType(resolvedLib: resolvedLib, type: typeArgument);
+        default:
+          throw Exception("Unknown type of type-argument ($typeArgument): '${typeArgument.runtimeType}'");
+      }
+
+      infos.add(TypeInformation(typeParameter, resolvedTypeArgument));
+    }
+
+    return infos;
   }
 }

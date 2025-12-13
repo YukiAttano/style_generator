@@ -14,7 +14,7 @@ mixin FieldsGen {
       resolvedType = field.resolvedType;
       name = field.name;
 
-      list.add("${resolvedType.displayName} get $name;");
+      list.add("${resolvedType.getDisplayString()} get $name;");
     }
 
     String content = """

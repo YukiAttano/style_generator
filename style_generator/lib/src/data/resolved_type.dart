@@ -6,11 +6,10 @@ import "package:analyzer/dart/element/type.dart";
 
 import "../extensions/dart_type_extension.dart";
 import "../extensions/element/element_extension.dart";
-import "class_method.dart";
 import "resolved_import.dart";
 
 class TypeInformation {
-  final String parameter;
+  final TypeParameterElement parameter;
   final ResolvedType argument;
 
   const TypeInformation(this.parameter, this.argument);
@@ -56,14 +55,14 @@ class ResolvedType {
   /// ```
   final ImportDirective? importDirective;
 
+  final List<TypeInformation> typeInformation;
+
   /// if [type] has type arguments, these are the imports of them
   ///
   /// Example:
-  /// `Map<SomeType, SomeOtherType>`
+  /// `Map<SomeType, SomeOtherType<SomeNestedType>>`
   List<ResolvedImport> get typeArgumentImports =>
-      typeArguments.fold<List<ResolvedImport>>([], (p, element) => p..add(element.import));
-
-  final List<ResolvedType> typeArguments;
+      typeInformation.fold<List<ResolvedImport>>([], (p, element) => p..add(element.argument.import));
 
   ResolvedImport get prefixedFieldImport => ResolvedImport(
         prefix: prefixReference?.name.lexeme ?? "",
@@ -97,16 +96,13 @@ class ResolvedType {
   /// [typePrefix] and the display name of [type] combined
   ///
   /// Example: `fake.TextStyle`
-  String get displayName => "$typePrefix${type.getDisplayString()}";
-  //"$typePrefix${type.element?.displayName}$typeArgumentsAsString${type.isNullable ? "?" : ""}";
+  String getDisplayString() => //"$typePrefix${type.getDisplayString()}";
+      "$typePrefix${type.element?.displayName}${typeAsString()}${type.isNullable ? "?" : ""}";
 
-  String get typeArgumentsAsString {
-    if (typeArguments.isEmpty) return "";
+  String typeAsString() {
+    if (typeInformation.isEmpty) return "";
 
-    // return typedElement.types;
-    //print(typedElement.element.runtimeType.toString() + " .. " + typedElement.displayName + typedElement.types);
-    //return typeArguments.map((e) => e.displayName).toString();
-    return "<${typeArguments.map((e) => e.displayName).join(",")}>";
+    return "<${typeInformation.map((e) => e.argument.getDisplayString()).join(",")}>";
   }
 
   ResolvedImport get import {
@@ -115,13 +111,13 @@ class ResolvedType {
     return typeImport;
   }
 
-  const ResolvedType({
+  ResolvedType({
     required this.library,
     required this.type,
     required this.typeAnnotation,
     required this.prefixReference,
     required this.importDirective,
-    required this.typeArguments,
+    required this.typeInformation,
   });
 
   factory ResolvedType.resolve({required ResolvedLibraryResult resolvedLib, required PropertyInducingElement element}) {
@@ -143,10 +139,9 @@ class ResolvedType {
       typeAnnotation: typeAnnotation,
       prefixReference: _getPrefixReference(typeAnnotation),
       importDirective: importDirective,
-      // typeArgumentImports:
-      //     element.type is InterfaceType ? (element.type as InterfaceType).resolveImports(resolvedLib) : const [],
-      typeArguments:
-          element.type is InterfaceType ? (element.type as InterfaceType).resolveTypeArguments(resolvedLib) : const [],
+      typeInformation: element.type is InterfaceType
+          ? (element.type as InterfaceType).resolveTypeInformation(resolvedLib)
+          : const [],
     );
   }
 
@@ -171,8 +166,25 @@ class ResolvedType {
       typeAnnotation: typeAnnotation,
       prefixReference: _getPrefixReference(typeAnnotation),
       importDirective: importDirective,
-      //typeArgumentImports: type.resolveImports(resolvedLib),
-      typeArguments: type.resolveTypeArguments(resolvedLib),
+      typeInformation: type.resolveTypeInformation(resolvedLib),
+    );
+  }
+
+  factory ResolvedType.resolveTypeParameterType({
+    required ResolvedLibraryResult resolvedLib,
+    required TypeParameterType type,
+  }) {
+    TypeAnnotation? typeAnnotation = _getPrefixType(resolvedLib, type.element);
+
+    TypeParameterElement element = type.element;
+
+    return ResolvedType(
+      library: element.library!,
+      type: type,
+      typeAnnotation: typeAnnotation,
+      prefixReference: _getPrefixReference(typeAnnotation),
+      importDirective: null,
+      typeInformation: [],
     );
   }
 
@@ -212,6 +224,6 @@ class ResolvedType {
         typeAnnotation: typeAnnotation,
         prefixReference: prefixReference,
         importDirective: importDirective,
-        typeArguments: typeArguments,
+        typeInformation: typeInformation,
       );
 }

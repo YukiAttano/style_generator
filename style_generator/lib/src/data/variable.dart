@@ -110,7 +110,7 @@ class Variable {
           typeAnnotation: null,
           prefixReference: null,
           importDirective: null,
-          typeArguments: const []
+          typeInformation: const [],
         );
       } else {
         resolvedType = ResolvedType.resolve(resolvedLib: resolvedLib, element: fieldElement!);
