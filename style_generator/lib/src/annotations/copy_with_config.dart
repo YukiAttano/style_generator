@@ -23,6 +23,7 @@ class CopyWithConfig extends CopyWith implements Config<CopyWith> {
     );
   }
 
+  @override
   CopyWithConfig apply(CopyWith other) {
     return CopyWithConfig(
       constructor: other.constructor ?? constructor,

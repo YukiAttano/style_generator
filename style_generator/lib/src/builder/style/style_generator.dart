@@ -15,9 +15,9 @@ import "../../data/annotated_element.dart";
 import "../../data/annotation_converter/annotation_converter.dart";
 import "../../data/variable.dart";
 import "../../extensions/element/class_element_extension.dart";
-import "../../extensions/string_constructor_extension.dart";
 import "../../extensions/element/type_parameter_element_list_extension_.dart";
 import "../../extensions/element/type_parameterized_element_extension.dart";
+import "../../extensions/string_constructor_extension.dart";
 import "../generator.dart";
 
 class StyleGeneratorResult extends GeneratorResult {
@@ -28,8 +28,10 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
     with FieldsGen, LerpGen, MergeGen, CopyWithGen, OfGen {
   static String get _nl => newLine;
 
+  @override
   AnnotationConverter<Style> get annotation => store.styleAnnoConverter;
 
+  @override
   AnnotationConverter<StyleKeyInternal> get keyAnnotation => store.styleKeyAnnoConverter;
 
   StyleGenerator({

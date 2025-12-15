@@ -1,10 +1,8 @@
 import "dart:async";
 
 import "package:analyzer/dart/analysis/results.dart";
-import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
-import "package:analyzer/src/dart/ast/ast.dart";
 import "package:build/build.dart";
 import "package:meta/meta.dart";
 
@@ -14,7 +12,6 @@ import "../data/lookup_store.dart";
 import "../data/variable.dart";
 import "../extensions/element/class_element_extension.dart";
 import "../extensions/element_annotation_extension.dart";
-import "../extensions/resolved_library_result_extension.dart";
 import "config.dart";
 
 class GeneratorResult {

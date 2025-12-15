@@ -2,13 +2,13 @@ import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/element/type.dart";
 
 import "../annotations/style_key_internal.dart";
+import "../builder/style/style_builder.dart";
 import "../data/annotation_converter/annotation_converter.dart";
 import "../data/class_method.dart";
 import "../data/logger.dart";
 import "../data/resolved_type.dart";
 import "../data/variable.dart";
 import "../extensions/dart_type_extension.dart";
-import "../builder/style/style_builder.dart";
 
 class LerpGenResult {
   /// the generated function
@@ -58,7 +58,14 @@ mixin LerpGen {
 
       prefix = inLerp ? "" : "//";
 
-      method = _getLerpMethod(resolvedLib, v, lerpMethod: styleKey?.lerp, className: className, a: "$name", b: "other.$name");
+      method = _getLerpMethod(
+        resolvedLib,
+        v,
+        lerpMethod: styleKey?.lerp,
+        className: className,
+        a: "$name",
+        b: "other.$name",
+      );
 
       if (v.isNamed) {
         namedConstructorParams.add("$prefix $name: ${method.content},");
