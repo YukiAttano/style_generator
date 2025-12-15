@@ -15,18 +15,10 @@ import "../../data/lookup_store.dart";
 import "../../extensions/resolved_library_result_extension.dart";
 import "style_generator.dart";
 
-/*
-    // Lookup classes from packages
-    var asset = AssetId.resolve(Uri.parse("package:flutter/material.dart"));
-    var lib = await buildStep.resolver.libraryFor(asset);
-    print(lib.exportNamespace.get2("ThemeExtension"));
-
- */
-
 // TODO(Yuki): add invertedMerge
 // TODO(Yuki): maybe design merge method to work inverted to current implementation because some (maybe all?) flutter internal merge functions work like that
 // TODO(Yuki): maybe check whether StyleKeys type is a subclass of the fields/parameters type
-// TODO(Yuki): generate part file either at the location defined by "part .style.part" directive
+// TODO(Yuki): generate part file at the location defined by "part .style.part" directive
 
 String get newLine => Platform.lineTerminator;
 
