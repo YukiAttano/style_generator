@@ -42,9 +42,7 @@ mixin CopyWithGen {
     String typeSuffix;
     String fieldName;
 
-    ResolvedImport import;
     for (var v in parameters) {
-
       resolvedType = v.resolvedType;
 
       name = v.name!;
@@ -56,12 +54,8 @@ mixin CopyWithGen {
 
       prefix = inCopyWith ? "" : "//";
 
-      import = resolvedType.import;
-
-      if (import.hasPrefix || !resolvedType.type.isDartCore) {
-        imports.add(import);
-      }
-      imports.addAll(resolvedType.typeArgumentImports);
+      if (resolvedType.requireImport) imports.add(resolvedType.import);
+      imports.addAll(resolvedType.typeArgumentImports());
 
       params.add("$prefix ${resolvedType.getDisplayString()}$typeSuffix $name,");
       if (v.isNamed) {
@@ -90,7 +84,7 @@ mixin CopyWithGen {
     );
   }
 
-  bool _includeVariable(Variable v,  bool? Function(Variable v) inCopyWithCallback, String clazz) {
+  bool _includeVariable(Variable v, bool? Function(Variable v) inCopyWithCallback, String clazz) {
     bool include = inCopyWithCallback(v) ?? true;
     if (!include && (v.isPositional || v.isRequired)) {
       cannotIgnorePositionalOrRequiredParameter(v, clazz: clazz, method: methodName);

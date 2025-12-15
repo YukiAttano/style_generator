@@ -11,6 +11,10 @@ import "../data/resolved_type.dart";
 extension DartTypeExtension on DartType {
   bool get isNullable => nullabilitySuffix == NullabilitySuffix.question;
 
+  /// whether the type is imported by the Dart-Core like [String], [DateTime]
+  bool get isFromDartCore => element?.library?.isDartCore ?? false;
+
+  /// whether it is a Dart-Core Class like [Future], [Null], etc.
   bool get isDartCore =>
       isBottom ||
       isDartAsyncFuture ||

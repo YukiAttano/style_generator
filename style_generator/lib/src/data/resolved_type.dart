@@ -27,6 +27,9 @@ class ResolvedType {
 
   final TypeAnnotation? typeAnnotation;
 
+  /// whether code gen tools require to add this import, if they list imports
+  bool get requireImport => !type.isFromDartCore || typeImport.hasPrefix;
+
   /// set, if the [type] is defined with a prefix `pre.Type variable`
   ///
   /// Example:
@@ -61,12 +64,25 @@ class ResolvedType {
   ///
   /// Example:
   /// `Map<SomeType, SomeOtherType<SomeNestedType>>`
-  List<ResolvedImport> get typeArgumentImports =>
-      typeInformation.fold<List<ResolvedImport>>([], (p, element) => p..add(element.argument.import));
+  List<ResolvedImport> typeArgumentImports({bool requiredOnly = true}) {
+    List<ResolvedImport> imports = [];
+
+    for (var info in typeInformation) {
+      if (requiredOnly) {
+        if (info.argument.requireImport) {
+          imports.add(info.argument.import);
+        }
+      } else {
+        imports.add(info.argument.import);
+      }
+    }
+
+    return imports;
+  }
 
   ResolvedImport get prefixedFieldImport => ResolvedImport(
         prefix: prefixReference?.name.lexeme ?? "",
-        uri: type.element!.library!.uri,
+        uri: type.element?.library?.uri ?? Uri(),
       );
 
   ResolvedImport get indirectFieldImport => ResolvedImport(
@@ -105,11 +121,11 @@ class ResolvedType {
     return "<${typeInformation.map((e) => e.argument.getDisplayString()).join(",")}>";
   }
 
-  ResolvedImport get import {
+  late final ResolvedImport import = () {
     if (prefixReference != null) return prefixedFieldImport;
     if (importDirective != null) return indirectFieldImport;
     return typeImport;
-  }
+  } ();
 
   ResolvedType({
     required this.library,
