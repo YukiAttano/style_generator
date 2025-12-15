@@ -347,6 +347,8 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 <summary> Since we already generating a `copyWith()` for `ThemeExtension`s, i've added a standalone `@CopyWith()` annotation 
 that generates standalone `copyWith()` Extensions (or Mixins) </summary>
 
+Since it comes with a different import, it won't collide with other packages when only the `@Style()` annotation is used
+
 ```dart
 import 'package:style_generator_annotation/copy_with_generator_annotation.dart';
 
