@@ -13,7 +13,7 @@
     },
     {
       "name": "style_generator",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "dependencies": [
         "analyzer",
         "build",
@@ -48,7 +48,7 @@
     },
     {
       "name": "meta",
-      "version": "1.16.0",
+      "version": "1.17.0",
       "dependencies": []
     },
     {
@@ -372,6 +372,35 @@
       "dependencies": []
     },
     {
+      "name": "package_config",
+      "version": "2.1.0",
+      "dependencies": [
+        "path"
+      ]
+    },
+    {
+      "name": "convert",
+      "version": "3.0.0",
+      "dependencies": [
+        "typed_data"
+      ]
+    },
+    {
+      "name": "built_value",
+      "version": "8.10.1",
+      "dependencies": [
+        "built_collection",
+        "collection",
+        "fixnum",
+        "meta"
+      ]
+    },
+    {
+      "name": "built_collection",
+      "version": "5.1.1",
+      "dependencies": []
+    },
+    {
       "name": "yaml",
       "version": "3.1.2",
       "dependencies": [
@@ -391,13 +420,6 @@
       ]
     },
     {
-      "name": "package_config",
-      "version": "2.1.0",
-      "dependencies": [
-        "path"
-      ]
-    },
-    {
       "name": "json_annotation",
       "version": "4.8.1",
       "dependencies": [
@@ -414,13 +436,6 @@
       ]
     },
     {
-      "name": "convert",
-      "version": "3.0.0",
-      "dependencies": [
-        "typed_data"
-      ]
-    },
-    {
       "name": "_fe_analyzer_shared",
       "version": "87.0.0",
       "dependencies": [
@@ -428,28 +443,13 @@
       ]
     },
     {
-      "name": "built_value",
-      "version": "8.10.1",
-      "dependencies": [
-        "built_collection",
-        "collection",
-        "fixnum",
-        "meta"
-      ]
-    },
-    {
-      "name": "built_collection",
-      "version": "5.1.1",
+      "name": "vector_math",
+      "version": "2.2.0",
       "dependencies": []
     },
     {
       "name": "sky_engine",
       "version": "0.0.0",
-      "dependencies": []
-    },
-    {
-      "name": "vector_math",
-      "version": "2.2.0",
       "dependencies": []
     },
     {
@@ -541,6 +541,11 @@
       ]
     },
     {
+      "name": "fixnum",
+      "version": "1.0.0",
+      "dependencies": []
+    },
+    {
       "name": "term_glyph",
       "version": "1.2.0",
       "dependencies": []
@@ -548,11 +553,6 @@
     {
       "name": "charcode",
       "version": "1.2.0",
-      "dependencies": []
-    },
-    {
-      "name": "fixnum",
-      "version": "1.0.0",
       "dependencies": []
     }
   ],

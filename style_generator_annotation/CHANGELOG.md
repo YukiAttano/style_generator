@@ -1,3 +1,8 @@
+## 0.1.5
+
+* change StyleKey's type parameter is to optional
+* remove type parameter from CopyWithKey
+
 ## 0.1.4
 
 - Improve explanation of CopyWith annotation in ReadMe

@@ -207,9 +207,9 @@
     },
     {
       "name": "meta",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/meta-1.16.0",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/meta-1.17.0",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.5"
     },
     {
       "name": "mime",
@@ -363,8 +363,8 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.9.2",
+  "generatorVersion": "3.10.4",
   "flutterRoot": "file:///Users/alexandersandten/Library/flutter",
-  "flutterVersion": "3.35.6",
+  "flutterVersion": "3.38.5",
   "pubCache": "file:///Users/alexandersandten/.pub-cache"
 }
