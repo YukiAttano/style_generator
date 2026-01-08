@@ -1,3 +1,4 @@
+import "package:meta/meta.dart";
 import "package:meta/meta_meta.dart";
 
 /// override the generation behavior of a field
@@ -71,7 +72,7 @@ import "package:meta/meta_meta.dart";
   TargetKind.getter,
   TargetKind.overridableMember,
 })
-class CopyWithKey<T> {
+class CopyWithKey {
   /// if false, the field will not be included in the copyWith() method
   final bool inCopyWith;
 

@@ -1,3 +1,8 @@
+## 0.2.2
+
+* change StyleKey's type parameter is to optional
+* remove type parameter from CopyWithKey
+
 ## 0.2.1
 
 * add CopyWith and CopyWithKey annotation

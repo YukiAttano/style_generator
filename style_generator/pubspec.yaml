@@ -1,6 +1,6 @@
 name: style_generator
 description: "Theme and Style generator. Generates ThemeExtension files"
-version: 0.2.1
+version: 0.2.2
 repository: https://github.com/YukiAttano/style_generator/tree/main/style_generator
 issue_tracker: https://github.com/YukiAttano/style_generator/issues
 topics:

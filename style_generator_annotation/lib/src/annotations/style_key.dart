@@ -1,3 +1,4 @@
+import "package:meta/meta.dart";
 import "package:meta/meta_meta.dart";
 
 typedef LerpCallback<T> = T Function(T? a, T? b, double t);
@@ -13,6 +14,7 @@ typedef MergeCallback<T> = T Function(T a, T other);
   TargetKind.getter,
   TargetKind.overridableMember,
 })
+@optionalTypeArgs
 class StyleKey<T> {
   /// if false, the field will not be included in the copyWith() method
   ///
