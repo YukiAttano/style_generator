@@ -1,4 +1,3 @@
-import "package:meta/meta.dart";
 import "package:meta/meta_meta.dart";
 
 /// override the generation behavior of a field
