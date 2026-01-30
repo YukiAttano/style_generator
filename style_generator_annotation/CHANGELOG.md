@@ -1,7 +1,11 @@
 ## 0.1.5
 
-* change StyleKey's type parameter is to optional
-* remove type parameter from CopyWithKey
+- Add halfMerge() shortcut method
+
+## 0.1.5
+
+- Change StyleKey's type parameter is to optional
+- Remove type parameter from CopyWithKey
 
 ## 0.1.4
 
