@@ -3,21 +3,21 @@
   "packages": [
     {
       "name": "_fe_analyzer_shared",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-87.0.0",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-93.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.9"
     },
     {
       "name": "analyzer",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/analyzer-8.1.0",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/analyzer-10.0.1",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.9"
     },
     {
       "name": "args",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/args-2.0.0",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/args-2.7.0",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.3"
     },
     {
       "name": "async",
@@ -27,7 +27,7 @@
     },
     {
       "name": "build",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/build-3.0.2",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/build-4.0.4",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -44,20 +44,8 @@
       "languageVersion": "2.14"
     },
     {
-      "name": "build_resolvers",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/build_resolvers-3.0.2",
-      "packageUri": "lib/",
-      "languageVersion": "3.7"
-    },
-    {
       "name": "build_runner",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/build_runner-2.7.0",
-      "packageUri": "lib/",
-      "languageVersion": "3.7"
-    },
-    {
-      "name": "build_runner_core",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/build_runner_core-9.3.0",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/build_runner-2.10.5",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -117,9 +105,9 @@
     },
     {
       "name": "dart_style",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/dart_style-3.1.2",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/dart_style-3.1.5",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.9"
     },
     {
       "name": "file",
@@ -138,12 +126,6 @@
       "rootUri": "file:///Users/alexandersandten/Library/flutter/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "3.8"
-    },
-    {
-      "name": "frontend_server_client",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/frontend_server_client-3.0.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
     },
     {
       "name": "glob",
@@ -279,9 +261,9 @@
     },
     {
       "name": "source_span",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/source_span-1.8.0",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/source_span-1.10.1",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.1"
     },
     {
       "name": "stack_trace",
@@ -310,12 +292,6 @@
     {
       "name": "term_glyph",
       "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/term_glyph-1.2.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
-      "name": "timing",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/timing-1.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },

@@ -1,3 +1,7 @@
+## 0.2.3
+
+* Support `analyzer: ">=8.1.0 <11.0.0"`
+
 ## 0.2.2
 
 * change StyleKey's type parameter is to optional
