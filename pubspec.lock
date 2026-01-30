@@ -222,6 +222,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.0"
+  improved_analysis:
+    dependency: transitive
+    description:
+      name: improved_analysis
+      sha256: a09d876def446f3f366db19882da753b24c392be786381d26ad8f25a453f2b99
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   io:
     dependency: transitive
     description:

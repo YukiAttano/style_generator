@@ -170,6 +170,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "improved_analysis",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/improved_analysis-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "io",
       "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/io-1.0.0",
       "packageUri": "lib/",

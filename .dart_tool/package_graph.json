@@ -38,8 +38,14 @@
         "meta"
       ],
       "devDependencies": [
+        "improved_analysis",
         "lints"
       ]
+    },
+    {
+      "name": "improved_analysis",
+      "version": "1.0.0",
+      "dependencies": []
     },
     {
       "name": "lints",
