@@ -30,6 +30,7 @@ class CopyWithBuilder with HeaderGen implements Builder {
     ".dart": [outExtension],
   };
 
+  // TODO(Yuki): add 'apply' flag for inverted copyWith
   @override
   Future<void> build(BuildStep buildStep) async {
     await _lookupStore.init(buildStep);
