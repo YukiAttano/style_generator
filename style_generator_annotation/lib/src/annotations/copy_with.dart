@@ -1,5 +1,6 @@
 import "package:meta/meta_meta.dart";
 
+/// Classes annotated with @CopyWith() will generate a copyWith() method
 @Target({TargetKind.classType})
 class CopyWith {
   /// The name of the constructor that should be used for copyWith()

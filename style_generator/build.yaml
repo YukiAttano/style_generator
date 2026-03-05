@@ -28,9 +28,21 @@ builders:
         constructor: null
         asExtension: null
         suffix: null
+  equality_builder:
+    import: "package:style_generator/style_generator.dart"
+    builder_factories: [ "equalityBuilder" ]
+    build_extensions: { ".dart": [ ".equality.dart" ] }
+    build_to: source
+    auto_apply: root_package
+    defaults:
+      options:
+        run_only_if_triggered: true
+        suffix: null
 
 triggers:
   style_generator:style_builder:
     - annotation Style
   style_generator:copy_with_builder:
     - annotation CopyWith
+  style_generator:equality_builder:
+    - annotation Equality

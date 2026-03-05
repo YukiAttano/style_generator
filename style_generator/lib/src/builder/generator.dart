@@ -93,7 +93,12 @@ abstract base class Generator<A, K, C extends Config<A>> {
 
   GeneratorResult mergeParts(List<PartGenResult> parts);
 
-  Future<AnalyzedClass> analyzeClass(AnnotatedElement<A> annotatedClazz, String? constructorName) async {
+  /// Analyzes [annotatedClazz]
+  ///
+  /// use [analyzeFor] to override the analyzing.
+  /// This is probably only useful in cases where no constructor is necessary
+  /// and only direct access to [AnalyzedClass.fields] is required.
+  Future<AnalyzedClass> analyzeClass(AnnotatedElement<A> annotatedClazz, String? constructorName, {FieldType? analyzeFor}) async {
     ClassElement clazz = annotatedClazz.element as ClassElement;
     ConstructorElement? constructor = findConstructor(clazz.constructors, constructorName);
 
@@ -101,8 +106,8 @@ abstract base class Generator<A, K, C extends Config<A>> {
 
     VariableHandler state = VariableHandler(clazz: clazz, constructor: constructor);
     await state.indexConstructorDeclarations(resolver, resolvedLib);
-    if (keyAnnotation != null) state.build(keyAnnotation!);
-    state.resolveTypes(resolvedLib);
+    if (keyAnnotation != null) state.build(keyAnnotation!, type: analyzeFor);
+    state.resolveTypes(resolvedLib, type: analyzeFor);
 
     return AnalyzedClass(clazz: clazz, constructor: constructor, variableHandler: state);
   }

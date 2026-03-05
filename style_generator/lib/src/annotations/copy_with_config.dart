@@ -12,7 +12,7 @@ class CopyWithConfig extends CopyWith implements Config<CopyWith> {
   const CopyWithConfig({
     super.constructor,
     super.asExtension,
-    required super.suffix,
+    required String super.suffix,
   });
 
   factory CopyWithConfig.fromConfig(Map<String, Object?> config) {

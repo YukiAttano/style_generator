@@ -6,7 +6,8 @@ typedef MergeCallback<T> = T Function(T a, T other);
 
 /// override the generation behavior of a field
 ///
-/// Annotations on constructor parameters take precedence over fields
+/// - Annotations on constructor parameters take precedence over fields
+/// - Annotations on fields are inherited in subclasses, while those on parameters do not
 @Target({
   TargetKind.field,
   TargetKind.parameter,

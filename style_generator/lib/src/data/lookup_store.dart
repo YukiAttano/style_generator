@@ -4,10 +4,13 @@ import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 import "package:build/build.dart";
 import "package:style_generator_annotation/copy_with_generator_annotation.dart";
+import "package:style_generator_annotation/equality_generator_annotation.dart";
 import "package:style_generator_annotation/style_generator_annotation.dart";
 
 import "../annotations/copy_with_config.dart";
 import "../annotations/copy_with_key_internal.dart";
+import "../annotations/equality_config.dart";
+import "../annotations/equality_key_internal.dart";
 import "../annotations/style_config.dart";
 import "../annotations/style_key_internal.dart";
 import "annotation_converter/annotation_converter.dart";
@@ -16,12 +19,15 @@ import "annotation_converter/json_annotation_converter.dart";
 class LookupStore {
   static const String styleAnnotationPackage = "package:style_generator_annotation/style_generator_annotation.dart";
   static const String copyWithAnnotationPackage = "package:style_generator_annotation/copy_with_generator_annotation.dart";
+  static const String equalityAnnotationPackage = "package:style_generator_annotation/equality_generator_annotation.dart";
   static const String materialPackage = "package:flutter/material.dart";
 
   static const String styleKeyName = StyleKeyInternal.srcAnnotationName;
   static const String styleName = StyleConfig.srcAnnotationName;
   static const String copyWithName = CopyWithConfig.srcAnnotationName;
   static const String copyWithKeyName = CopyWithKeyInternal.srcAnnotationName;
+  static const String equalityName = EqualityConfig.srcAnnotationName;
+  static const String equalityKeyName = EqualityKeyInternal.srcAnnotationName;
   static const String buildContextName = "BuildContext";
 
   final Map<String, AnnotationConverter> _libraryAnnotations = {};
@@ -31,13 +37,13 @@ class LookupStore {
   bool _isInitialized = false;
 
   AnnotationConverter<Style> get styleAnnoConverter => _libraryAnnotations[styleName]! as AnnotationConverter<Style>;
-
   AnnotationConverter<StyleKeyInternal> get styleKeyAnnoConverter => _libraryAnnotations[styleKeyName]! as AnnotationConverter<StyleKeyInternal>;
 
   AnnotationConverter<CopyWith> get copyWithAnnoConverter => _libraryAnnotations[copyWithName]! as AnnotationConverter<CopyWith>;
-
   AnnotationConverter<CopyWithKeyInternal> get copyWithKeyAnnoConverter => _libraryAnnotations[copyWithKeyName]! as AnnotationConverter<CopyWithKeyInternal>;
 
+  AnnotationConverter<Equality> get equalityAnnoConverter => _libraryAnnotations[equalityName]! as AnnotationConverter<Equality>;
+  AnnotationConverter<EqualityKeyInternal> get equalityKeyAnnoConverter => _libraryAnnotations[equalityKeyName]! as AnnotationConverter<EqualityKeyInternal>;
 
   DartType get buildContextType => _dartTypes[buildContextName]!;
 
@@ -73,8 +79,10 @@ class LookupStore {
   Future<void> _initStyle(BuildStep buildStep) async {
     AssetId styleAsset = AssetId.resolve(Uri.parse(styleAnnotationPackage));
     AssetId copyWithAsset = AssetId.resolve(Uri.parse(copyWithAnnotationPackage));
+    AssetId equalityAsset = AssetId.resolve(Uri.parse(equalityAnnotationPackage));
     LibraryElement styleLib = await buildStep.resolver.libraryFor(styleAsset);
     LibraryElement copyWithLib = await buildStep.resolver.libraryFor(copyWithAsset);
+    LibraryElement equalityLib = await buildStep.resolver.libraryFor(equalityAsset);
 
     // create ClassElements of our annotations and
     // create converter for the ClassElements to read the configured Annotations from real DartObjects
@@ -83,6 +91,8 @@ class LookupStore {
     _createAnnotationFromMap<StyleKeyInternal>(styleLib, styleKeyName,  (map) => createStyleKey(resolvedLibrary, map));
     _createAnnotationFromJson<CopyWith>(copyWithLib, copyWithName, CopyWith.fromJson);
     _createAnnotationFromJson<CopyWithKeyInternal>(copyWithLib, copyWithKeyName, CopyWithKeyInternal.fromJson);
+    _createAnnotationFromJson<Equality>(equalityLib, equalityName, Equality.fromJson);
+    _createAnnotationFromJson<EqualityKeyInternal>(equalityLib, equalityKeyName, EqualityKeyInternal.fromJson);
   }
 
   void _createAnnotationFromJson<T>(LibraryElement library, String annoName, AnnotationFromJson<T> fromJson) {
