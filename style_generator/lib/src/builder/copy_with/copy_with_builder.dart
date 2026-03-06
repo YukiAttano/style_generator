@@ -67,8 +67,7 @@ class CopyWithBuilder with HeaderGen implements Builder {
 
     bool hasPartDirective = resolvedLib.containsPart(inputId, outputId);
 
-    // if (result.addPartDirective && !hasPartDirective) missingPartDeclaration(basename(outputId.path));
-
+    if (result.addPartDirective && !hasPartDirective) missingPartDeclaration(basename(outputId.path));
 
     partClass = """
     $header

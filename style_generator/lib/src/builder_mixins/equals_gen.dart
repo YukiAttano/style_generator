@@ -1,11 +1,6 @@
-import "package:analyzer/dart/analysis/results.dart";
 
 import "../../style_generator.dart";
-import "../data/logger.dart";
-import "../data/resolved_import.dart";
-import "../data/resolved_type.dart";
 import "../data/variable.dart";
-import "../extensions/dart_type_extension.dart";
 
 class EqualsGenResult {
   /// the generated function

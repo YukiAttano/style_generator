@@ -1,25 +1,19 @@
 import "dart:async";
 
 import "package:analyzer/dart/element/element.dart";
-import "package:style_generator_annotation/copy_with_generator_annotation.dart";
 import "package:style_generator_annotation/equality_generator_annotation.dart";
 
-import "../../annotations/copy_with_config.dart";
-import "../../annotations/copy_with_key_internal.dart";
 import "../../annotations/equality_config.dart";
 import "../../annotations/equality_key_internal.dart";
-import "../../builder_mixins/copy_with_gen.dart";
 import "../../builder_mixins/equals_gen.dart";
 import "../../builder_mixins/fields_gen.dart";
 import "../../builder_mixins/hash_gen.dart";
 import "../../data/annotated_element.dart";
 import "../../data/annotation_converter/annotation_converter.dart";
-import "../../data/logger.dart";
 import "../../data/resolved_import.dart";
 import "../../data/variable.dart";
 import "../../extensions/element/type_parameter_element_list_extension_.dart";
 import "../../extensions/element/type_parameterized_element_extension.dart";
-import "../../extensions/string_constructor_extension.dart";
 import "../generator.dart";
 
 class EqualityGeneratorResult extends GeneratorResult {

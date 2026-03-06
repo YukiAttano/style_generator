@@ -4,7 +4,6 @@ import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/analysis/session.dart";
 import "package:analyzer/dart/element/element.dart";
 import "package:build/build.dart";
-import "package:collection/collection.dart";
 import "package:dart_style/dart_style.dart";
 import "package:path/path.dart";
 

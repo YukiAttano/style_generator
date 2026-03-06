@@ -106,7 +106,7 @@ class Variable {
     if (resolvedType == null) {
       if (fieldElement == null) {
         resolvedType = ResolvedType(
-          library: library!,
+          library: library,
           type: type,
           typeAnnotation: null,
           prefixReference: null,

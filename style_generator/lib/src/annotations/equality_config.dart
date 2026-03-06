@@ -1,4 +1,3 @@
-import "package:style_generator_annotation/copy_with_generator_annotation.dart";
 import "package:style_generator_annotation/equality_generator_annotation.dart";
 
 import "../builder/config.dart";
