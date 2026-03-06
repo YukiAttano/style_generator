@@ -599,6 +599,21 @@ mixin _$SomeUserEquality {
 ```
 </details>
 
+### Customize the default behavior with build.yml
+
+You can customize the default behavior in your build.yml
+
+```yaml
+targets:
+  $default:
+    builders:
+      style_generator|equality_builder:
+        enabled: true
+        options:
+          constructor: null     # The constructor for .copyWith to use. The default is `null`
+          suffix: "Equality"    # an optional suffix for the generated mixin. The default is `Equality`
+```
+
 ## EqualityKey
 
 <details>
@@ -755,23 +770,6 @@ mixin _$EqChildEquality {
 
 
 </details>
-
-### Customize the default behavior with build.yml
-
-You can customize the default behavior in your build.yml
-
-```yaml
-targets:
-  $default:
-    builders:
-      style_generator|equality_builder:
-        enabled: true
-        options:
-          constructor: null     # The constructor for .copyWith to use. The default is `null`
-          suffix: "Equality"    # an optional suffix for the generated mixin. The default is `Equality`
-```
-
-
 
 # Prefixed Imports and static callbacks
 
