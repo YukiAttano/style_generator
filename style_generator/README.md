@@ -40,6 +40,7 @@ For even easier generation, use the [Style Generator Templates for Flutter](http
       - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml-1)
     - [CopyWithKey](#copywithkey)
     - [Equality](#equality)
+      - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml-2)
     - [EqualityKey](#equalityKey)
 - [Prefixed Imports and static callbacks](#prefixed-imports-and-static-callbacks)
 - [Feedback](#feedback)
