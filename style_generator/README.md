@@ -346,7 +346,7 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 
 <details>
 
-<summary> Since we already generating a `copyWith()` for `ThemeExtension`s, i've added a standalone `@CopyWith()` annotation 
+<summary> Since we already generating a `copyWith()` for `ThemeExtension`s, I've added a standalone `@CopyWith()` annotation 
 that generates standalone `copyWith()` Extensions (or Mixins) </summary>
 
 Since it comes with a different import, it won't collide with other packages when only the `@Style()` annotation is used
@@ -552,6 +552,9 @@ extension $UserProfileExtension on UserProfile {
 <details>
 
 <summary> generates `hashCode` and `operator ==` functions </summary>
+
+Just like the @CopyWith annotation, it comes with its own import and won't collide with other packages 
+when only the `@Style()` annotation is used
 
 ```dart
 import 'package:style_generator_annotation/equality_generator_annotation.dart';
