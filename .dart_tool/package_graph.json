@@ -18,6 +18,7 @@
         "analyzer",
         "build",
         "build_config",
+        "collection",
         "dart_style",
         "flutter",
         "logging",
@@ -32,7 +33,7 @@
     },
     {
       "name": "style_generator_annotation",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "dependencies": [
         "collection",
         "meta"
