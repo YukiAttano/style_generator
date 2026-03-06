@@ -3,7 +3,6 @@ import "package:style_generator_annotation/style_generator_annotation.dart";
 import "../builder/config.dart";
 
 class StyleConfig extends Style implements Config<StyleConfig> {
-
   static const String srcAnnotationName = "Style";
 
   @override

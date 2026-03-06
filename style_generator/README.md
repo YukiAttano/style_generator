@@ -39,6 +39,8 @@ For even easier generation, use the [Style Generator Templates for Flutter](http
       - [CopyWith as Mixin](#copywith-as-mixin)
       - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml-1)
     - [CopyWithKey](#copywithkey)
+    - [Equality](#equality)
+    - [EqualityKey](#equalityKey)
 - [Prefixed Imports and static callbacks](#prefixed-imports-and-static-callbacks)
 - [Feedback](#feedback)
 
@@ -544,6 +546,232 @@ extension $UserProfileExtension on UserProfile {
 ```
 
 </details>
+
+## Equality
+
+<details>
+
+<summary> generates `hashCode` and `operator ==` functions </summary>
+
+```dart
+import 'package:style_generator_annotation/equality_generator_annotation.dart';
+
+part 'some_user.equality.dart';
+
+@Equality()
+class SomeUser with _$SomeUserEquality {
+  final String firstname;
+  final String lastname;
+  final DateTime? birthday;
+
+  const SomeUser(this.firstname, this.lastname, this.birthday);
+}
+```
+
+which generates:
+```dart
+part of "some_user.dart";
+
+mixin _$SomeUserEquality {
+  String get firstname;
+  String get lastname;
+  DateTime? get birthday;
+  List<Profile>? get profiles;
+
+  int get hashCode => Object.hashAll([
+    firstname,
+    lastname,
+    birthday,
+    const DeepCollectionEquality().hash(profiles),
+  ]);
+
+  bool operator ==(Object other) {
+    if (other is! SomeUser) return false;
+
+    return identical(this, other) ||
+        firstname == other.firstname &&
+            lastname == other.lastname &&
+            birthday == other.birthday &&
+            const DeepCollectionEquality().equals(profiles, other.profiles);
+  }
+}
+
+```
+</details>
+
+## EqualityKey
+
+<details>
+
+<summary> The generation of the `hashCode` and `operator ==` method can be further customized </summary>
+
+- fields can be excluded from `hashCode` alone
+- fields can be excluded from `operator ==` alone
+
+Excluding fields from only one method is discouraged, consider using `@EqualityKey.exclude` to
+exclude the field from both (or include them again when they were excluded in a parent class)
+
+```dart
+import 'package:style_generator_annotation/equality_generator_annotation.dart';
+
+part 'eq_parent.equality.dart';
+
+@Equality()
+class EqParent with _$EqParentEquality {
+  final EqParent zero;
+  @EqualityKey(inEquals: false, inHash: false)
+  final String one;
+  @EqualityKey(inHash: true)
+  final int two;
+
+  final List<String> list;
+  @EqualityKey.exclude()
+  final HashMap<String, bool> hashMap;
+  final Set<int> set;
+
+  const EqParent(this.zero, this.one, this.two, this.list, this.hashMap, this.set);
+}
+
+@Equality()
+class EqChild extends EqParent with _$EqChildEquality {
+  final EqChild ten;
+  final String eleven;
+
+  final List<Object?> oList;
+  final List<double?>? nullableList;
+  final List<dynamic> dynList;
+  final dynamic dyn;
+  final Map<dynamic, List<dynamic>> dynMap;
+
+  const EqChild(
+    super.zero,
+    super.one,
+    super.two,
+    super.list,
+    this.ten,
+    @EqualityKey.exclude(false) super.hashMap,
+    super.set,
+    this.eleven,
+    this.oList,
+    this.nullableList,
+    this.dynList,
+    this.dyn,
+    this.dynMap,
+  );
+}
+```
+
+which generates
+```dart
+part of "eq_parent.dart";
+
+mixin _$EqParentEquality {
+  EqParent get zero;
+  String get one;
+  int get two;
+  List<String> get list;
+  HashMap<String, bool> get hashMap;
+  Set<int> get set;
+
+  int get hashCode => Object.hashAll([
+    zero,
+    // one,
+    two,
+    const DeepCollectionEquality().hash(list),
+    // const DeepCollectionEquality().hash(hashMap),
+    const DeepCollectionEquality().hash(set),
+  ]);
+
+  bool operator ==(Object other) {
+    if (other is! EqParent) return false;
+
+    return identical(this, other) ||
+        zero == other.zero
+            // && one == other.one
+            &&
+            two == other.two &&
+            const DeepCollectionEquality().equals(list, other.list)
+            // && const DeepCollectionEquality().equals(hashMap, other.hashMap)
+            &&
+            const DeepCollectionEquality().equals(set, other.set);
+  }
+}
+
+mixin _$EqChildEquality {
+  EqParent get zero;
+  String get one;
+  int get two;
+  List<String> get list;
+  EqChild get ten;
+  HashMap<String, bool> get hashMap;
+  Set<int> get set;
+  String get eleven;
+  List<Object?> get oList;
+  List<double?>? get nullableList;
+  List<dynamic> get dynList;
+  dynamic get dyn;
+  Map<dynamic, List<dynamic>> get dynMap;
+
+  int get hashCode => Object.hashAll([
+    zero,
+    // one,
+    two,
+    const DeepCollectionEquality().hash(list),
+    ten,
+    const DeepCollectionEquality().hash(hashMap),
+    const DeepCollectionEquality().hash(set),
+    eleven,
+    const DeepCollectionEquality().hash(oList),
+    const DeepCollectionEquality().hash(nullableList),
+    const DeepCollectionEquality().hash(dynList),
+    dyn,
+    const DeepCollectionEquality().hash(dynMap),
+  ]);
+
+  bool operator ==(Object other) {
+    if (other is! EqChild) return false;
+
+    return identical(this, other) ||
+        zero == other.zero
+            // && one == other.one
+            &&
+            two == other.two &&
+            const DeepCollectionEquality().equals(list, other.list) &&
+            ten == other.ten &&
+            const DeepCollectionEquality().equals(hashMap, other.hashMap) &&
+            const DeepCollectionEquality().equals(set, other.set) &&
+            eleven == other.eleven &&
+            const DeepCollectionEquality().equals(oList, other.oList) &&
+            const DeepCollectionEquality().equals(
+              nullableList,
+              other.nullableList,
+            ) &&
+            const DeepCollectionEquality().equals(dynList, other.dynList) &&
+            dyn == other.dyn &&
+            const DeepCollectionEquality().equals(dynMap, other.dynMap);
+  }
+}
+```
+
+
+</details>
+
+### Customize the default behavior with build.yml
+
+You can customize the default behavior in your build.yml
+
+```yaml
+targets:
+  $default:
+    builders:
+      style_generator|equality_builder:
+        enabled: true
+        options:
+          constructor: null     # The constructor for .copyWith to use. The default is `null`
+          suffix: "Equality"    # an optional suffix for the generated mixin. The default is `Equality`
+```
+
+
 
 # Prefixed Imports and static callbacks
 

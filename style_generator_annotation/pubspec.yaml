@@ -18,6 +18,8 @@ environment:
 dependencies:
   meta: ^1.15.0
 
+  collection: ^1.0.0
+
 dev_dependencies:
   lints: ">=5.0.0 <8.0.0"
   improved_analysis: ^1.0.0

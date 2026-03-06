@@ -22,3 +22,4 @@ For even easier generation, use the [Style Generator Templates for Flutter](http
 
 - Style and StyleKey (for generating ThemeExtension classes)
 - CopyWith and CopyWithKey (for generating standalone CopyWith Extensions or Mixins)
+- Equality and EqualityKey (for generating standalone hashCode and == methods)

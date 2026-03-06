@@ -2,10 +2,13 @@ import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/ast/syntactic_entity.dart";
 import "package:analyzer/dart/element/element.dart";
+import "package:analyzer/dart/element/nullability_suffix.dart";
 import "package:analyzer/dart/element/type.dart";
+import "package:analyzer/dart/element/type_provider.dart";
 
 import "../extensions/dart_type_extension.dart";
 import "../extensions/element/element_extension.dart";
+import "logger.dart";
 import "resolved_import.dart";
 
 class TypeInformation {
@@ -16,7 +19,8 @@ class TypeInformation {
 }
 
 class ResolvedType {
-  final LibraryElement library;
+  /// should only be null when [type] is [DynamicType]
+  final LibraryElement? library;
   final DartType type;
 
   // TypedElement get typedElement => TypedElement(
@@ -125,7 +129,7 @@ class ResolvedType {
     if (prefixReference != null) return prefixedFieldImport;
     if (importDirective != null) return indirectFieldImport;
     return typeImport;
-  } ();
+  }();
 
   ResolvedType({
     required this.library,
@@ -149,11 +153,13 @@ class ResolvedType {
       importDirective = element.type.searchImportDirectiveIn(resolvedLib);
     }
 
+    var ref = _getPrefixReference(typeAnnotation);
+
     return ResolvedType(
       library: element.library,
       type: element.type,
       typeAnnotation: typeAnnotation,
-      prefixReference: _getPrefixReference(typeAnnotation),
+      prefixReference: ref,
       importDirective: importDirective,
       typeInformation: element.type is InterfaceType
           ? (element.type as InterfaceType).resolveTypeInformation(resolvedLib)
@@ -195,7 +201,25 @@ class ResolvedType {
     TypeParameterElement element = type.element;
 
     return ResolvedType(
-      library: element.library!,
+      library: element.library,
+      type: type,
+      typeAnnotation: typeAnnotation,
+      prefixReference: _getPrefixReference(typeAnnotation),
+      importDirective: null,
+      typeInformation: [],
+    );
+  }
+
+  factory ResolvedType.dynamicType({
+    required ResolvedLibraryResult resolvedLib,
+    required DynamicType type,
+  }) {
+    TypeAnnotation? typeAnnotation = _getPrefixType(resolvedLib, type.element!);
+
+    Element element = type.element!;
+
+    return ResolvedType(
+      library: element.library,
       type: type,
       typeAnnotation: typeAnnotation,
       prefixReference: _getPrefixReference(typeAnnotation),
@@ -242,4 +266,33 @@ class ResolvedType {
         importDirective: importDirective,
         typeInformation: typeInformation,
       );
+
+  bool requiresDeepEquality() {
+    var lib = library;
+    if (type is! InterfaceType || lib == null) return false;
+
+    // requires an element
+    // var element = type.element;
+    // if (element is! InterfaceElement) return false;
+    // return element.allSupertypes.any((element) {
+    //   return element.isDartCoreIterable || element.isDartCoreList || element.isDartCoreMap;
+    // },);
+
+    TypeProvider tp = lib.typeProvider;
+
+    InterfaceType dynamicIterableType = tp.iterableElement.instantiate(
+      typeArguments: [tp.dynamicType],
+      nullabilitySuffix: NullabilitySuffix.none,
+    );
+
+    InterfaceType dynamicMapType = tp.mapElement.instantiate(
+      typeArguments: [tp.dynamicType, tp.dynamicType],
+      nullabilitySuffix: NullabilitySuffix.none,
+    );
+
+    DartType nonNullType = lib.typeSystem.promoteToNonNull(type);
+
+    return lib.typeSystem.isSubtypeOf(nonNullType, dynamicIterableType) ||
+        lib.typeSystem.isSubtypeOf(nonNullType, dynamicMapType);
+  }
 }

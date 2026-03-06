@@ -10,11 +10,13 @@ class EqualityConfig extends Equality implements Config<Equality> {
   String get suffix => super.suffix!;
 
   const EqualityConfig({
+    required super.constructor,
     required String super.suffix,
   });
 
   factory EqualityConfig.fromConfig(Map<String, Object?> config) {
     return EqualityConfig(
+      constructor: config["constructor"]?.toString(),
       suffix: config["suffix"] as String? ?? "",
     );
   }
@@ -22,6 +24,7 @@ class EqualityConfig extends Equality implements Config<Equality> {
   @override
   EqualityConfig apply(Equality other) {
     return EqualityConfig(
+      constructor: other.constructor,
       suffix: other.suffix ?? suffix,
     );
   }

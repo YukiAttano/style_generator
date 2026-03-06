@@ -1,3 +1,8 @@
+## 0.2.4
+
+* Fix crash on members using 'dynamic' as type argument (e.g. `List<dynamic>`, `Map<dynamic, dynamic>`)
+* Add Equality and EqualityKey annotation
+
 ## 0.2.3
 
 * Support `analyzer: ">=8.1.0 <11.0.0"`

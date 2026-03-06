@@ -14,6 +14,7 @@ import "../../builder_mixins/fields_gen.dart";
 import "../../builder_mixins/hash_gen.dart";
 import "../../data/annotated_element.dart";
 import "../../data/annotation_converter/annotation_converter.dart";
+import "../../data/logger.dart";
 import "../../data/resolved_import.dart";
 import "../../data/variable.dart";
 import "../../extensions/element/type_parameter_element_list_extension_.dart";
@@ -68,10 +69,10 @@ final class EqualityGenerator extends Generator<Equality, EqualityKeyInternal, E
 
   @override
   Future<GenResult> generateForClass(AnnotatedElement<Equality> annotatedClazz, EqualityConfig config) async {
-    AnalyzedClass c = await analyzeClass(annotatedClazz, null, analyzeFor: FieldType.FIELD);
+    AnalyzedClass c = await analyzeClass(annotatedClazz, config.constructor, annotationTypeCheck: false);
     ClassElement clazz = c.clazz;
 
-    List<Variable> fields = c.fields;
+    List<Variable> fields = c.variables;
 
     String suffix = config.suffix;
 

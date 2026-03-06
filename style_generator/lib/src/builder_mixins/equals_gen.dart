@@ -47,7 +47,11 @@ mixin EqualsGen {
         if (inHash) isFirst = false;
       }
 
-      buffer.write("$fieldName == other.$fieldName$_nl");
+      if (v.resolvedType.requiresDeepEquality()) {
+        buffer.write("const DeepCollectionEquality().equals($fieldName, other.$fieldName)$_nl");
+      } else {
+        buffer.write("$fieldName == other.$fieldName$_nl");
+      }
     }
 
 

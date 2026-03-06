@@ -5,14 +5,14 @@ import "../data/variable.dart";
 mixin FieldsGen {
   static String get _nl => newLine;
 
-  String generateFieldGetter(List<Variable> fields) {
+  String generateFieldGetter(Iterable<Variable> fields) {
     List<String> list = [];
 
     String? name;
     ResolvedType resolvedType;
     for (var field in fields) {
       resolvedType = field.resolvedType;
-      name = field.name;
+      name = field.fieldElement?.displayName ?? name;
 
       list.add("${resolvedType.getDisplayString()} get $name;");
     }

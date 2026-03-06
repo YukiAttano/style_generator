@@ -19,13 +19,18 @@ class EqualityKey {
   /// if false, the field will not be included in the == method
   final bool inEquals;
 
+  /// Use [EqualityKey.exclude]
+  ///
+  /// It is generally discouraged to only disable one and not the other.
+  ///
+  /// But who am I to take this option from you.
   const EqualityKey({
     bool? inHash,
     bool? inEquals,
   })  : inHash = inHash ?? true,
         inEquals = inEquals ?? true;
 
-  const EqualityKey.ignore() : this(inHash: false, inEquals: false);
+  const EqualityKey.exclude([bool exclude = true]) : this(inHash: !exclude, inEquals: !exclude);
 
   Map<String, Object?> toJson() {
     return {

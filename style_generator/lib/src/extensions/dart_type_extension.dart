@@ -5,6 +5,7 @@ import "package:analyzer/dart/element/nullability_suffix.dart";
 import "package:analyzer/dart/element/type.dart";
 
 import "../data/class_method.dart";
+import "../data/logger.dart";
 import "../data/resolved_import.dart";
 import "../data/resolved_type.dart";
 
@@ -190,6 +191,8 @@ extension InterfaceTypeExtension on InterfaceType {
       typeParameter = typeParameters[index];
       typeArgument = typeArguments[index];
       switch (typeArgument) {
+        case DynamicType():
+          resolvedTypeArgument = ResolvedType.dynamicType(resolvedLib: resolvedLib, type: typeArgument);
         case TypeParameterType():
           resolvedTypeArgument = ResolvedType.resolveTypeParameterType(resolvedLib: resolvedLib, type: typeArgument);
         case InterfaceType():

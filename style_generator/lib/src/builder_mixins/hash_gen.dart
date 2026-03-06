@@ -1,4 +1,6 @@
 import "package:analyzer/dart/analysis/results.dart";
+import "package:analyzer/dart/element/element.dart";
+import "package:analyzer/dart/element/type.dart";
 
 import "../../style_generator.dart";
 import "../data/logger.dart";
@@ -16,7 +18,7 @@ class HashGenResult {
 
 mixin HashGen {
   static String get _nl => newLine;
-  static const String methodName = "hash";
+  static const String methodName = "hashCode";
 
   HashGenResult generateHash(
     List<Variable> fields,
@@ -25,22 +27,23 @@ mixin HashGen {
     List<String> f = [];
 
     String prefix;
-    String name;
     bool inHash;
     String fieldName;
     bool hasFields = false;
 
     for (var v in fields) {
-      name = v.name!;
-
-      fieldName = v.fieldElement?.displayName ?? name;
+      fieldName = v.fieldElement?.displayName ?? v.displayName;
 
       inHash = _includeVariable(v, inHashCallback);
 
       hasFields |= inHash;
-      prefix = inHash ? "" : "//";
+      prefix = inHash ? "" : "// ";
 
-      f.add("$prefix$fieldName");
+      if (v.resolvedType.requiresDeepEquality()) {
+        f.add("${prefix}const DeepCollectionEquality().hash($fieldName)");
+      } else {
+        f.add("$prefix$fieldName");
+      }
     }
 
     String hashParameter = f.isEmpty ? "" : f.join(",$_nl");

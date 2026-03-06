@@ -1,3 +1,7 @@
+## 0.1.7
+
+- Add Equality and EqualityKey annotation
+
 ## 0.1.6
 
 - Add halfMerge() shortcut method

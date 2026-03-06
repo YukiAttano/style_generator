@@ -37,7 +37,7 @@ builders:
     defaults:
       options:
         run_only_if_triggered: true
-        suffix: null
+        suffix: "Equality"
 
 triggers:
   style_generator:style_builder:

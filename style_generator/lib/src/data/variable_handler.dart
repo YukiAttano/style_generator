@@ -98,17 +98,19 @@ class VariableHandler {
   }
 
   /// builds the annotation cache for [merged]
-  void build<T>(AnnotationConverter<T> converter, {FieldType? type}) {
+  void build<T>(AnnotationConverter<T> converter, {FieldType? type, bool? annotationTypeCheck}) {
     type ??= FieldType.MERGED;
+    annotationTypeCheck ??= true;
 
     AnnotatedElement<T>? anno;
     List<Variable> vars = getVariablesByType(type);
     for (var v in vars) {
       anno = _findAnnotationForType<T>(type, v, converter);
-
       if (anno != null) {
-        bool hasMatchingType = v.element.isOfSameTypeAsTypeArgumentFromObject(anno.object, lessStrict: true, allowDynamic: true);
-        if (!hasMatchingType) styleKeyTypeMismatch(v, anno.object.type);
+        if (annotationTypeCheck) {
+          bool hasMatchingType = v.element.isOfSameTypeAsTypeArgumentFromObject(anno.object, lessStrict: true, allowDynamic: true);
+          if (!hasMatchingType) styleKeyTypeMismatch(v, anno.object.type);
+        }
 
         v._cache._inject(anno);
       }
