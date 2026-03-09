@@ -1,4 +1,3 @@
-
 import "../../style_generator.dart";
 import "../data/variable.dart";
 
@@ -43,14 +42,16 @@ mixin EqualsGen {
       }
 
       if (v.resolvedType.requiresDeepEquality()) {
-        buffer.write("const DeepCollectionEquality().equals($fieldName, other.$fieldName)$_nl");
+        buffer.write(
+          "identical($fieldName, other.$fieldName) || const DeepCollectionEquality().equals($fieldName, other.$fieldName)$_nl",
+        );
       } else {
         buffer.write("$fieldName == other.$fieldName$_nl");
       }
     }
 
-
     String function = """
+    @override
     bool $methodName(Object other) {
       if (other is! $className) return false;
       

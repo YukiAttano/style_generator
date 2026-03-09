@@ -44,6 +44,7 @@ mixin HashGen {
     String hashEmpty = "identityHashCode(this)";
 
     String function = """
+    @override
     int get $methodName => ${!hasFields ? hashEmpty : hashAll};
     """;
 

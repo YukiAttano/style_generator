@@ -1,3 +1,7 @@
+## 0.2.5
+
+* Add `@override` annotation to `hashCode` and `operator ==` methods
+
 ## 0.2.4
 
 * Fix crash on members using 'dynamic' as type argument (e.g. `List<dynamic>`, `Map<dynamic, dynamic>`)
