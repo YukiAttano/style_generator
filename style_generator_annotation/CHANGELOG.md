@@ -1,3 +1,7 @@
+## 0.1.8
+
+- Fix typo in Readme.md and add full `build.yaml` example
+
 ## 0.1.7
 
 - Add Equality and EqualityKey annotation

@@ -614,7 +614,7 @@ targets:
       style_generator|equality_builder:
         enabled: true
         options:
-          constructor: null     # The constructor for .copyWith to use. The default is `null`
+          constructor: null     # The constructor to lookup required fields. The default is `null`
           suffix: "Equality"    # an optional suffix for the generated mixin. The default is `Equality`
 ```
 
@@ -823,6 +823,47 @@ class SomeStyle extends ThemeExtension<SomeStyle> with _$SomeStyle {
 
   static Color? alwaysRed(Color? a, Color? b, core.double t) => Colors.red;
 }
+```
+
+</details>
+
+# Full build.yaml example
+
+<details>
+
+<summary> This build.yaml shows the default configuration of all annotations </summary>
+
+You can create a `build.yaml` inside your project (on the same level as your `pubspec.yaml`)
+and insert and modify this content to change the default behavior project wide.
+
+Note: setting `enable: false` should not be necessary. All builder come with their own imports
+and therefor only trigger when their import is found. They will not interfere with other packages.
+
+```yaml
+targets:
+  $default:
+    builders:
+      style_generator|style_builder:
+        enabled: true                     
+        options:
+          constructor: null
+          fallback: null
+          gen_copy_with: true
+          gen_merge: true
+          gen_lerp: true
+          gen_of: null
+          suffix: null
+      style_generator|copy_with_builder:
+        enabled: true                     
+        options:
+          constructor: null
+          asExtension: null
+          suffix: null
+      style_generator|equality_builder:
+        enabled: true                     
+        options:
+          constructor: null
+          suffix: "Equality"
 ```
 
 </details>

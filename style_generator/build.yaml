@@ -37,6 +37,7 @@ builders:
     defaults:
       options:
         run_only_if_triggered: true
+        constructor: null
         suffix: "Equality"
 
 triggers:
