@@ -1,3 +1,7 @@
+## 0.2.6
+
+- Fix typo in Readme.md and add full `build.yaml` example
+
 ## 0.2.5
 
 * Add `@override` annotation to `hashCode` and `operator ==` methods
