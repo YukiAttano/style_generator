@@ -4,7 +4,6 @@ import "package:meta/meta_meta.dart";
 ///
 /// - Annotations on constructor parameters take precedence over fields
 /// - Annotations on fields are inherited in subclasses, while those on parameters do not
-/// ```
 @Target({
   TargetKind.field,
   TargetKind.parameter,
