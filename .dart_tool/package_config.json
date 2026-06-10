@@ -63,7 +63,7 @@
     },
     {
       "name": "characters",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/characters-1.4.0",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/characters-1.4.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -125,7 +125,7 @@
       "name": "flutter",
       "rootUri": "file:///Users/alexandersandten/Library/flutter/packages/flutter",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.9"
     },
     {
       "name": "glob",
@@ -189,9 +189,9 @@
     },
     {
       "name": "material_color_utilities",
-      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/material_color_utilities-0.11.1",
+      "rootUri": "file:///Users/alexandersandten/.pub-cache/hosted/pub.dev/material_color_utilities-0.13.0",
       "packageUri": "lib/",
-      "languageVersion": "2.17"
+      "languageVersion": "3.5"
     },
     {
       "name": "meta",
@@ -257,7 +257,7 @@
       "name": "sky_engine",
       "rootUri": "file:///Users/alexandersandten/Library/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.9"
     },
     {
       "name": "source_span",
@@ -345,8 +345,8 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.10.7",
+  "generatorVersion": "3.11.5",
   "flutterRoot": "file:///Users/alexandersandten/Library/flutter",
-  "flutterVersion": "3.38.7",
+  "flutterVersion": "3.41.9",
   "pubCache": "file:///Users/alexandersandten/.pub-cache"
 }

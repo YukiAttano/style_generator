@@ -11,7 +11,7 @@ class CopyWithGenResult {
   /// the generated function
   final String content;
 
-  /// additional code that [content] depends on
+  /// Additional code that [content] depends on
   final Iterable<ResolvedImport> imports;
 
   const CopyWithGenResult({this.content = "", this.imports = const []});

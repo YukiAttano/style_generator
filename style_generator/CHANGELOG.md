@@ -1,6 +1,6 @@
 ## 0.2.6
 
-- Fix typo in Readme.md and add full `build.yaml` example
+- Fix typo in README.md and add full `build.yaml` example
 
 ## 0.2.5
 
@@ -45,7 +45,7 @@
 
 ## 0.1.1
 
-* Add IntelliJ/Android Studio plugin to ReadMe
+* Add IntelliJ/Android Studio plugin to README
 * Support `analyzer: ">=8.1.0 <10.0.0"` (required since 0.1.0)
 
 ## 0.1.0

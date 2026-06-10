@@ -49,7 +49,7 @@ class LookupStore {
 
   late ResolvedLibraryResult _resolvedLibrary;
   ResolvedLibraryResult get resolvedLibrary {
-    assert(_isInitialized, "You must initialized this object first with init()");
+    assert(_isInitialized, "You must initialize this object first with init()");
     return _resolvedLibrary;
   }
 

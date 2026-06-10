@@ -6,7 +6,9 @@ class ClassMethod {
   final MethodElement element;
 
   String get name => element.displayName;
+
   bool get isStatic => element.isStatic;
+
   ClassElement get clazz => element.enclosingElement! as ClassElement;
 
   late Map<String, DartType> typeArgs = _getTypeArgs();
@@ -69,6 +71,4 @@ class ClassMethod {
 
     return head;
   }
-
-
 }
