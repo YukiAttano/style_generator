@@ -1,3 +1,7 @@
+## 0.2.8
+
+* Support `analyzer: ">=10.0.0 <13.0.0"`
+
 ## 0.2.7
 
 * Fix wrong 'missing import' warnings when multiple imports were defined

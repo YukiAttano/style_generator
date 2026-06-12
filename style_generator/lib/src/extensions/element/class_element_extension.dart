@@ -55,7 +55,7 @@ extension FieldElementListExtension on List<FieldElement> {
     for (var f in this) {
       // up to analyzer v10.0.1, `f.isOriginX` were `f.isSynthetic`
       // and I don't know which of the origins is the correct replacement.
-      if (f.isStatic || f.isSynthetic /*f.isOriginGetterSetter*/ || f.isPrivate) {
+      if (f.isStatic || f.isOriginGetterSetter || f.isPrivate) {
         continue;
       }
 
