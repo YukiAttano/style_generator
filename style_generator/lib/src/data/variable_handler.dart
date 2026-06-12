@@ -152,8 +152,8 @@ class VariableHandler {
               for (var param in d.parameters.parameters) {
                 if (param.declaredFragment == element.firstFragment) {
                   // it then resolves
-                  // - 'requires this.something' to the field via the 'FieldFormalParameterElement'
-                  // - 'requires L? bim' enters again the 'FormalParameterElement' but hits the `field = checkInitializersOf(d);` above
+                  // - 'required this.something' to the field via the 'FieldFormalParameterElement'
+                  // - 'required L? bim' enters again the 'FormalParameterElement' but hits the `field = checkInitializersOf(d);` above
                   //   and resolves with that to the field 'final L? bimbo'
                   field = _lookupTree(param.declaredFragment!.element);
                   break;
