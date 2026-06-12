@@ -24,8 +24,10 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
   ///
   /// Since one part of the initializers is for class-local field initialization and the other one for super-class parameters,
   /// the [lookup] method is required to look trough the structure of a super constructor to find the correct field.
-  Map<String, String> mapParameterToField({
+  Map<String, String> mapInitializersToField({
     required ParameterLookup lookup,
+    // print for debugging purpose
+    void Function(dynamic p)? p,
   }) {
     Map<String, String> map = {};
 

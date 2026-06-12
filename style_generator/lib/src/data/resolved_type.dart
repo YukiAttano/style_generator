@@ -5,6 +5,7 @@ import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/nullability_suffix.dart";
 import "package:analyzer/dart/element/type.dart";
 import "package:analyzer/dart/element/type_provider.dart";
+import "package:meta/meta.dart";
 
 import "../extensions/dart_type_extension.dart";
 import "../extensions/element/element_extension.dart";
@@ -102,9 +103,9 @@ class ResolvedType {
         uri: type.element?.library?.uri ?? Uri(),
       );
 
-  /// the string representation of [prefixReference]
+  /// The string representation of [prefixReference]
   ///
-  /// contains a trailing dot.
+  /// Contains a trailing dot.
   ///
   /// Example: `fake.TextStyle` -> `fake.`
   String get typePrefix {
@@ -256,6 +257,59 @@ class ResolvedType {
     }
 
     return null;
+  }
+
+  /// Allows overwriting the resolved [type].
+  ///
+  /// Under some circumstances, it is possible that the resolved [DartType] is a [TypeParameterType].
+  /// This happens for example, when a Constructor parameter refers to an (at least) two layer inherited generic parent class.
+  /// ```dart
+  /// // Example
+  /// class DataStuff {}
+  ///
+  /// class GenChild extends GenIntermediate<DataStuff, String> with _$GenChild {
+  ///   final String local;
+  ///
+  ///   const GenChild({
+  ///     required this.local,
+  ///     required super.some,
+  ///     required super.something, // <-- This one
+  ///   });
+  /// }
+  ///
+  /// class GenIntermediate<T, L> extends GenParent<T, L> {
+  ///   const GenIntermediate({required super.some, required super.something});
+  /// }
+  ///
+  /// class GenParent<T, L> {
+  ///   final String some;
+  ///   final T? something; // <-- resolves to type 'T?' and not 'DataStuff?'
+  ///
+  ///   const GenParent({
+  ///     required this.some,
+  ///     required this.something, // <-- This one
+  ///   });
+  /// }
+  ///
+  /// ```
+  ///
+  /// In such a case, we allow the internal overwrite because we most probably don't want 'T?'
+  /// but the used Datatype
+  @internal
+  ResolvedType overwriteType(DartType type) {
+    assert(
+      this.type is TypeParameterType,
+      "The override is only expected to be called when the resolved type is a TypeParameterType (generics like T, K, ...)",
+    );
+
+    return ResolvedType(
+      library: library,
+      type: type,
+      typeAnnotation: typeAnnotation,
+      prefixReference: prefixReference,
+      importDirective: importDirective,
+      typeInformation: typeInformation,
+    );
   }
 
   ResolvedType get extensionTypeErasure => ResolvedType(

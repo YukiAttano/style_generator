@@ -7,7 +7,6 @@ import "package:analyzer/dart/element/element.dart";
 import "package:build/build.dart";
 
 extension ResolvedLibraryResultExtension on ResolvedLibraryResult {
-
   ClassDeclaration? findClassDeclarationFor(ClassElement clazz) {
     for (var unitResult in units) {
       for (var declaration in unitResult.unit.declarations) {
@@ -20,21 +19,35 @@ extension ResolvedLibraryResultExtension on ResolvedLibraryResult {
     return null;
   }
 
+  /*
+  unused
   ConstructorDeclaration? findConstructorDeclarationFor(ConstructorElement constructor) {
     for (var unitResult in units) {
       for (var declaration in unitResult.unit.declarations) {
         if (declaration is ClassDeclaration) {
-          for (var member in declaration.members) {
-            if (member is ConstructorDeclaration) {
-              return member;
+
+          // previously for analyzer 10.0.1
+          // for (var member in declaration.members) {}
+          // but `declaration.members` was deprecated and should be replaced by `declaration.body`
+
+          // If the current doesn't work, try `declaration.body.childEntities`
+          var body = declaration.body;
+          if (body is BlockClassBody) {
+            for (var member in body.members) {
+              if (member is ConstructorDeclaration) {
+                warn("FOUND MEMBER");
+                return member;
+              }
             }
           }
+
         }
       }
     }
 
     return null;
   }
+  */
 
   /// will resolve `fragment` to its declaration `R`
   ///
@@ -46,7 +59,6 @@ extension ResolvedLibraryResultExtension on ResolvedLibraryResult {
   }
 
   List<PartDirective> getPartDirectives() {
-
     List<PartDirective> list = [];
 
     for (var u in units) {
@@ -67,7 +79,7 @@ extension ResolvedLibraryResultExtension on ResolvedLibraryResult {
     for (var p in parts) {
       partId = AssetId.resolve(Uri.parse(p.uri.stringValue!), from: sourceId);
 
-      return partId.uri.toString() == lookupPart.uri.toString();
+      if (partId.uri.toString() == lookupPart.uri.toString()) return true;
     }
 
     return false;

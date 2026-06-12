@@ -1,6 +1,11 @@
+## 0.2.7
+
+* Fix wrong 'missing import' warnings when multiple imports were defined
+* Fix an error, were no class field were found when multiple generic ancestors are used
+
 ## 0.2.6
 
-- Fix typo in README.md and add full `build.yaml` example
+* Fix typo in README.md and add full `build.yaml` example
 
 ## 0.2.5
 

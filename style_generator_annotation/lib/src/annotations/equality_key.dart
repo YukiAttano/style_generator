@@ -1,6 +1,6 @@
 import "package:meta/meta_meta.dart";
 
-/// override the generation behavior of a field
+/// Override the generation behavior of a field
 ///
 /// - Annotations on constructor parameters take precedence over fields
 /// - Annotations on fields are inherited in subclasses, while those on parameters do not
@@ -12,10 +12,10 @@ import "package:meta/meta_meta.dart";
   TargetKind.overridableMember,
 })
 class EqualityKey {
-  /// if false, the field will not be included in the hash method
+  /// If false, the field will not be included in the hash method
   final bool inHash;
 
-  /// if false, the field will not be included in the == method
+  /// If false, the field will not be included in the == method
   final bool inEquals;
 
   /// Use [EqualityKey.exclude]

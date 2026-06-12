@@ -31,6 +31,7 @@ class CopyWithBuilder with HeaderGen implements Builder {
   };
 
   // TODO(Yuki): add 'apply' flag for inverted copyWith
+  // TODO(Yuki): add 'copyWithNull' (as Annotation ?)
   @override
   Future<void> build(BuildStep buildStep) async {
     await _lookupStore.init(buildStep);

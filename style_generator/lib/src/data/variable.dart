@@ -33,12 +33,24 @@ class Variable {
     return element is FormalParameterElement ? element as FormalParameterElement : null;
   }
 
-  /// if this is null, [resolveType] will fail
+  /// if this is null, [resolveType] will fail.
   ///
-  /// a library element is defined to be only null on pseudo elements like [MultiplyDefinedElement]
+  /// A library element is defined to be only null on pseudo elements like [MultiplyDefinedElement]
   LibraryElement? get library => element.library;
 
   DartType get type => element.type;
+
+  /*
+  DartType get classType {
+    assert(
+      resolvedType.type is! TypeParameterType || type is! TypeParameterType,
+      "The found type is a generic type like 'T' or 'K' etc. but we expected to have a defined class",
+    );
+
+    if (resolvedType.type is TypeParameterType) return type;
+
+    return resolvedType.type;
+  }*/
 
   // ElementKind get kind => element.kind;
 
@@ -115,6 +127,10 @@ class Variable {
         );
       } else {
         resolvedType = ResolvedType.resolve(resolvedLib: resolvedLib, element: fieldElement!);
+      }
+
+      if (resolvedType.type is TypeParameterType) {
+        resolvedType = resolvedType.overwriteType(element.type);
       }
 
       _resolvedType = resolvedType;
