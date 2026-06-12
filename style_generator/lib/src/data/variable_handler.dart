@@ -154,6 +154,7 @@ class VariableHandler {
                   // it then resolves
                   // - 'requires this.something' to the field via the 'FieldFormalParameterElement'
                   // - 'requires L? bim' enters again the 'FormalParameterElement' but hits the `field = checkInitializersOf(d);` above
+                  //   and resolves with that to the field 'final L? bimbo'
                   field = _lookupTree(param.declaredFragment!.element);
                   break;
                 }
