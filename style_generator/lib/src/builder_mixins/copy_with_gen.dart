@@ -43,9 +43,12 @@ mixin CopyWithGen {
     String fieldName;
 
     for (var v in parameters) {
+      if (v.isPrivate) cannotUsePrivateParameterInCopyWith(v, clazz: className);
+
       resolvedType = v.resolvedType;
 
       name = v.name!;
+
       typeSuffix = resolvedType.type.isNullable ? "" : "?";
 
       fieldName = v.fieldElement?.displayName ?? name;

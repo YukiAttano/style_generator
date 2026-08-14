@@ -53,7 +53,13 @@ void didNotFindLerpForParameter(Variable variable, {required String clazz}) {
 
 void didNotFindFieldForParameter(VariableElement element, {required String clazz}) {
   warn(
-    "Couldn't find a field for parameter '${element.type} ${element.displayName}' in Class '$clazz'. If the parameter isn't used, remove it from the constructor, otherwise this is a bug",
+    "Couldn't find a field for parameter '${element.type} ${element.displayName}' in Class '$clazz'. If the parameter isn't used, remove it from the constructor, otherwise this is a bug.",
+  );
+}
+
+void cannotUsePrivateParameterInCopyWith(Variable element, {required String clazz}) {
+  warn(
+    "We can't generate copyWith() methods with private parameters: '${element.type} ${element.displayName}' in Class '$clazz'. Please assign the private field with a constructor initializer list or file a feature request.",
   );
 }
 
