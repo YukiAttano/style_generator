@@ -9,7 +9,6 @@ import "package:meta/meta.dart";
 
 import "../extensions/dart_type_extension.dart";
 import "../extensions/element/element_extension.dart";
-import "logger.dart";
 import "resolved_import.dart";
 
 class TypeInformation {

@@ -19,6 +19,7 @@ class VariableHandler {
   /// This one holds concrete implementations like
   /// `GenParent<DataStuff, String>({required String some, required DataStuff? something})`
   final Map<ConstructorElement, ConstructorDeclaration> _constructors = {};
+
   /// This one holds generic implementations like
   /// `GenParent<T, L>({required String some, required DataStuff? something})`
   final Map<ConstructorElement, ConstructorDeclaration> _baseConstructors = {};
@@ -39,7 +40,8 @@ class VariableHandler {
 
   /// returns the corresponding list of variables by [type] to allow dynamic access
   @protected
-  List<Variable> getVariablesByType(FieldType type) => switch (type) {
+  List<Variable> getVariablesByType(FieldType type) =>
+      switch (type) {
         FieldType.FIELD => fields,
         FieldType.CONSTRUCTOR_PARAM => constructorParams,
         FieldType.MERGED => merged,
@@ -56,7 +58,6 @@ class VariableHandler {
 
     return _lookupTree(parameter.element);
   }
-
 
 
   /// Will find the field of a constructor parameter.
@@ -113,8 +114,8 @@ class VariableHandler {
       case FieldFormalParameterElement():
         field = element.field;
       case SuperFormalParameterElement():
-        // [element.superConstructorParameter] looses type information
-        // (the returned type is always [FormalParameterElement], even for [FieldFormalParameterElement]s for example.
+      // [element.superConstructorParameter] looses type information
+      // (the returned type is always [FormalParameterElement], even for [FieldFormalParameterElement]s for example.
         var superElement = element.superConstructorParameter;
 
         field = _lookupTree(superElement!);
@@ -126,7 +127,9 @@ class VariableHandler {
           var map = d.mapInitializersToField(lookup: (superParameter) => _lookupTree(superParameter).displayName);
 
           String? fieldName = map[element.displayName];
-          return fields.firstWhereOrNull((f) => f.displayName == fieldName)?.fieldElement;
+          return fields
+              .firstWhereOrNull((f) => f.displayName == fieldName)
+              ?.fieldElement;
         }
 
         if (d != null) {
@@ -134,7 +137,8 @@ class VariableHandler {
           // to the field.
           field = checkInitializersOf(d);
 
-          assert(field != null, "We expected that parameter:'$element' must be mapped through initializers, but none were found");
+          assert(field !=
+              null, "We expected that parameter:'$element' must be mapped through initializers, but none were found");
         } else {
           // We enter here, when the Example from the doc above hits and we have to map the given constructor parameter
           // 'element' like 'required DataStuff? something' to the constructor parameter 'required T? something'
@@ -190,8 +194,8 @@ class VariableHandler {
 
       superConstructor = superConstructor.superConstructor;
     }
+    // @formatter:on
   }
-  // @formatter:on
 
   /// builds the annotation cache for [merged]
   void build<T>(AnnotationConverter<T> converter, {FieldType? type, bool? annotationTypeCheck}) {
@@ -205,7 +209,7 @@ class VariableHandler {
       if (anno != null) {
         if (annotationTypeCheck) {
           bool hasMatchingType =
-              v.element.isOfSameTypeAsTypeArgumentFromObject(anno.object, lessStrict: true, allowDynamic: true);
+          v.element.isOfSameTypeAsTypeArgumentFromObject(anno.object, lessStrict: true, allowDynamic: true);
           if (!hasMatchingType) styleKeyTypeMismatch(v, anno.object.type);
         }
 
