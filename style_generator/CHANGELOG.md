@@ -1,3 +1,7 @@
+## 0.2.9
+
+* Fix breaking code generation when private fields are assigned via constructor initializer list
+
 ## 0.2.8
 
 * Support `analyzer: ">=10.0.0 <13.0.0"`

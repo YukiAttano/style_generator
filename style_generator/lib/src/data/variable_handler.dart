@@ -164,6 +164,8 @@ class VariableHandler {
         }
     }
 
+    if (field == null) didNotFindFieldForParameter(element, clazz: clazz.displayName);
+
     return field!;
   }
 

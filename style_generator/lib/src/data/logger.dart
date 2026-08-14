@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/constant/value.dart";
+import "package:analyzer/dart/element/element.dart";
 import "package:analyzer/dart/element/type.dart";
 import "package:build/build.dart" as build;
 import "package:logging/logging.dart";
@@ -47,6 +48,12 @@ void cannotIgnorePositionalOrRequiredParameter(Variable variable, {required Stri
 void didNotFindLerpForParameter(Variable variable, {required String clazz}) {
   warn(
     "Class '$clazz' parameter '${variable.type} ${variable.displayName}' has no lerp method. Annotate the parameter with @StyleKey(lerp: noLerp) if this is intended",
+  );
+}
+
+void didNotFindFieldForParameter(VariableElement element, {required String clazz}) {
+  warn(
+    "Couldn't find a field for parameter '${element.type} ${element.displayName}' in Class '$clazz'. If the parameter isn't used, remove it from the constructor, otherwise this is a bug",
   );
 }
 
