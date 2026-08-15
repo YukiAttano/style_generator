@@ -55,11 +55,9 @@ StyleKeyInternal<T> createStyleKey<T>(ResolvedLibraryResult resolved, Map<String
   ExecutableElement? lerp = map[lerpName]?.toFunctionValue();
   ExecutableElement? merge = map[mergeName]?.toFunctionValue();
 
-  AnnotationParameterLookupVisitor lerpLookup =
-      AnnotationParameterLookupVisitor(parameterName: lerpName, element: lerp);
+  AnnotationParameterLookupVisitor lerpLookup = AnnotationParameterLookupVisitor(parameterName: lerpName, element: lerp);
 
-  AnnotationParameterLookupVisitor mergeLookup =
-      AnnotationParameterLookupVisitor(parameterName: mergeName, element: merge);
+  AnnotationParameterLookupVisitor mergeLookup = AnnotationParameterLookupVisitor(parameterName: mergeName, element: merge);
 
   lerpLookup.run(resolved.units);
   mergeLookup.run(resolved.units);

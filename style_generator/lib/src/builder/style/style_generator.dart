@@ -84,7 +84,7 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
             resolvedLib,
             variables,
             (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
-            // Because ThemeExtensions are generally kept simple, the CopyWithKey.field property is probably not required
+            // Because ThemeExtensions are generally kept simple, the CopyWithKey.field property is most likely not required
             // in StyleKey annotations.
             (v) => null,
           );

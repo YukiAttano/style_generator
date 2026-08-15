@@ -29,12 +29,12 @@ class StyleKey<T> {
   /// if false, the field will not be included in the lerp() method
   final bool inLerp;
 
-  /// override the lerp function for this field
+  /// overrides the lerp function for this field
   ///
   /// must either be a top level function or a static function
   final LerpCallback<T>? lerp;
 
-  /// override the merge function for this field
+  /// overrides the merge function for this field
   ///
   /// must either be a top level function or a static function
   final MergeCallback<T>? merge;

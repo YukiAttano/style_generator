@@ -86,9 +86,8 @@ class LookupStore {
 
     // create ClassElements of our annotations and
     // create converter for the ClassElements to read the configured Annotations from real DartObjects
-
     _createAnnotationFromJson<Style>(styleLib, styleName, Style.fromJson);
-    _createAnnotationFromMap<StyleKeyInternal>(styleLib, styleKeyName,  (map) => createStyleKey(resolvedLibrary, map));
+    _createAnnotationFromMap<StyleKeyInternal>(styleLib, styleKeyName, (map) => createStyleKey(resolvedLibrary, map));
     _createAnnotationFromJson<CopyWith>(copyWithLib, copyWithName, CopyWith.fromJson);
     _createAnnotationFromJson<CopyWithKeyInternal>(copyWithLib, copyWithKeyName, CopyWithKeyInternal.fromJson);
     _createAnnotationFromJson<Equality>(equalityLib, equalityName, Equality.fromJson);
