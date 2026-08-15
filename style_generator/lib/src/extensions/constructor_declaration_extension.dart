@@ -3,6 +3,8 @@ import "package:analyzer/dart/element/element.dart";
 
 typedef ParameterLookup = String Function(FormalParameterElement element);
 
+typedef InitializerFieldMap = Map<String, List<String>>;
+
 extension ConstructorDeclarationExtension on ConstructorDeclaration {
   /// maps the constructor initializer parameter names to their corresponding field names
   ///
@@ -24,12 +26,12 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
   ///
   /// Since one part of the initializers is for class-local field initialization and the other one for super-class parameters,
   /// the [lookup] method is required to look trough the structure of a super constructor to find the correct field.
-  Map<String, String> mapInitializersToField({
+  InitializerFieldMap mapInitializersToField({
     required ParameterLookup lookup,
     // print for debugging purpose
     void Function(dynamic p)? p,
   }) {
-    Map<String, String> map = {};
+    InitializerFieldMap map = {};
 
     for (var i in initializers) {
       switch (i) {
@@ -45,7 +47,8 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
           // If Constructor is: `Some({String? private, String other}) : private = private ?? "", other = other;`
           // Than expr is: `other = other`
           if (expr is SimpleIdentifier) {
-            map[expr.name] = fieldName;
+            map.addToList(expr.name, fieldName);
+            //map[expr.name] = fieldName;
           }
         // Those who are redirecting to the super class
         // Example: `super(lastname: last, birthday: birth ?? DateTime.now());`
@@ -64,7 +67,7 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
     return map;
   }
 
-  void _handleArguments(Map<String, String> map, NodeList<Expression> arguments, ParameterLookup lookup) {
+  void _handleArguments(InitializerFieldMap map, NodeList<Expression> arguments, ParameterLookup lookup) {
     for (var argument in arguments) {
       Expression? expr;
 
@@ -79,9 +82,19 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
 
       switch (expr) {
         case SimpleIdentifier():
-          map[expr.name] = lookup(argument.correspondingParameter!);
-        //argument.correspondingParameter!.displayName;
+          map.addToList(expr.name, lookup(argument.correspondingParameter!));
+          //map[expr.name] = lookup(argument.correspondingParameter!);
+
+          // //argument.correspondingParameter!.displayName;
       }
     }
+  }
+}
+
+extension _MapListExtension<K, V> on Map<K, List<V>> {
+  void addToList(K key, V value) {
+    List<V> list = this[key] ?? [];
+    list.add(value);
+    this[key] = list;
   }
 }

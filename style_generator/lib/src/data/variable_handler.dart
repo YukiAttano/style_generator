@@ -126,19 +126,18 @@ class VariableHandler {
         FieldElement? checkInitializersOf(ConstructorDeclaration d) {
           var map = d.mapInitializersToField(lookup: (superParameter) => _lookupTree(superParameter).displayName);
 
-          String? fieldName = map[element.displayName];
-          return fields
-              .firstWhereOrNull((f) => f.displayName == fieldName)
-              ?.fieldElement;
+          List<String> fieldNames = map[element.displayName] ?? [];
+
+          if (fieldNames.length > 1) warn("FOUND $fieldNames for $element");
+
+          return fields.firstWhereOrNull((f) => f.displayName == fieldNames.first)?.fieldElement;
         }
 
         if (d != null) {
-          // We enter this part, when we have to map a constructor parameter via the initializers (the : behind the constructor)
-          // to the field.
+          // We enter this part, when we have to map a constructor parameter via the initializers (the : behind the constructor parameter to the field).
           field = checkInitializersOf(d);
 
-          assert(field !=
-              null, "We expected that parameter:'$element' must be mapped through initializers, but none were found");
+          assert(field != null, "We expected that parameter:'$element' must be mapped through initializers, but none were found");
         } else {
           // We enter here, when the Example from the doc above hits and we have to map the given constructor parameter
           // 'element' like 'required DataStuff? something' to the constructor parameter 'required T? something'
