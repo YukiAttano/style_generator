@@ -29,9 +29,9 @@ class VariableHandler {
 
   late final List<Variable> _merged = List.of(
     constructorParams.map((e) {
-      return Variable(
+      return Variable.fromList(
         element: e.element,
-        fieldElement: _lookupField(e),
+        fieldElements: _lookupField(e).fields,
       );
     }),
   );
@@ -52,9 +52,9 @@ class VariableHandler {
     fields = clazz.getPropertyFields().map((e) => Variable(element: e)).toList();
   }
 
-  FieldElement _lookupField(Variable parameter) {
+  FieldMapResult _lookupField(Variable parameter) {
     // short circuit lookup if the field is already assigned
-    if (parameter.fieldElement != null) parameter.fieldElement!;
+    if (parameter.fieldElements.isNotEmpty) return FieldMapResult.list(parameter.fieldElements);
 
     return _lookupTree(parameter.element);
   }
@@ -105,39 +105,44 @@ class VariableHandler {
   /// exists to actually resolve generics to a concrete class.
   /// However: It is technically correct that this method returns the [FieldElement] of that type.
   /// Therefor the [VariableHandler] will take care of the conversion.
-  FieldElement _lookupTree(VariableElement element) {
-    FieldElement? field;
+  FieldMapResult _lookupTree(VariableElement element) {
+    FieldMapResult result = FieldMapResult.empty();
 
     switch (element) {
       case FieldElement():
-        field = element;
+        result = FieldMapResult.value(element);
       case FieldFormalParameterElement():
-        field = element.field;
+        result = FieldMapResult.value(element.field);
       case SuperFormalParameterElement():
       // [element.superConstructorParameter] looses type information
       // (the returned type is always [FormalParameterElement], even for [FieldFormalParameterElement]s for example.
         var superElement = element.superConstructorParameter;
 
-        field = _lookupTree(superElement!);
+        result = _lookupTree(superElement!);
       case FormalParameterElement():
         var constructorElement = element.enclosingElement;
         ConstructorDeclaration? d = _constructors[constructorElement];
 
-        FieldElement? checkInitializersOf(ConstructorDeclaration d) {
-          var map = d.mapInitializersToField(lookup: (superParameter) => _lookupTree(superParameter).displayName);
+        FieldMapResult checkInitializersOf(ConstructorDeclaration d) {
+          var map = d.mapInitializersToField(lookup: (superParameter) => _lookupTree(superParameter).fields.map((e) => e.displayName));
 
-          List<String> fieldNames = map[element.displayName] ?? [];
+          Set<String> fieldNames = map[element.displayName]?.toSet() ?? {};
 
-          if (fieldNames.length > 1) warn("FOUND $fieldNames for $element");
+          FieldMapResult result = FieldMapResult.empty();
+          for (var f in fields) {
+            if (fieldNames.contains(f.displayName)) {
+              result.addAll(f.fieldElements);
+            }
+          }
 
-          return fields.firstWhereOrNull((f) => f.displayName == fieldNames.first)?.fieldElement;
+          return result;
         }
 
         if (d != null) {
           // We enter this part, when we have to map a constructor parameter via the initializers (the : behind the constructor parameter to the field).
-          field = checkInitializersOf(d);
+          result = checkInitializersOf(d);
 
-          assert(field != null, "We expected that parameter:'$element' must be mapped through initializers, but none were found");
+          assert(result.isNotEmpty, "We expected that parameter:'$element' must be mapped through initializers, but none were found");
         } else {
           // We enter here, when the Example from the doc above hits and we have to map the given constructor parameter
           // 'element' like 'required DataStuff? something' to the constructor parameter 'required T? something'
@@ -146,19 +151,19 @@ class VariableHandler {
           if (d != null) {
             // Taken the example above, this one will find nothing for 'required DataStuff? something' and 'required String bim'.
             // read the comments down below, this one is matched for the 'required L? bim' lookup (the generic).
-            field = checkInitializersOf(d);
+            result = checkInitializersOf(d);
 
             // This one resolves
             // - 'required DataStuff? something' to 'required this.something'
             // - 'required String bim'           to 'required L? bim'
-            if (field == null) {
+            if (result.isEmpty) {
               for (var param in d.parameters.parameters) {
                 if (param.declaredFragment == element.firstFragment) {
                   // it then resolves
                   // - 'required this.something' to the field via the 'FieldFormalParameterElement'
                   // - 'required L? bim' enters again the 'FormalParameterElement' but hits the `field = checkInitializersOf(d);` above
                   //   and resolves with that to the field 'final L? bimbo'
-                  field = _lookupTree(param.declaredFragment!.element);
+                  result = _lookupTree(param.declaredFragment!.element);
                   break;
                 }
               }
@@ -167,9 +172,9 @@ class VariableHandler {
         }
     }
 
-    if (field == null) didNotFindFieldForParameter(element, clazz: clazz.displayName);
+    if (result.isEmpty) didNotFindFieldForParameter(element, clazz: clazz.displayName);
 
-    return field!;
+    return result;
   }
 
   FutureOr<void> indexConstructorDeclarations(Resolver resolver, ResolvedLibraryResult resolvedLib) async {
@@ -207,9 +212,8 @@ class VariableHandler {
       anno = _findAnnotationForType<T>(type, v, converter);
       if (anno != null) {
         if (annotationTypeCheck) {
-          bool hasMatchingType =
-          v.element.isOfSameTypeAsTypeArgumentFromObject(anno.object, lessStrict: true, allowDynamic: true);
-          if (!hasMatchingType) styleKeyTypeMismatch(v, anno.object.type);
+          bool hasMatchingType = v.element.isOfSameTypeAsTypeArgumentFromObject(anno.object, lessStrict: true, allowDynamic: true);
+          if (!hasMatchingType) annotationTypeMismatch(v, anno.object.type);
         }
 
         v._cache._inject(anno);

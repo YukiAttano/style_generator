@@ -84,6 +84,9 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
             resolvedLib,
             variables,
             (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
+            // Because ThemeExtensions are generally kept simple, the CopyWithKey.field property is probably not required
+            // in StyleKey annotations.
+            (v) => null,
           );
     String mergeContent = !genMerge ? "" : generateMerge(resolvedLib, clazz.displayName, variables, keyAnnotation);
     LerpGenResult lerpContent = !genLerp
@@ -142,7 +145,8 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
     required String lerp,
     List<String> trailing = const [],
   }) {
-    String partClass = """
+    String partClass =
+        """
        
     mixin _\$$generatedClassName {
 

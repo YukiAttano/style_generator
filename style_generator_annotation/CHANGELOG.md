@@ -1,6 +1,7 @@
 ## 0.1.8
 
 - Fix typo in Readme.md and add full `build.yaml` example
+- Add CopyWithKey.field parameter to allow customizing the field that should be used for the copyWith() method
 
 ## 0.1.7
 
@@ -12,7 +13,7 @@
 
 ## 0.1.5
 
-- Change StyleKey's type parameter is to optional
+- Change StyleKey's type parameter to optional
 - Remove type parameter from CopyWithKey
 
 ## 0.1.4

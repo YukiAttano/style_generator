@@ -75,13 +75,38 @@ class CopyWithKey {
   /// if false, the field will not be included in the copyWith() method
   final bool inCopyWith;
 
+  /// The field that should be used as the fallback in the copyWith() method
+  ///
+  /// Example:
+  /// ```dart
+  /// @CopyWith()
+  /// class Profile {
+  ///   final String _privateOne;
+  ///   final String _privateTwo;
+  ///
+  ///   Profile({
+  ///     @CopyWithKey(field: "_privateOne")
+  ///     String? private,
+  ///   }) : _privateOne = private ?? "one", _privateTwo = private ?? "two";
+  /// }
+  /// ```
+  ///
+  /// This is necessary, when a constructor parameter is used to assign multiple fields.
+  ///
+  /// In probably every case, this can be avoided (e.g. using a factory constructor or using getter methods instead).
+  ///
+  /// Do only set this when the annotation is used on a constructor parameter
+  final String? field;
+
   const CopyWithKey({
     bool? inCopyWith,
+    this.field,
   }) : inCopyWith = inCopyWith ?? true;
 
   Map<String, Object?> toJson() {
     return {
       "inCopyWith": inCopyWith,
+      "field": field,
     };
   }
 }

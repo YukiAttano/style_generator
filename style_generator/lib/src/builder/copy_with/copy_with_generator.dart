@@ -63,7 +63,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
 
   @override
   Future<GenResult> generateForClass(AnnotatedElement<CopyWith> annotatedClazz, CopyWithConfig config) async {
-    AnalyzedClass c = await analyzeClass(annotatedClazz, config.constructor?.asConstructorName);
+    AnalyzedClass c = await analyzeClass(annotatedClazz, config.constructor?.asConstructorName, annotationTypeCheck: false);
     ClassElement clazz = c.clazz;
 
     List<Variable> variables = c.variables;
@@ -83,6 +83,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
       resolvedLib,
       variables,
       (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
+      (v) => v.getAnnotationOf(keyAnnotation)?.field,
     );
 
     return GenResult(

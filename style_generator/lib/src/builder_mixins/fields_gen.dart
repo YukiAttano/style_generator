@@ -10,6 +10,7 @@ mixin FieldsGen {
 
     String? name;
     ResolvedType resolvedType;
+
     for (var field in fields) {
       resolvedType = field.resolvedType;
       name = field.fieldElement?.displayName ?? name;

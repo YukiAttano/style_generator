@@ -63,9 +63,15 @@ void cannotUsePrivateParameterInCopyWith(Variable element, {required String claz
   );
 }
 
-void styleKeyTypeMismatch(Variable variable, DartType? styleKey) {
+void preferredFieldNotFound(Variable element, String preferredField, {required String clazz}) {
   warn(
-    "Type mismatch between '${variable.type} ${variable.displayName}' and '$styleKey' annotation",
+    "The field '$preferredField' from class $clazz can't be used for the parameter ${element.displayName}. The only valid fields for this parameter are: '${element.fieldElements}'.",
+  );
+}
+
+void annotationTypeMismatch(Variable variable, DartType? annotationType) {
+  warn(
+    "Type mismatch between '${variable.type} ${variable.displayName}' and '$annotationType' annotation",
   );
 }
 

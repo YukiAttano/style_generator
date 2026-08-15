@@ -1,6 +1,9 @@
 ## 0.2.9
 
 * Fix breaking code generation when private fields are assigned via constructor initializer list
+* Fix weird behavior when a single constructor parameter is used to initialize multiple fields
+* Added the CopyWithKey.field property constructor parameter, to allow setting the correct field if the auto-guessed field is wrong
+* Fix spamming the console with unused type checks
 
 ## 0.2.8
 

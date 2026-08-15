@@ -8,6 +8,7 @@ import "../dart_type_extension.dart";
 extension VariableElementExtension on VariableElement {
   bool isOfSameTypeAsTypeArgumentFromObject(DartObject object, {bool? lessStrict, bool? allowDynamic}) {
     DartType? type = object.type;
+
     if (type == null) {
       hasNoType(object);
       return false;

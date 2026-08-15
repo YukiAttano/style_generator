@@ -79,7 +79,7 @@ final class EqualityGenerator extends Generator<Equality, EqualityKeyInternal, E
     EqualsGenResult equalsResult = generateEquals(
       clazz.displayName,
       fields,
-          (v) => v.getAnnotationOf(keyAnnotation)?.inEquals,
+      (v) => v.getAnnotationOf(keyAnnotation)?.inEquals,
     );
 
     return GenResult(
@@ -96,7 +96,6 @@ final class EqualityGenerator extends Generator<Equality, EqualityKeyInternal, E
     );
   }
 
-
   String _generatePartClass(
     String generatedClassName,
     String className,
@@ -107,7 +106,8 @@ final class EqualityGenerator extends Generator<Equality, EqualityKeyInternal, E
   }) {
     String partClass;
 
-    partClass = """
+    partClass =
+        """
        
      mixin _\$$generatedClassName$types {
       

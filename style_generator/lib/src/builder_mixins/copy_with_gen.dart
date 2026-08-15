@@ -28,6 +28,7 @@ mixin CopyWithGen {
     ResolvedLibraryResult resolvedLib,
     List<Variable> parameters,
     bool? Function(Variable v) inCopyWithCallback,
+      String? Function(Variable v) fieldCallback,
   ) {
     List<String> params = [];
     List<String> namedConstructorParams = [];
@@ -51,7 +52,7 @@ mixin CopyWithGen {
 
       typeSuffix = resolvedType.type.isNullable ? "" : "?";
 
-      fieldName = v.fieldElement?.displayName ?? name;
+      fieldName = v.preferField(fieldCallback(v), className)?.displayName ?? name;
 
       inCopyWith = _includeVariable(v, inCopyWithCallback, className);
 

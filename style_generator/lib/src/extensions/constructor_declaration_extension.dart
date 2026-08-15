@@ -1,7 +1,7 @@
 import "package:analyzer/dart/ast/ast.dart";
 import "package:analyzer/dart/element/element.dart";
 
-typedef ParameterLookup = String Function(FormalParameterElement element);
+typedef ParameterLookup = Iterable<String> Function(FormalParameterElement element);
 
 typedef InitializerFieldMap = Map<String, List<String>>;
 
@@ -47,7 +47,7 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
           // If Constructor is: `Some({String? private, String other}) : private = private ?? "", other = other;`
           // Than expr is: `other = other`
           if (expr is SimpleIdentifier) {
-            map.addToList(expr.name, fieldName);
+            map.addValueToList(expr.name, fieldName);
             //map[expr.name] = fieldName;
           }
         // Those who are redirecting to the super class
@@ -82,7 +82,7 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
 
       switch (expr) {
         case SimpleIdentifier():
-          map.addToList(expr.name, lookup(argument.correspondingParameter!));
+          map.addListToList(expr.name, lookup(argument.correspondingParameter!));
           //map[expr.name] = lookup(argument.correspondingParameter!);
 
           // //argument.correspondingParameter!.displayName;
@@ -92,9 +92,15 @@ extension ConstructorDeclarationExtension on ConstructorDeclaration {
 }
 
 extension _MapListExtension<K, V> on Map<K, List<V>> {
-  void addToList(K key, V value) {
+  void addValueToList(K key, V value) {
     List<V> list = this[key] ?? [];
     list.add(value);
+    this[key] = list;
+  }
+
+  void addListToList(K key, Iterable<V> values) {
+    List<V> list = this[key] ?? [];
+    list.addAll(values);
     this[key] = list;
   }
 }

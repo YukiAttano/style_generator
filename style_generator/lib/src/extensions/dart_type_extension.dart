@@ -117,6 +117,8 @@ extension DartTypeExtension on DartType {
 
     return imports;
   }
+
+  bool isSubtypeOf(LibraryElement lib, DartType other) => lib.typeSystem.isSubtypeOf(this, other);
 }
 
 extension InterfaceTypeExtension on InterfaceType {

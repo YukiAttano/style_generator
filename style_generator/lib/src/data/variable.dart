@@ -10,11 +10,13 @@ import "package:meta/meta.dart";
 
 import "../data/annotated_element.dart";
 import "../extensions/constructor_declaration_extension.dart";
+import "../extensions/dart_type_extension.dart";
 import "../extensions/element/class_element_extension.dart";
 import "../extensions/element/element_extension.dart";
 import "../extensions/element/variable_element_extension.dart";
 import "../extensions/resolved_library_result_extension.dart";
 import "annotation_converter/annotation_converter.dart";
+import "field_map_result.dart";
 import "logger.dart";
 import "resolved_type.dart";
 
@@ -23,7 +25,10 @@ part "variable_handler.dart";
 class Variable {
   final VariableElement element;
 
-  final FieldElement? fieldElement;
+  final List<FieldElement> fieldElements;
+
+  /// returns the preferred field from [fieldElement]
+  FieldElement? get fieldElement => preferField(null, null);
 
   FormalParameterElement? get _asParameter {
     assert(
@@ -81,7 +86,7 @@ class Variable {
     return _resolvedType!;
   }
 
-  Variable._({required this.element, required this.fieldElement, _Cache? cache}) : _cache = cache ?? _Cache();
+  Variable._({required this.element, required this.fieldElements, _Cache? cache}) : _cache = cache ?? _Cache();
 
   /// A generalized representation about (mainly) [FormalParameterElement] and [FieldElement]
   ///
@@ -90,8 +95,16 @@ class Variable {
   /// like its (probably) prefixed type (accessible via [resolveType]).
   ///
   /// if [element] is of type [FieldElement], [fieldElement] is ignored
-  Variable({required VariableElement element, FieldElement? fieldElement})
-      : this._(element: element, fieldElement: _getFieldElement(element) ?? fieldElement);
+  factory Variable({required VariableElement element, FieldElement? fieldElement}) {
+    return Variable.fromList(element: element, fieldElements: [?fieldElement]);
+  }
+
+  factory Variable.fromList({required VariableElement element, List<FieldElement> fieldElements = const []}) {
+    List<FieldElement> elements = [?_getFieldElement(element)];
+    if (elements.isEmpty) elements = fieldElements;
+
+    return Variable._(element: element, fieldElements: elements.toSet().toList());
+  }
 
   /// This is not exhaustive
   ///
@@ -116,7 +129,7 @@ class Variable {
     ResolvedType? resolvedType = _resolvedType;
 
     if (resolvedType == null) {
-      if (fieldElement == null) {
+      if (fieldElements.isEmpty) {
         resolvedType = ResolvedType(
           library: library,
           type: type,
@@ -126,7 +139,37 @@ class Variable {
           typeInformation: const [],
         );
       } else {
-        resolvedType = ResolvedType.resolve(resolvedLib: resolvedLib, element: fieldElement!);
+        if (fieldElements.length == 1) {
+          resolvedType = ResolvedType.resolve(resolvedLib: resolvedLib, element: fieldElements.first);
+        } else {
+          List<ResolvedType> resolved = [];
+          ResolvedType? current;
+          ResolvedType? type;
+          for (var field in fieldElements) {
+            current = ResolvedType.resolve(resolvedLib: resolvedLib, element: field);
+            resolved.add(current);
+            if (type == null) {
+              type = current;
+            } else {
+              var first = type.type.extensionTypeErasure;
+              var second = current.type.extensionTypeErasure;
+
+              if (first != second) {
+                bool firstIsSubtypeOfSecond = first.isSubtypeOf(resolvedLib.element, second);
+                bool secondIsSubtypeOfFirst = second.isSubtypeOf(resolvedLib.element, first);
+                if (!firstIsSubtypeOfSecond && !secondIsSubtypeOfFirst) {
+                  throw Exception(
+                    "The parameter $element is mapped against multiple fields $fieldElements, and two of them were different",
+                  );
+                } else {
+                  if (secondIsSubtypeOfFirst) type = current;
+                }
+              }
+            }
+          }
+
+          resolvedType = type!;
+        }
       }
 
       if (resolvedType.type is TypeParameterType) {
@@ -137,6 +180,39 @@ class Variable {
     }
 
     return resolvedType;
+  }
+
+  /// Searches for the field with the displayName [name] in [fieldElements].
+  ///
+  /// If the preferred [name] is null or not found, the first element is used
+  FieldElement? preferField(String? name, String? className) {
+    // ignore: avoid_bool_literals_in_conditional_expressions for readability purpose
+    assert(name != null ? className != null : true, "when 'name' is given, a class name is required for logging");
+
+    FieldElement? fallback = fieldElements.firstOrNull;
+
+    if (fieldElements.length > 1) {
+      String privateName = "_$displayName";
+      FieldElement? preferredNameMatch;
+      FieldElement? sameNameMatch;
+      FieldElement? privateNameMatch;
+
+      for (var f in fieldElements) {
+        if (f.displayName == name) {
+          preferredNameMatch = f;
+        } else if (f.displayName == displayName) {
+          sameNameMatch = f;
+        } else if (f.displayName == privateName) {
+          privateNameMatch = f;
+        }
+      }
+
+      if (name != null && preferredNameMatch == null) preferredFieldNotFound(this, name, clazz: className!);
+
+      return preferredNameMatch ?? sameNameMatch ?? privateNameMatch ?? fallback;
+    }
+
+    return fallback;
   }
 
   @override
