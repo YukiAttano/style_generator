@@ -245,7 +245,7 @@ class VariableHandler {
   /// returns the annotation for [parameter] and falls back to the annotation of the corresponding field annotation
   AnnotatedElement<T>? _findWeightedAnnotation<T>(Variable parameter, AnnotationConverter<T> converter) {
     for (var field in fields) {
-      if (parameter == field) {
+      if (field.element == parameter.fieldElement) {
         return _getAnnotation<T>(parameter, field, converter);
       }
     }

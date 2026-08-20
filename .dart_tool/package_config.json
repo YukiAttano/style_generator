@@ -123,7 +123,7 @@
     },
     {
       "name": "flutter",
-      "rootUri": "file:///Users/yukiattano/.puro/envs/stable/flutter/packages/flutter",
+      "rootUri": "file:///Users/yukiattano/.puro/envs/latest/flutter/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "3.10"
     },
@@ -261,7 +261,7 @@
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///Users/yukiattano/.puro/envs/stable/flutter/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///Users/yukiattano/.puro/envs/latest/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
       "languageVersion": "3.10"
     },
@@ -352,7 +352,7 @@
   ],
   "generator": "pub",
   "generatorVersion": "3.12.2",
-  "flutterRoot": "file:///Users/yukiattano/.puro/envs/stable/flutter",
+  "flutterRoot": "file:///Users/yukiattano/.puro/envs/latest/flutter",
   "flutterVersion": "3.44.8",
   "pubCache": "file:///Users/yukiattano/.puro/shared/pub_cache"
 }

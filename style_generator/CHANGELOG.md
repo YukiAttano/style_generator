@@ -1,3 +1,7 @@
+## 0.2.11
+
+* Fix an issue, where annotation keys (CopyWithKey, StyleKey, EqualityKey) were not found when used on fields, when the constructor parameter and the mapped field had different types
+
 ## 0.2.10
 
 * Added CopyWithKey.unmodifiable, which prevents overriding fields. Useful for ID/UUID fields.
