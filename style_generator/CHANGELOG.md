@@ -1,3 +1,7 @@
+## 0.2.10
+
+* Added CopyWithKey.unmodifiable, which prevents overriding fields. Useful for ID/UUID fields.
+
 ## 0.2.9
 
 * Fix breaking code generation when private fields are assigned via constructor initializer list

@@ -30,8 +30,6 @@ class CopyWithBuilder with HeaderGen implements Builder {
     ".dart": [outExtension],
   };
 
-  // TODO(Yuki): replace the type of 'CopyWithKey.field' with a symbol ?
-
   // TODO(Yuki): add 'apply' flag for inverted copyWith
   // TODO(Yuki): add 'copyWithNull' (as Annotation ?)
   @override

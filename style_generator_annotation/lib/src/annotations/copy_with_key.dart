@@ -73,7 +73,18 @@ import "package:meta/meta_meta.dart";
 })
 class CopyWithKey {
   /// if false, the field will not be included in the copyWith() method
+  /// effectively resetting the field to the default value with each copyWith() call
+  ///
+  /// defaults to true
   final bool inCopyWith;
+
+  /// if true, the field will not be changeable in the copyWith() method
+  /// preserving the first value that was ever set.
+  ///
+  /// This is useful for fields that contain generated IDs.
+  ///
+  /// defaults to false
+  final bool unmodifiable;
 
   /// The field that should be used as the fallback in the copyWith() method
   ///
@@ -100,12 +111,15 @@ class CopyWithKey {
 
   const CopyWithKey({
     bool? inCopyWith,
+    bool? unmodifiable,
     this.field,
-  }) : inCopyWith = inCopyWith ?? true;
+  })  : inCopyWith = inCopyWith ?? true,
+        unmodifiable = unmodifiable ?? false;
 
   Map<String, Object?> toJson() {
     return {
       "inCopyWith": inCopyWith,
+      "unmodifiable": unmodifiable,
       "field": field,
     };
   }

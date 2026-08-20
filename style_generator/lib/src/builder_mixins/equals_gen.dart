@@ -15,7 +15,7 @@ mixin EqualsGen {
   EqualsGenResult generateEquals(
     String className,
     List<Variable> fields,
-    bool? Function(Variable v) inEqualsCallback,
+    bool Function(Variable v) inEqualsCallback,
   ) {
     String name;
     bool inHash;
@@ -30,7 +30,7 @@ mixin EqualsGen {
 
       fieldName = v.fieldElement?.displayName ?? name;
 
-      inHash = _includeVariable(v, inEqualsCallback);
+      inHash = inEqualsCallback(v);
       hasFields = hasFields || inHash;
 
       if (!inHash) buffer.write("// ");
@@ -62,9 +62,5 @@ mixin EqualsGen {
     return EqualsGenResult(
       content: function,
     );
-  }
-
-  bool _includeVariable(Variable v, bool? Function(Variable v) inHashCallback) {
-    return inHashCallback(v) ?? true;
   }
 }

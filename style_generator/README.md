@@ -475,7 +475,7 @@ class Profile {
   int get age => birthday != null ? DateTime.now().difference(birthday!).inDays ~/ 365 : 0;
 
   const Profile({
-    @CopyWithKey(inCopyWith: false) this.firstname = "", // this will hide firstname only it its own class
+    @CopyWithKey(inCopyWith: false) this.firstname = "", // this will hide firstname only in its own class
     this.lastname = "", 
     this.birthday,
   });
@@ -483,6 +483,7 @@ class Profile {
 
 
 class UserProfile extends Profile {
+  @CopyWithKey(unmodifiable: true) // will prevent overriding the value in copyWith
   final String id;
 
   final String firstName; // don't get confused with 'firstName' and 'firstname'
@@ -491,9 +492,9 @@ class UserProfile extends Profile {
   final QuestionStyle? question;
 
   UserProfile({
-    this.id = "", 
+    required this.id, 
     this.firstName = "", 
-    super.lastname, // this is hidden through its super class, annotate it in the constructor with @CopyWithKey(inCopyWith: true) to override the behavior
+    super.lastname, // this is hidden through its super class 'Profile', annotate it in this constructor with @CopyWithKey(inCopyWith: true) to override the behavior for 'UserProfile'
     this.style, 
     this.question, 
     super.birthday, 

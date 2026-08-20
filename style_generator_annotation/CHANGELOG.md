@@ -1,3 +1,7 @@
+## 0.1.9
+
+- Added CopyWithKey.unmodifiable, which prevents overriding fields. Useful for ID/UUID fields.
+
 ## 0.1.8
 
 - Fix typo in Readme.md and add full `build.yaml` example

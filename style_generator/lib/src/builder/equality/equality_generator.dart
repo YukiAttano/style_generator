@@ -72,15 +72,8 @@ final class EqualityGenerator extends Generator<Equality, EqualityKeyInternal, E
 
     String generatedClassName = clazz.displayName + suffix;
     String fieldContent = generateFieldGetter(fields);
-    HashGenResult hashResult = generateHash(
-      fields,
-      (v) => v.getAnnotationOf(keyAnnotation)?.inHash,
-    );
-    EqualsGenResult equalsResult = generateEquals(
-      clazz.displayName,
-      fields,
-      (v) => v.getAnnotationOf(keyAnnotation)?.inEquals,
-    );
+    HashGenResult hashResult = generateHash(fields, (v) => getAnnotation(v).inHash);
+    EqualsGenResult equalsResult = generateEquals(clazz.displayName, fields, (v) => getAnnotation(v).inEquals);
 
     return GenResult(
       addPartDirective: true,
@@ -94,6 +87,10 @@ final class EqualityGenerator extends Generator<Equality, EqualityKeyInternal, E
         equals: equalsResult.content,
       ),
     );
+  }
+
+  EqualityKeyInternal getAnnotation(Variable v) {
+    return v.getAnnotationOf(keyAnnotation) ?? EqualityKeyInternal.defaults;
   }
 
   String _generatePartClass(

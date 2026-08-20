@@ -15,7 +15,7 @@ mixin HashGen {
 
   HashGenResult generateHash(
     List<Variable> fields,
-    bool? Function(Variable v) inHashCallback,
+    bool Function(Variable v) inHashCallback,
   ) {
     List<String> f = [];
 
@@ -27,7 +27,7 @@ mixin HashGen {
     for (var v in fields) {
       fieldName = v.fieldElement?.displayName ?? v.displayName;
 
-      inHash = _includeVariable(v, inHashCallback);
+      inHash = inHashCallback(v);
 
       hasFields |= inHash;
       prefix = inHash ? "" : "// ";
@@ -51,9 +51,5 @@ mixin HashGen {
     return HashGenResult(
       content: function,
     );
-  }
-
-  bool _includeVariable(Variable v, bool? Function(Variable v) inHashCallback) {
-    return inHashCallback(v) ?? true;
   }
 }

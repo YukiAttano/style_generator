@@ -27,8 +27,9 @@ mixin CopyWithGen {
     String constructor,
     ResolvedLibraryResult resolvedLib,
     List<Variable> parameters,
-    bool? Function(Variable v) inCopyWithCallback,
-      String? Function(Variable v) fieldCallback,
+    bool Function(Variable v) inCopyWithCallback,
+    bool Function(Variable v) unmodifiableCallback,
+    String? Function(Variable v) fieldCallback,
   ) {
     List<String> params = [];
     List<String> namedConstructorParams = [];
@@ -36,9 +37,11 @@ mixin CopyWithGen {
 
     List<ResolvedImport> imports = [];
 
-    String prefix = "";
+    String prefixParam = "";
+    String callingLine = "";
     String name;
     bool inCopyWith;
+    bool unmodifiable;
     ResolvedType? resolvedType;
     String typeSuffix;
     String fieldName;
@@ -55,17 +58,20 @@ mixin CopyWithGen {
       fieldName = v.preferField(fieldCallback(v), className)?.displayName ?? name;
 
       inCopyWith = _includeVariable(v, inCopyWithCallback, className);
+      unmodifiable = unmodifiableCallback(v);
 
-      prefix = inCopyWith ? "" : "//";
+      prefixParam = inCopyWith && !unmodifiable ? "" : "//";
 
       if (resolvedType.requireImport) imports.add(resolvedType.import);
       imports.addAll(resolvedType.typeArgumentImports());
 
-      params.add("$prefix ${resolvedType.getDisplayString()}$typeSuffix $name,");
+      params.add("$prefixParam ${resolvedType.getDisplayString()}$typeSuffix $name,");
+      callingLine = _callingLine(isNamed: v.isNamed, inCopyWith: inCopyWith, unmodifiable: unmodifiable, name: name, fieldName: fieldName);
+
       if (v.isNamed) {
-        namedConstructorParams.add("$prefix $name: $name ?? this.$fieldName,");
+        namedConstructorParams.add(callingLine);
       } else {
-        positionalConstructorParams.add("$prefix $name ?? this.$fieldName,");
+        positionalConstructorParams.add(callingLine);
       }
     }
 
@@ -88,8 +94,20 @@ mixin CopyWithGen {
     );
   }
 
-  bool _includeVariable(Variable v, bool? Function(Variable v) inCopyWithCallback, String clazz) {
-    bool include = inCopyWithCallback(v) ?? true;
+  String _callingLine({required bool isNamed, required bool inCopyWith, required bool unmodifiable, required String name, required  String fieldName}) {
+    String prefix = inCopyWith ? "" : "//";
+
+    String n = !unmodifiable ? "$name ??" : "/* $name ?? */";
+
+    if (isNamed) {
+      return "$prefix $name: $n this.$fieldName,";
+    } else {
+      return "$prefix $n this.$fieldName,";
+    }
+  }
+
+  bool _includeVariable(Variable v, bool Function(Variable v) inCopyWithCallback, String clazz) {
+    bool include = inCopyWithCallback(v);
     if (!include && (v.isPositional || v.isRequired)) {
       cannotIgnorePositionalOrRequiredParameter(v, clazz: clazz, method: methodName);
       include = true;

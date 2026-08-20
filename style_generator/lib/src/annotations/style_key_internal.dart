@@ -4,6 +4,7 @@ library;
 import "package:analyzer/dart/analysis/results.dart";
 import "package:analyzer/dart/constant/value.dart";
 import "package:analyzer/dart/element/element.dart";
+import "package:meta/meta.dart";
 
 import "../data/ast_visitor/annotation_parameter_lookup_visitor.dart";
 import "../data/logger.dart";
@@ -36,6 +37,16 @@ class StyleKeyInternal<T> {
     required this.merge,
   });
 
+  /// These defaults must be the same as the one set by [StyleKey]
+  @internal
+  static const StyleKeyInternal defaults = StyleKeyInternal(
+    inCopyWith: true,
+    inMerge: true,
+    inLerp: true,
+    lerp: null,
+    merge: null,
+  );
+
   Map<String, Object?> toJson() {
     return {
       inCopyWithName: inCopyWith,
@@ -55,9 +66,15 @@ StyleKeyInternal<T> createStyleKey<T>(ResolvedLibraryResult resolved, Map<String
   ExecutableElement? lerp = map[lerpName]?.toFunctionValue();
   ExecutableElement? merge = map[mergeName]?.toFunctionValue();
 
-  AnnotationParameterLookupVisitor lerpLookup = AnnotationParameterLookupVisitor(parameterName: lerpName, element: lerp);
+  AnnotationParameterLookupVisitor lerpLookup = AnnotationParameterLookupVisitor(
+    parameterName: lerpName,
+    element: lerp,
+  );
 
-  AnnotationParameterLookupVisitor mergeLookup = AnnotationParameterLookupVisitor(parameterName: mergeName, element: merge);
+  AnnotationParameterLookupVisitor mergeLookup = AnnotationParameterLookupVisitor(
+    parameterName: mergeName,
+    element: merge,
+  );
 
   lerpLookup.run(resolved.units);
   mergeLookup.run(resolved.units);

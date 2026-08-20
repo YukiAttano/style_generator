@@ -1,6 +1,8 @@
 /// @docImport "package:style_generator_annotation/equality_generator_annotation.dart";
 library;
 
+import "package:meta/meta.dart";
+
 /// The internal representation of [EqualityKey]
 class EqualityKeyInternal<T> {
   static const String srcAnnotationName = "EqualityKey";
@@ -15,10 +17,14 @@ class EqualityKeyInternal<T> {
     required this.inEquals,
   });
 
+  /// These defaults must be the same as the one set by [EqualityKey]
+  @internal
+  static const EqualityKeyInternal defaults = EqualityKeyInternal(inHash: true, inEquals: true,);
+
   factory EqualityKeyInternal.fromJson(Map<String, Object?> json) {
     return EqualityKeyInternal(
-      inHash: json[inHashName] as bool? ?? true,
-      inEquals: json[inEqualsName] as bool? ?? true,
+      inHash: json[inHashName]! as bool,
+      inEquals: json[inEqualsName]! as bool,
     );
   }
 

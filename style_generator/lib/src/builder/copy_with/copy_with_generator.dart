@@ -63,7 +63,11 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
 
   @override
   Future<GenResult> generateForClass(AnnotatedElement<CopyWith> annotatedClazz, CopyWithConfig config) async {
-    AnalyzedClass c = await analyzeClass(annotatedClazz, config.constructor?.asConstructorName, annotationTypeCheck: false);
+    AnalyzedClass c = await analyzeClass(
+      annotatedClazz,
+      config.constructor?.asConstructorName,
+      annotationTypeCheck: false,
+    );
     ClassElement clazz = c.clazz;
 
     List<Variable> variables = c.variables;
@@ -82,8 +86,9 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
       constructorName,
       resolvedLib,
       variables,
-      (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
-      (v) => v.getAnnotationOf(keyAnnotation)?.field,
+      (v) => _getAnnotation(v).inCopyWith,
+      (v) => _getAnnotation(v).unmodifiable,
+      (v) => _getAnnotation(v).field,
     );
 
     return GenResult(
@@ -98,6 +103,10 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
         copyWithAsExtension: asExtension,
       ),
     );
+  }
+
+  CopyWithKeyInternal _getAnnotation(Variable v) {
+    return v.getAnnotationOf(keyAnnotation) ?? CopyWithKeyInternal.defaults;
   }
 
   String _generateMixin(String generatedClassName, String types, {required String fields, required String copyWith}) {
@@ -136,7 +145,8 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
     mixin = _generateMixin(generatedClassName, types, fields: fields, copyWith: copyWith);
     extension = _generateExtension(generatedClassName, className, types, copyWith: copyWith);
 
-    partClass = """
+    partClass =
+        """
        
     ${hasMixin ? mixin : ""}
 

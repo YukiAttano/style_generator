@@ -83,7 +83,8 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
             constructorName,
             resolvedLib,
             variables,
-            (v) => v.getAnnotationOf(keyAnnotation)?.inCopyWith,
+            (v) => _getAnnotation(v).inCopyWith,
+            (v) => false,
             // Because ThemeExtensions are generally kept simple, the CopyWithKey.field property is most likely not required
             // in StyleKey annotations.
             (v) => null,
@@ -105,6 +106,8 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
       ),
     );
   }
+
+  StyleKeyInternal _getAnnotation(Variable v) => v.getAnnotationOf(keyAnnotation) ?? StyleKeyInternal.defaults;
 
   Variable? _getBuildContextParameterFrom({ConstructorElement? fallback, ConstructorElement? of}) {
     if (fallback == null || of == null) return null;
