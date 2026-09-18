@@ -1,4 +1,4 @@
-## 0.3.0
+## 0.3.0-dev
 
 * *Breaking* CopyWith annotations apply the suffix 'Cw' by default now
 * Add ToString and ToStringKey annotations
