@@ -69,8 +69,8 @@ Element? _getElementFromExpression(Expression expression) {
       element = expression.element;
     case SimpleIdentifier():
       element = expression.element;
-    case Identifier():
-      element = expression.element;
+    // case Identifier():
+    //   element = expression.element;
     case PropertyAccess():
       element = expression.propertyName.element;
     case FunctionReference():
