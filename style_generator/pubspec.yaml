@@ -18,7 +18,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  style_generator_annotation: ^0.1.9
+  style_generator_annotation: ^0.1.10
   #  path: "../style_generator_annotation"
 
   logging: ^1.0.0

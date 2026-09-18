@@ -84,7 +84,7 @@ mixin MergeGen {
   }
 
   bool _includeVariable(Variable v, StyleKeyInternal? styleKey, String clazz) {
-    bool include = styleKey?.inMerge ?? true;
+    bool include = styleKey?.inMerge ?? StyleKeyInternal.defaults.inMerge;
 
     return include;
   }

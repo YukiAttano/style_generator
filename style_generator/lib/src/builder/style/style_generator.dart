@@ -89,10 +89,23 @@ final class StyleGenerator extends Generator<Style, StyleKeyInternal, StyleConfi
             // in StyleKey annotations.
             (v) => null,
           );
-    String mergeContent = !genMerge ? "" : generateMerge(resolvedLib, clazz.displayName, variables, keyAnnotation);
+    String mergeContent = !genMerge
+        ? ""
+        : generateMerge(
+            resolvedLib,
+            clazz.displayName,
+            variables,
+            keyAnnotation,
+          );
     LerpGenResult lerpContent = !genLerp
         ? const LerpGenResult()
-        : generateLerp(resolvedLib, clazz.displayName, constructorName, variables, keyAnnotation);
+        : generateLerp(
+            resolvedLib,
+            clazz.displayName,
+            constructorName,
+            variables,
+            keyAnnotation,
+          );
 
     return PartGenResult(
       part: _generatePartClass(

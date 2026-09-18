@@ -39,6 +39,16 @@ builders:
         run_only_if_triggered: true
         constructor: null
         suffix: "Equality"
+  to_string_builder:
+    import: "package:style_generator/style_generator.dart"
+    builder_factories: [ "toStringBuilder" ]
+    build_extensions: { ".dart": [ ".to_string.dart" ] }
+    build_to: source
+    auto_apply: root_package
+    defaults:
+      options:
+        run_only_if_triggered: true
+        suffix: "Ts"
 
 triggers:
   style_generator:style_builder:
@@ -47,3 +57,5 @@ triggers:
     - annotation CopyWith
   style_generator:equality_builder:
     - annotation Equality
+  style_generator:to_string_builder:
+    - annotation ToString

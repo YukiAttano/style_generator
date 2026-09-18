@@ -1,6 +1,7 @@
 ## 0.3.0
 
 * *Breaking* CopyWith annotations apply the suffix 'Cw' by default now
+* Add ToString and ToStringKey annotations
 
 ## 0.2.12
 

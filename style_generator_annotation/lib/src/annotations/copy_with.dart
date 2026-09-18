@@ -12,11 +12,11 @@ class CopyWith {
   /// * `"_example"` will use the _example constructor
   final String? constructor;
 
-  /// will generate the as an extension
+  /// will generate the method as an extension
   ///
   /// * `true` generates as extension method (default)
   /// * `null` will depend on the build.yml value
-  /// * `false` generates as mixin (requires `with _$[ClassName]CopyWith` on the class)
+  /// * `false` generates as mixin (requires `with _$[ClassName]Cw` on the class)
   ///
   /// If `true`, [suffix] will be applied to the name of the extension class
   ///
@@ -27,11 +27,14 @@ class CopyWith {
   ///
   /// Example:
   /// ```dart
-  /// @CopyWith(suffix: "S")
-  /// class SomeCopyWith with _$SomeCopyWithS {}
+  /// @CopyWith(suffix: "Copy")
+  /// class Something with _$SomethingCopy {}
   ///
-  /// // generates
-  /// mixin SomeCopyWithS {}
+  /// // generates either a class
+  /// mixin _$SomethingCopy {}
+  ///
+  /// // or an extension
+  /// extension $SomethingCopy on Something {}
   /// ```
   final String? suffix;
 

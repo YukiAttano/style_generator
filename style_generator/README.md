@@ -42,6 +42,9 @@ For even easier generation, use the [Style Generator Templates for Flutter](http
     - [Equality](#equality)
       - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml-2)
     - [EqualityKey](#equalityKey)
+    - [ToString](#toString)
+      - [Customize the default behavior with build.yml](#customize-the-default-behavior-with-buildyml-3)
+    - [ToStringKey](#toStringKey)
 - [Prefixed Imports and static callbacks](#prefixed-imports-and-static-callbacks)
 - [Feedback](#feedback)
 
@@ -405,7 +408,7 @@ import 'package:style_generator_annotation/copy_with_generator_annotation.dart';
 part 'some_user.copy_with.dart';
 
 @CopyWith(asExtension: false)
-class SomeUser with _$SomeUser {
+class SomeUser with _$SomeUserCw {
   final String firstname;
   final String lastname;
   final DateTime? birthday;
@@ -418,7 +421,7 @@ which generates:
 ```dart
 part of "some_user.dart";
 
-mixin _$SomeUser {
+mixin _$SomeUserCw {
   String get firstname;
   String get lastname;
   DateTime? get birthday;
@@ -448,7 +451,7 @@ targets:
         options:
           constructor: null     # The constructor for .copyWith to use. The default is `null`
           asExtension: null     # whether an Extension method or a mixin should be generated. The default is `null` (will generate an Extension)
-          suffix: null          # an optional suffix for the generated extension or mixin. The default is `null`
+          suffix: null          # an optional suffix for the generated extension or mixin. The default is `Cw`
 ```
 
 ## CopyWithKey
@@ -556,7 +559,7 @@ extension $UserProfileExtension on UserProfile {
 <summary> generates `hashCode` and `operator ==` functions </summary>
 
 Just like the @CopyWith annotation, it comes with its own import and won't collide with other packages 
-when only the `@Style()` annotation is used
+when only the `@Equality()` annotation is used
 
 ```dart
 import 'package:style_generator_annotation/equality_generator_annotation.dart';
@@ -568,8 +571,9 @@ class SomeUser with _$SomeUserEquality {
   final String firstname;
   final String lastname;
   final DateTime? birthday;
+  final List<Profile>? profiles;
 
-  const SomeUser(this.firstname, this.lastname, this.birthday);
+  const SomeUser(this.firstname, this.lastname, this.birthday, this.profiles);
 }
 ```
 
@@ -583,13 +587,15 @@ mixin _$SomeUserEquality {
   DateTime? get birthday;
   List<Profile>? get profiles;
 
+  @override
   int get hashCode => Object.hashAll([
-    firstname,
-    lastname,
-    birthday,
-    const DeepCollectionEquality().hash(profiles),
+    firstname, 
+    lastname, 
+    birthday, 
+    const DeepCollectionEquality().hash(profiles)
   ]);
 
+  @override
   bool operator ==(Object other) {
     if (other is! SomeUser) return false;
 
@@ -597,9 +603,10 @@ mixin _$SomeUserEquality {
         firstname == other.firstname &&
             lastname == other.lastname &&
             birthday == other.birthday &&
-            const DeepCollectionEquality().equals(profiles, other.profiles);
+            (identical(profiles, other.profiles) || const DeepCollectionEquality().equals(profiles, other.profiles));
   }
 }
+
 
 ```
 </details>
@@ -769,6 +776,126 @@ mixin _$EqChildEquality {
             const DeepCollectionEquality().equals(dynList, other.dynList) &&
             dyn == other.dyn &&
             const DeepCollectionEquality().equals(dynMap, other.dynMap);
+  }
+}
+```
+
+
+</details>
+
+
+## ToString
+
+<details>
+
+<summary> generates the `toString` function </summary>
+
+Just like the @CopyWith annotation, it comes with its own import and won't collide with other packages
+when only the `@ToString()` annotation is used
+
+```dart
+import 'package:style_generator_annotation/to_string_generator_annotation.dart';
+
+part 'some_user.to_string.dart';
+
+@ToString()
+class SomeUser with _$SomeUserTs {
+  final String firstname;
+  final String lastname;
+  final DateTime? birthday;
+  final List<Profile>? profiles;
+
+  const SomeUser(this.firstname, this.lastname, this.birthday, this.profiles);
+}
+```
+
+which generates:
+```dart
+part of "some_user.dart";
+
+mixin _$SomeUserTs {
+  String get firstname;
+  String get lastname;
+  DateTime? get birthday;
+  List<Profile>? get profiles;
+
+  @override
+  String toString() {
+    return "SomeUser(firstname:$firstname, lastname:$lastname, birthday:$birthday, profiles:$profiles)";
+  }
+}
+
+```
+</details>
+
+### Customize the default behavior with build.yml
+
+You can customize the default behavior in your build.yml
+
+```yaml
+targets:
+  $default:
+    builders:
+      style_generator|to_string_builder:
+        enabled: true
+        options:
+          suffix: "Ts"    # an optional suffix for the generated mixin. The default is `Ts`
+```
+
+## ToStringKey
+
+<details>
+
+<summary> The generation of the `toString` method can be further customized </summary>
+
+- fields can be excluded from `toString`
+
+```dart
+import 'package:style_generator_annotation/to_string_generator_annotation.dart';
+
+part 'eq_parent.to_string.dart';
+
+@ToString()
+class SomeData with _$SomeDataTs {
+  final String title;
+  final String subtitle;
+  final String content;
+  final String trailing;
+  @ToStringKey(stringify: SomeData.intListToString)
+  final List<int>? something;
+  final double money;
+  @ToStringKey(inToString: false)
+  final int id;
+
+  const SomeData({
+    this.title = "",
+    this.subtitle = "",
+    this.trailing = "",
+    this.something = const [],
+    this.money = 0,
+    this.id = 0,
+  });
+
+  static String intListToString(List<int>? list) => list?.join(",") ?? "";
+}
+```
+
+which generates
+```dart
+part of "eq_parent.dart";
+
+mixin _$SomeDataTs {
+  String get title;
+  String get subtitle;
+  String get content;
+  String get trailing;
+  List<int>? get something;
+  double get money;
+  int get id;
+
+  @override
+  String toString() {
+    return "SomeData(title:$title, subtitle:$subtitle, content:$content, trailing:$trailing, something:${SomeData.intListToString(something)}, money:$money)";
   }
 }
 ```

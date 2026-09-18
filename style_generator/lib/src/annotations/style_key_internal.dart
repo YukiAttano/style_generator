@@ -9,6 +9,7 @@ import "package:meta/meta.dart";
 import "../data/ast_visitor/annotation_parameter_lookup_visitor.dart";
 import "../data/logger.dart";
 import "../extensions/dart_object_extension.dart";
+import "../extensions/element/executable_element_extension.dart";
 
 /// The internal representation of [StyleKey]
 ///
@@ -84,11 +85,11 @@ StyleKeyInternal<T> createStyleKey<T>(ResolvedLibraryResult resolved, Map<String
 
   if (lerp != null && lerpFunction == null) {
     couldNotResolveFunction(lerpName, lerp.toString(), styleKeyName);
-    lerpFunction = _getFunctionName(lerp);
+    lerpFunction = lerp.getFunctionName();
   }
   if (merge != null && mergeFunction == null) {
     couldNotResolveFunction(mergeName, merge.toString(), styleKeyName);
-    mergeFunction = _getFunctionName(merge);
+    mergeFunction = merge.getFunctionName();
   }
 
   return StyleKeyInternal(
@@ -98,32 +99,4 @@ StyleKeyInternal<T> createStyleKey<T>(ResolvedLibraryResult resolved, Map<String
     lerp: lerpFunction,
     merge: mergeFunction,
   );
-}
-
-/// Fallback name lookup if AST lookup fails
-///
-/// Due to the nature of [Element]s, this method does not recognize prefix name imports
-/// (Hence why we search the AST).
-///
-/// The AST lookup should always work and
-/// this function exists solely to have a generalized backup
-String? _getFunctionName(ExecutableElement? function) {
-  String? callbackName;
-  if (function != null) {
-    if (function.isStatic) {
-      switch (function.kind) {
-        case ElementKind.METHOD:
-          callbackName = "${function.enclosingElement?.displayName ?? ""}.${function.displayName}";
-        case ElementKind.FUNCTION:
-          callbackName = function.displayName;
-      }
-    } else {
-      switch (function.kind) {
-        case ElementKind.CONSTRUCTOR:
-          callbackName = function.displayName;
-      }
-    }
-  }
-
-  return callbackName;
 }

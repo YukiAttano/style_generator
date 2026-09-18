@@ -3,7 +3,7 @@ import "package:meta/meta_meta.dart";
 /// Override the generation behavior of a field
 ///
 /// - Annotations on constructor parameters take precedence over fields
-/// - Annotations on fields are inherited in subclasses, while those on parameters do not
+/// - Annotations on fields are inherited in subclasses, while those on parameters are not
 @Target({
   TargetKind.field,
   TargetKind.parameter,

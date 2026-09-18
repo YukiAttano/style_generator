@@ -6,6 +6,7 @@ import "package:build/build.dart";
 import "package:style_generator_annotation/copy_with_generator_annotation.dart";
 import "package:style_generator_annotation/equality_generator_annotation.dart";
 import "package:style_generator_annotation/style_generator_annotation.dart";
+import "package:style_generator_annotation/to_string_generator_annotation.dart";
 
 import "../annotations/copy_with_config.dart";
 import "../annotations/copy_with_key_internal.dart";
@@ -13,6 +14,8 @@ import "../annotations/equality_config.dart";
 import "../annotations/equality_key_internal.dart";
 import "../annotations/style_config.dart";
 import "../annotations/style_key_internal.dart";
+import "../annotations/to_string_config.dart";
+import "../annotations/to_string_key_internal.dart";
 import "annotation_converter/annotation_converter.dart";
 import "annotation_converter/json_annotation_converter.dart";
 
@@ -20,6 +23,7 @@ class LookupStore {
   static const String styleAnnotationPackage = "package:style_generator_annotation/style_generator_annotation.dart";
   static const String copyWithAnnotationPackage = "package:style_generator_annotation/copy_with_generator_annotation.dart";
   static const String equalityAnnotationPackage = "package:style_generator_annotation/equality_generator_annotation.dart";
+  static const String toStringAnnotationPackage = "package:style_generator_annotation/to_string_generator_annotation.dart";
   static const String materialPackage = "package:flutter/material.dart";
 
   static const String styleKeyName = StyleKeyInternal.srcAnnotationName;
@@ -28,6 +32,8 @@ class LookupStore {
   static const String copyWithKeyName = CopyWithKeyInternal.srcAnnotationName;
   static const String equalityName = EqualityConfig.srcAnnotationName;
   static const String equalityKeyName = EqualityKeyInternal.srcAnnotationName;
+  static const String toStringName = ToStringConfig.srcAnnotationName;
+  static const String toStringKeyName = ToStringKeyInternal.srcAnnotationName;
   static const String buildContextName = "BuildContext";
 
   final Map<String, AnnotationConverter> _libraryAnnotations = {};
@@ -44,6 +50,9 @@ class LookupStore {
 
   AnnotationConverter<Equality> get equalityAnnoConverter => _libraryAnnotations[equalityName]! as AnnotationConverter<Equality>;
   AnnotationConverter<EqualityKeyInternal> get equalityKeyAnnoConverter => _libraryAnnotations[equalityKeyName]! as AnnotationConverter<EqualityKeyInternal>;
+
+  AnnotationConverter<ToString> get toStringAnnoConverter => _libraryAnnotations[toStringName]! as AnnotationConverter<ToString>;
+  AnnotationConverter<ToStringKeyInternal> get toStringKeyAnnoConverter => _libraryAnnotations[toStringKeyName]! as AnnotationConverter<ToStringKeyInternal>;
 
   DartType get buildContextType => _dartTypes[buildContextName]!;
 
@@ -80,9 +89,11 @@ class LookupStore {
     AssetId styleAsset = AssetId.resolve(Uri.parse(styleAnnotationPackage));
     AssetId copyWithAsset = AssetId.resolve(Uri.parse(copyWithAnnotationPackage));
     AssetId equalityAsset = AssetId.resolve(Uri.parse(equalityAnnotationPackage));
+    AssetId toStringAsset = AssetId.resolve(Uri.parse(toStringAnnotationPackage));
     LibraryElement styleLib = await buildStep.resolver.libraryFor(styleAsset);
     LibraryElement copyWithLib = await buildStep.resolver.libraryFor(copyWithAsset);
     LibraryElement equalityLib = await buildStep.resolver.libraryFor(equalityAsset);
+    LibraryElement toStringLib = await buildStep.resolver.libraryFor(toStringAsset);
 
     // create ClassElements of our annotations and
     // create converter for the ClassElements to read the configured Annotations from real DartObjects
@@ -92,6 +103,8 @@ class LookupStore {
     _createAnnotationFromJson<CopyWithKeyInternal>(copyWithLib, copyWithKeyName, CopyWithKeyInternal.fromJson);
     _createAnnotationFromJson<Equality>(equalityLib, equalityName, Equality.fromJson);
     _createAnnotationFromJson<EqualityKeyInternal>(equalityLib, equalityKeyName, EqualityKeyInternal.fromJson);
+    _createAnnotationFromJson<ToString>(toStringLib, toStringName, ToString.fromJson);
+    _createAnnotationFromMap<ToStringKeyInternal>(toStringLib, toStringKeyName, (map) => createToStringKey(resolvedLibrary, map));
   }
 
   void _createAnnotationFromJson<T>(LibraryElement library, String annoName, AnnotationFromJson<T> fromJson) {

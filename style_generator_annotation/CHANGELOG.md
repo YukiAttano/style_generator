@@ -1,6 +1,10 @@
+## 0.1.10
+
+- Add ToString and ToStringKey annotation
+
 ## 0.1.9
 
-- Added CopyWithKey.unmodifiable, which prevents overriding fields. Useful for ID/UUID fields.
+- Add CopyWithKey.unmodifiable, which prevents overriding fields. Useful for ID/UUID fields.
 
 ## 0.1.8
 

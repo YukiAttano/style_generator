@@ -70,7 +70,6 @@ final class EqualityGenerator extends Generator<Equality, EqualityKeyInternal, E
 
     String suffix = config.suffix;
 
-    String generatedClassName = clazz.displayName + suffix;
     String fieldContent = generateFieldGetter(fields);
     HashGenResult hashResult = generateHash(fields, (v) => getAnnotation(v).inHash);
     EqualsGenResult equalsResult = generateEquals(clazz.displayName, fields, (v) => getAnnotation(v).inEquals);
@@ -79,9 +78,7 @@ final class EqualityGenerator extends Generator<Equality, EqualityKeyInternal, E
       addPartDirective: true,
       imports: const [],
       part: _generatePartClass(
-        generatedClassName,
-        clazz.getTypedName(),
-        clazz.typeParameters.typesToString(),
+        clazz.getTypedName(suffix: suffix),
         fields: fieldContent,
         hash: hashResult.content,
         equals: equalsResult.content,
@@ -94,9 +91,7 @@ final class EqualityGenerator extends Generator<Equality, EqualityKeyInternal, E
   }
 
   String _generatePartClass(
-    String generatedClassName,
-    String className,
-    String types, {
+    String clazzName, {
     required String fields,
     required String hash,
     required String equals,
@@ -106,7 +101,7 @@ final class EqualityGenerator extends Generator<Equality, EqualityKeyInternal, E
     partClass =
         """
        
-     mixin _\$$generatedClassName$types {
+     mixin _\$$clazzName {
       
         $fields
         

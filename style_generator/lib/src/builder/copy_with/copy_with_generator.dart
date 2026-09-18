@@ -120,7 +120,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
     """;
   }
 
-  String _generateExtension(String generatedClassName, String className, String types, {required String copyWith}) {
+  String _generateExtension(String generatedClassName, String types, String className, {required String copyWith}) {
     return """
       extension \$${generatedClassName}Extension$types on $className {
         $copyWith
@@ -143,7 +143,7 @@ final class CopyWithGenerator extends Generator<CopyWith, CopyWithKeyInternal, C
     bool hasMixin = !copyWithAsExtension || trailing.isNotEmpty;
 
     mixin = _generateMixin(generatedClassName, types, fields: fields, copyWith: copyWith);
-    extension = _generateExtension(generatedClassName, className, types, copyWith: copyWith);
+    extension = _generateExtension(generatedClassName, types, className, copyWith: copyWith);
 
     partClass =
         """
