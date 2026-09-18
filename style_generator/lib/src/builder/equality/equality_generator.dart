@@ -12,7 +12,6 @@ import "../../data/annotated_element.dart";
 import "../../data/annotation_converter/annotation_converter.dart";
 import "../../data/resolved_import.dart";
 import "../../data/variable.dart";
-import "../../extensions/element/type_parameter_element_list_extension_.dart";
 import "../../extensions/element/type_parameterized_element_extension.dart";
 import "../generator.dart";
 

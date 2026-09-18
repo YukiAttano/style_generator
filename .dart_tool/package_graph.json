@@ -13,7 +13,7 @@
     },
     {
       "name": "style_generator",
-      "version": "0.3.0",
+      "version": "0.3.0-dev",
       "dependencies": [
         "analyzer",
         "build",
@@ -35,7 +35,7 @@
     },
     {
       "name": "style_generator_annotation",
-      "version": "0.1.9",
+      "version": "0.1.10",
       "dependencies": [
         "collection",
         "meta"

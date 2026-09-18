@@ -8,7 +8,6 @@ import "package:build/build.dart";
 import "package:dart_style/dart_style.dart";
 import "package:path/path.dart" hide Style;
 
-import "../../annotations/style_config.dart";
 import "../../annotations/to_string_config.dart";
 import "../../builder_mixins/header_gen.dart";
 import "../../data/logger.dart";
