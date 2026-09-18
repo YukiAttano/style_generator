@@ -821,7 +821,7 @@ mixin _$SomeUserTs {
 
   @override
   String toString() {
-    return "SomeUser(firstname:$firstname, lastname:$lastname, birthday:$birthday, profiles:$profiles)";
+    return 'SomeUser(firstname:"$firstname", lastname:"$lastname", birthday:${birthday == null ? 'null' : '$birthday'}, profiles:${profiles == null ? 'null' : '$profiles'})';
   }
 }
 
@@ -853,7 +853,7 @@ targets:
 ```dart
 import 'package:style_generator_annotation/to_string_generator_annotation.dart';
 
-part 'eq_parent.to_string.dart';
+part 'some_data.to_string.dart';
 
 @ToString()
 class SomeData with _$SomeDataTs {
@@ -882,7 +882,7 @@ class SomeData with _$SomeDataTs {
 
 which generates
 ```dart
-part of "eq_parent.dart";
+part of "some_data.dart";
 
 mixin _$SomeDataTs {
   String get title;
@@ -895,11 +895,11 @@ mixin _$SomeDataTs {
 
   @override
   String toString() {
-    return "SomeData(title:$title, subtitle:$subtitle, content:$content, trailing:$trailing, something:${SomeData.intListToString(something)}, money:$money)";
+    // Excluded: id
+    return 'SomeData(title:"$title", subtitle:"$subtitle", content:"$content", trailing:"$trailing", something:${SomeData.intListToString(something)}, money:$money)';
   }
 }
 ```
-
 
 </details>
 
