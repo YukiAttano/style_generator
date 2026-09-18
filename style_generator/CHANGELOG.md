@@ -1,3 +1,7 @@
+## 0.3.0
+
+* *Breaking* CopyWith annotations apply the suffix 'Cw' by default now
+
 ## 0.2.12
 
 * Fix an issue, where the use of lists in classes generated wrong equality methods

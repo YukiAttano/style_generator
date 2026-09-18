@@ -27,7 +27,7 @@ builders:
         run_only_if_triggered: true
         constructor: null
         asExtension: null
-        suffix: null
+        suffix: Cw
   equality_builder:
     import: "package:style_generator/style_generator.dart"
     builder_factories: [ "equalityBuilder" ]
