@@ -19,7 +19,7 @@ class EqualityKeyInternal<T> {
 
   /// These defaults must be the same as the one set by [EqualityKey]
   @internal
-  static const EqualityKeyInternal defaults = EqualityKeyInternal(inHash: true, inEquals: true,);
+  static const EqualityKeyInternal<dynamic> defaults = EqualityKeyInternal(inHash: true, inEquals: true,);
 
   factory EqualityKeyInternal.fromJson(Map<String, Object?> json) {
     return EqualityKeyInternal(

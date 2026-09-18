@@ -53,6 +53,7 @@ final class ToStringGenerator extends Generator<ToString, ToStringKeyInternal, T
 
     String fieldContent = generateFieldGetter(fields);
     ToStringGenResult toStringContent = generateToString(
+      resolvedLib,
       fields,
       clazz.displayName,
       keyAnnotation,

@@ -1,6 +1,11 @@
+## 0.3.0
+
+* Add quotation marks for String types in toString method
+* Add explicit 'null' text for null value in toString method
+
 ## 0.3.0-dev
 
-* *Breaking* CopyWith annotations apply the suffix 'Cw' by default now
+* *Breaking* CopyWith annotations applies the suffix 'Cw' by default now
 * Add ToString and ToStringKey annotations
 
 ## 0.2.12

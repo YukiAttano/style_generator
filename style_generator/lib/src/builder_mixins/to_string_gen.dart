@@ -1,6 +1,11 @@
+import "package:analyzer/dart/analysis/results.dart";
+import "package:analyzer/dart/element/type.dart";
+
 import "../annotations/to_string_key_internal.dart";
 import "../data/annotation_converter/annotation_converter.dart";
+import "../data/resolved_type.dart";
 import "../data/variable.dart";
+import "../extensions/dart_type_extension.dart";
 
 class ToStringGenResult {
   /// the generated function
@@ -13,9 +18,10 @@ mixin ToStringGen {
   static const String methodName = "toString";
 
   ToStringGenResult generateToString(
+    ResolvedLibraryResult resolvedLib,
     List<Variable> fields,
     String className,
-    AnnotationConverter<ToStringKeyInternal> styleKeyAnnotation,
+    AnnotationConverter<ToStringKeyInternal> toStringKeyAnnotation,
   ) {
     List<String> f = [];
     List<String> excluded = [];
@@ -25,12 +31,12 @@ mixin ToStringGen {
     String line;
     ToStringKeyInternal? toStringKey;
     for (var v in fields) {
-      fieldName = v.fieldElement?.displayName ?? v.displayName;
+      fieldName = _getFieldName(v);
 
-      toStringKey = v.getAnnotationOf(styleKeyAnnotation);
+      toStringKey = v.getAnnotationOf(toStringKeyAnnotation);
       inToString = _includeVariable(v, toStringKey, className);
 
-      line = "$fieldName:${_getToStringMethod(fieldName, toStringMethod: toStringKey?.stringify)}";
+      line = "$fieldName:${_getToStringMethod(resolvedLib, v, toStringMethod: toStringKey?.stringify)}";
 
       if (inToString) {
         f.add(line);
@@ -47,7 +53,7 @@ mixin ToStringGen {
     @override
     String $methodName() {
       $excludedLine
-      return "$className($toStringParameter)";
+      return '$className($toStringParameter)';
     }
     """;
 
@@ -62,14 +68,33 @@ mixin ToStringGen {
     return include;
   }
 
+  String _getFieldName(Variable v) => v.fieldElement?.displayName ?? v.displayName;
+
   String _getToStringMethod(
-    String fieldName, {
+    ResolvedLibraryResult resolvedLib,
+    Variable variable, {
     String? toStringMethod,
   }) {
+    ResolvedType resolvedType = variable.resolvedType;
+    DartType d = resolvedType.type.extensionTypeErasure;
+    bool isNullable = d.isNullable;
+
+    String fieldName = _getFieldName(variable);
+
     if (toStringMethod != null) {
       return "\${$toStringMethod($fieldName)}";
     } else {
-      return "\$$fieldName";
+      String value = "\$$fieldName";
+
+      if (d.isDartCoreString) {
+        value = '"$value"' ;
+      }
+
+      if (isNullable) {
+        return "\${$fieldName == null ? 'null' : '$value'}";
+      }
+
+      return value;
     }
   }
 }

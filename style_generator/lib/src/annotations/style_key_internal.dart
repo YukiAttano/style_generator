@@ -40,7 +40,7 @@ class StyleKeyInternal<T> {
 
   /// These defaults must be the same as the one set by [StyleKey]
   @internal
-  static const StyleKeyInternal defaults = StyleKeyInternal(
+  static const StyleKeyInternal<dynamic> defaults = StyleKeyInternal(
     inCopyWith: true,
     inMerge: true,
     inLerp: true,
