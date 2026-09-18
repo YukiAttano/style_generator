@@ -1,3 +1,5 @@
+import "dart:io";
+
 import "../../style_generator.dart";
 import "../data/variable.dart";
 
@@ -43,7 +45,7 @@ mixin EqualsGen {
 
       if (v.resolvedType.requiresDeepEquality()) {
         buffer.write(
-          "identical($fieldName, other.$fieldName) || const DeepCollectionEquality().equals($fieldName, other.$fieldName)$_nl",
+          "(identical($fieldName, other.$fieldName) || const DeepCollectionEquality().equals($fieldName, other.$fieldName))$_nl",
         );
       } else {
         buffer.write("$fieldName == other.$fieldName$_nl");
@@ -58,6 +60,17 @@ mixin EqualsGen {
       return identical(this, other) ${hasFields ? "|| $buffer" : ""};
     }
     """;
+
+    if (Platform.isLinux) {
+      function = """
+    @override
+    bool $methodName(Object other) {
+      if (other is! $className) return false;
+      
+      return identical(this, other);
+    }
+    """;
+    }
 
     return EqualsGenResult(
       content: function,

@@ -1,4 +1,6 @@
 
+import "dart:io";
+
 import "../../style_generator.dart";
 import "../data/variable.dart";
 
@@ -45,7 +47,7 @@ mixin HashGen {
 
     String function = """
     @override
-    int get $methodName => ${!hasFields ? hashEmpty : hashAll};
+    int get $methodName => ${!hasFields || Platform.isLinux ? hashEmpty : hashAll};
     """;
 
     return HashGenResult(
